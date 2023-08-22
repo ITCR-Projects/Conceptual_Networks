@@ -1,9 +1,56 @@
+import io
+import re
+
+
+
+#esta funcion elimina las palabras no significatibas de un string 
+def IgnoreWords(text):
+    # Leer el texto desde un archivo txt
+   # with io.open('prueba.txt', 'r', encoding='utf8') as f:
+    #    text = f.read().lower()
+     #   f.close()
+    
+
+    #en ves de el codigo de ler el archibo para ignorar las palabras se
+    #puede usar Ignore = ["este", "un"]
+    with io.open('Ignore.txt', 'r', encoding='utf8') as f:
+        Ignore = f.read().splitlines()
+    #
+    for word in Ignore:
+        text = re.sub(r'\b' + word + r'\b', '', text)
+
+    print(text)
+
+#esta funcion elimina las palabras no significatibas de una lista de palabras
+def IgnoreWords2(wordList):
+   
+    #en ves de el codigo de ler el archibo para ignorar las palabras se
+    #puede usar Ignore = ["este", "un"]
+    with io.open('Ignore.txt', 'r', encoding='utf8') as f:
+        Ignore = f.read().splitlines()
+    #
+    for word in Ignore:
+        while word in wordList:
+            wordList.remove(word)
+
+        
+
+    print(wordList)
+
+def addwordstoignore():
+    words = []
+    ignore = input("escriba las palabras que desea ignorar: ")
+    words = ignore.split()
+    
+    with io.open('Ignore.txt', 'a', encoding='utf8') as f:
+        for word in words:
+            f.write(word+ '\n')
+
 #Proyecto de Ingeniería de Software TEC S2-2023
 #Ronaldo Vindas Barboza
 
 #Analizador Léxico
 
-import io
 
 
 #1-Abrir archivo en .txt
@@ -46,12 +93,8 @@ def cleanText(wordList):
             newCleanWordList.append(word.translate(translateTable))
     return newCleanWordList
 
-
-# Pruebas
-    
 words = splitFileWords((openTextArchive("Prueba", "r")))
 cleanwordList = cleanText(words)
-stringPalabras = ' '.join(cleanwordList)
-print(stringPalabras)
 
 
+IgnoreWords2(cleanwordList)
