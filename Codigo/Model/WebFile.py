@@ -1,5 +1,5 @@
 from abc import ABC
-from Código.Model.File import File
+from Codigo.Model.File import File
 import requests
 from bs4 import BeautifulSoup
 
