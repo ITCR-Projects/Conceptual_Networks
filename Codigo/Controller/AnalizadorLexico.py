@@ -83,11 +83,8 @@ def cleanText(wordList):
     Entradas: Lista de palabras
     Salidas: Lista de palabras limpia.
     Restricciones: N/A'''
-
-    
     translateTable= str.maketrans('áéíóúüÜñ', 'aeiouuun', '0123456789.,;|—:#$%&-*+-/()=><«»\@')
- 
-    newCleanWordList =[]
+    newCleanWordList = []
     for word in wordList:
         if not word.isdigit():
             newCleanWordList.append(word.translate(translateTable))
