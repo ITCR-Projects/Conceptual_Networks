@@ -1,6 +1,6 @@
 import textract
 from abc import ABC
-from Código.Model.File import File
+from Codigo.Model.File import File
 
 
 class DocxFile(File, ABC):
