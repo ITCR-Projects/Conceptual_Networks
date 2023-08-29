@@ -5,6 +5,7 @@ import re
 
 from Codigo.Model.DocxFile import DocxFile
 from Codigo.Model.WebFile import WebFile
+from Codigo.Model.TextFile import TextFile
 
 
 class TextHandlerAdmin:
@@ -13,7 +14,6 @@ class TextHandlerAdmin:
         self.document = ""
 
     #----Métodos Privados ----
-
 
     def splitFileWords(text):
         '''Función que divide un texto en una lista de palabras.
@@ -65,22 +65,6 @@ class TextHandlerAdmin:
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     # ---- Métodos Públicos ----
 
     def add_files(self, files):
@@ -88,17 +72,27 @@ class TextHandlerAdmin:
         Entradas: nombre del archivo, self.
         Salidas: Documento con texto de la lista de archivos.
         Restricciones: Archivos deven tener extensión ".docx", ".html" '''
-    
+
+        print(f"Llego aqui y el archivo es {files}")
         for filepath in files:
             name, extension = os.path.splitext(filepath)
-
+            name = os.path.basename(name)
+            print(f"Llego aqui y el nombre archivo es {name}")
             if extension == ".docx":
+                print(f"Llego aqui tambien y el archivo es {name} y su extencion {extension}")
                 file = DocxFile(name, filepath)
                 self.files.append(file)
                 print(file.get_text())
 
-            elif extension == "":
-                file = WebFile(name, filepath)
+            elif extension == ".txt":
+                print(f"Llego aqui (elif) tambien y el archivo es {name} y su extencion {extension}")
+                file = TextFile(name, filepath)
+                self.files.append(file)
+                print(file.get_text())
+
+            else:
+                print(f"Llego aqui (else) tambien y el archivo es {name} y su extencion {extension}")
+                file = WebFile(filepath, filepath)
                 self.files.append(file)
                 print(file.get_text())
 

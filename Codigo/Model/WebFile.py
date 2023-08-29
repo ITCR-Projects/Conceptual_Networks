@@ -18,6 +18,6 @@ class WebFile(File, ABC):
         text = soup.body.get_text()
 
         # Se crea el archivo .txt y se guarda con la infoamción de la página
-        with open('../../Documentación/'+self.url_file, "w", encoding="utf-8") as f:
+        with open('../../Txts/'+self.url_file, "w", encoding="utf-8") as f:
             f.write(text)
         return text

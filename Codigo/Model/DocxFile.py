@@ -9,8 +9,8 @@ class DocxFile(File, ABC):
 
     def get_text(self):
         #CAMBIAR EL PATH DE DONDE SE AGARRA
-        text = textract.process("../"+self.url_file, encoding='utf-8').decode('utf-8')
-
+        #text = textract.process("../"+self.url_file, encoding='utf-8').decode('utf-8')
+        text = textract.process(self.url_file, encoding='utf-8').decode('utf-8')
         # Escribe el texto en un archivo de texto
         path = "../../Txts/" + self.name + ".txt"
         with open(path, "w", encoding="utf-8") as f:

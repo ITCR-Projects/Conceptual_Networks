@@ -41,7 +41,7 @@ class MainWindow(QMainWindow):
 
         # Add a button to start the creation of the graph
         create_graph_btn = QPushButton("Create Graph")
-        create_graph_btn.clicked.connect(self.add_files)
+        create_graph_btn.clicked.connect(self.create_graph)
         self.mwlayout.addWidget(create_graph_btn, 2,0)
 
         widget = QWidget()
@@ -69,8 +69,7 @@ class MainWindow(QMainWindow):
         for i in range(self.file_list.count()):
             item = self.file_list.item(i)
             items.append(item.text())
-        print(items)
-
+        self.mainController.addFiles(items)
 
 app = QApplication(sys.argv)
 w = MainWindow()
