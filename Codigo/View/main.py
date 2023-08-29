@@ -65,11 +65,9 @@ class MainWindow(QMainWindow):
             self.url_txb.clear()
 
     def create_graph(self):
-        items = []
         for i in range(self.file_list.count()):
             item = self.file_list.item(i)
-            items.append(item.text())
-        self.mainController.addFiles(items)
+            self.mainController.addFiles(item.text())
 
 app = QApplication(sys.argv)
 w = MainWindow()
