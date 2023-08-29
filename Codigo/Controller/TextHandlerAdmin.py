@@ -61,43 +61,45 @@ class TextHandlerAdmin:
                 text = re.sub(r'\b' + word + r'\b', '', text)
             print(text)
 
-
-
-
-
     # ---- Métodos Públicos ----
 
-    def add_files(self, files):
+    def add_file(self, filepath):
         '''Método que añade archivos de la lista al documento a procesar.
         Entradas: nombre del archivo, self.
         Salidas: Documento con texto de la lista de archivos.
         Restricciones: Archivos deven tener extensión ".docx", ".html" '''
 
-        print(f"Llego aqui y el archivo es {files}")
-        for filepath in files:
-            name, extension = os.path.splitext(filepath)
-            name = os.path.basename(name)
-            print(f"Llego aqui y el nombre archivo es {name}")
-            if extension == ".docx":
-                print(f"Llego aqui tambien y el archivo es {name} y su extencion {extension}")
-                file = DocxFile(name, filepath)
-                self.files.append(file)
-                print(file.get_text())
+        name, extension = os.path.splitext(filepath)
+        name = os.path.basename(name)
+        if extension == ".docx":
+            file = DocxFile(name, filepath)
+            self.files.append(file)
+            response = file.get_text()
+            if response['response']:
+                return response
 
-            elif extension == ".txt":
-                print(f"Llego aqui (elif) tambien y el archivo es {name} y su extencion {extension}")
-                file = TextFile(name, filepath)
-                self.files.append(file)
-                print(file.get_text())
+            self.document = self.document + response['message']
+            return response
 
-            else:
-                print(f"Llego aqui (else) tambien y el archivo es {name} y su extencion {extension}")
-                file = WebFile(filepath, filepath)
-                self.files.append(file)
-                print(file.get_text())
+        elif extension == ".txt":
+            file = TextFile(name, filepath)
+            self.files.append(file)
+            response = file.get_text()
+            if response['response']:
+                return response
 
-        return
-    
+            self.document = self.document + response['message']
+            return response
+
+        else:
+            file = WebFile(filepath, filepath)
+            self.files.append(file)
+            response = file.get_text()
+            if response['response']:
+                return response
+
+            self.document = self.document + response['message']
+            return response
 
     def lexical_analysis(self):
         '''Método que realiza el análisis léxico del documento de texto de la clase.

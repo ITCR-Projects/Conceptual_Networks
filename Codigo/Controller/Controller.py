@@ -4,10 +4,14 @@ class MainController:
     def __init__(self):
         self.textHandlerAdmin = TextHandlerAdmin()
 
-    def addFiles(self, files):
-        if len(files) < 0:
-            return
-        return self.textHandlerAdmin.add_files(files)
+    def addFiles(self, filepath):
+        if filepath == "":
+            return {
+                'response': True,
+                'message': "Ruta del archivo inválida",
+
+            }
+        return self.textHandlerAdmin.add_file(filepath)
     
 
 

@@ -6,23 +6,29 @@ class TextFile(File, ABC):
         super().__init__(name, url_file)
 
     def get_text(self):
-        path = "../../Txts/" + self.name + ".txt"
+        path = self.path + self.name + ".txt"
         try:
-            # Abre el archivo de entrada en modo lectura
-            with open(self.url_file, 'r') as archivo_entrada:
+            with open(self.url_file, 'r') as input_file:
                 # Lee el contenido del archivo de entrada
-                contenido = archivo_entrada.read()
+                text = input_file.read()
 
-            with open(path, 'w') as archivo_salida:
+            with open(path, 'w', encoding="utf-8") as output_file:
                 # Escribe el contenido en el archivo de salida
-                archivo_salida.write(contenido)
+                output_file.write(text)
 
-                print(f'El contenido de {self.url_file} se ha guardado en {path}')
-        except FileNotFoundError:
-            print(f'El archivo {self.url_file} no se encontró.')
+            return {
+                'response': False,
+                'message': text,
 
+            }
+        except FileNotFoundError as e:
+            return {
+                'response': True,
+                'message': f"Error: El archivo {self.url_file} no se encontró.",
+            }
         except Exception as e:
-            print(f'Ocurrió un error: {str(e)}')
-
-        return contenido
+            return {
+                'response': True,
+                'message': "Error: No se logró cargar el archivo.",
+            }
 
