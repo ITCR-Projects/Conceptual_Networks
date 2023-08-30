@@ -7,6 +7,9 @@ import sys
 # Import the main controller
 from Codigo.Controller.Controller import MainController
 
+# Import the Thread using to the interface process
+from Codigo.View.GraphThread import GraphThread
+
 # Main window class
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -68,6 +71,12 @@ class MainWindow(QMainWindow):
         for i in range(self.file_list.count()):
             item = self.file_list.item(i)
             self.mainController.addFiles(item.text())
+        self.graph_thread = GraphThread(self.file_list, self.mainController)
+        self.graph_thread.finished.connect(self.graph_thread_finished)
+        self.graph_thread.start()
+
+    def graph_thread_finished(self):
+        print("Graph creation thread finished")
 
 app = QApplication(sys.argv)
 w = MainWindow()

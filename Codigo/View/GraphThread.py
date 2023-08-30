@@ -1,7 +1,8 @@
 # PyQt6 dependencies
 from PyQt6.QtCore import Qt, QThread, pyqtSignal
 
-#Class that create a thread to process the files
+
+# Class that create a thread to process the files
 class GraphThread(QThread):
 
     finished = pyqtSignal()
