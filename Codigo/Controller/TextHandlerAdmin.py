@@ -15,24 +15,23 @@ class TextHandlerAdmin:
 
     #----Métodos Privados ----
 
-    def splitFileWords(text):
+    def splitFileWords(self,text):
         '''Función que divide un texto en una lista de palabras.
         Entradas: Archivo de texto.
         Salidas: Lista de palabras.
         Restricciones: N/A'''
-        words = []
         words = text.split()
         return words
 
 
     #-Limpiar texto  
-    def cleanText(wordList):
+    def cleanText(self,wordList):
         '''Función que limpia una lista de palabras. Elimina números,acentuación, signos de puntuación, etc.
         Entradas: Lista de palabras
         Salidas: Lista de palabras limpia.
         Restricciones: N/A'''
         
-        translateTable= str.maketrans('áéíóúüÜñ', 'aeiouuun', '0123456789.,;|—:#$%&-*+-/()=><«»\@')
+        translateTable= str.maketrans('áéíóúüÜñ', 'aeiouuun', '0123456789.,;|—:#$%&-*+-/()=><«»\@º–')
     
         newCleanWordList =[]
         for word in wordList:
@@ -40,7 +39,7 @@ class TextHandlerAdmin:
                 newCleanWordList.append(word.translate(translateTable))
         return newCleanWordList
 
-    def IgnoreWords(text):
+    def IgnoreWords(self,wordList):
             '''Método que elimina palabras no singnificativas.
             Entradas: Texto a procesar.
             Salidas: Documento con texto limpio.
@@ -48,18 +47,16 @@ class TextHandlerAdmin:
 
             #En vez de el codigo de leer el archivo para ignorar las palabras se puede usar Ignore = ["este", "un"]
 
-            with io.open('Ignore.txt', 'r', encoding='utf8') as f:
+            # en ves de el codigo de ler el archibo para ignorar las palabras se
+            # puede usar Ignore = ["este", "un"]
+            with io.open('../Ignore.txt', 'r', encoding='utf8') as f:
                 Ignore = f.read().splitlines()
             #
+            print("goku")
             for word in Ignore:
-                text = re.sub(r'\b' + word + r'\b', '', text)
-
-            with io.open('Ignore.txt', 'r', encoding='utf8') as f:
-                Ignore = f.read().splitlines()
-            #
-            for word in Ignore:
-                text = re.sub(r'\b' + word + r'\b', '', text)
-            print(text)
+                while word in wordList:
+                    wordList.remove(word)
+            return wordList
 
     # ---- Métodos Públicos ----
 
@@ -107,12 +104,17 @@ class TextHandlerAdmin:
         Salidas: Lista de palabras limpia.
         Restricciones: N/A'''
 
-        text = self.document.lower()                                            #Estadariza todo el texto a minúsculas
-        wordList = self.splitFileWords(text)                                    #Divide el texto en una lista de palabras
-        cleanwordList = self.cleanText(wordList)                                #Limpia el texto, elimina números, cambia tildes,etc.
+        texts = self.document.lower()
+        text = texts.replace('\n', ' ')   #Elimina espacios de más y saltos de página de un texto.
+        print()
+        #Estadariza todo el texto a minúsculas
+        wordList = self.splitFileWords(text)
+         #Divide el texto en una lista de palabras
+        cleanwordList = self.cleanText(wordList)
+        #Limpia el texto, elimina números, cambia tildes,etc.
         IgnoredWords = self.IgnoreWords(cleanwordList)                          #Ignora Palabras sin carga semántica
 
-
+        print (IgnoredWords)
         return IgnoredWords
 
 
