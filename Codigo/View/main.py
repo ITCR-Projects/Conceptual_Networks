@@ -68,6 +68,7 @@ class MainWindow(QMainWindow):
         for i in range(self.file_list.count()):
             item = self.file_list.item(i)
             self.mainController.addFiles(item.text())
+        self.mainController.textAnalysis()
 
 app = QApplication(sys.argv)
 w = MainWindow()

@@ -8,11 +8,11 @@ class TextFile(File, ABC):
     def get_text(self):
         path = self.path + self.name + ".txt"
         try:
-            with open(self.url_file, 'r') as input_file:
+            with open(self.url_file, 'r', encoding="utf8") as input_file:
                 # Lee el contenido del archivo de entrada
                 text = input_file.read()
 
-            with open(path, 'w', encoding="utf-8") as output_file:
+            with open(path, 'w', encoding="utf8") as output_file:
                 # Escribe el contenido en el archivo de salida
                 output_file.write(text)
 
