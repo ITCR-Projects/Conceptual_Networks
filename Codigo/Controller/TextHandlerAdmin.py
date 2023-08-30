@@ -104,15 +104,15 @@ class TextHandlerAdmin:
         Salidas: Lista de palabras limpia.
         Restricciones: N/A'''
 
-        texts = self.document.lower()
-        text = texts.replace('\n', ' ')   #Elimina espacios de más y saltos de página de un texto.
-        print()
-        #Estadariza todo el texto a minúsculas
-        wordList = self.splitFileWords(text)
-         #Divide el texto en una lista de palabras
-        cleanwordList = self.cleanText(wordList)
-        #Limpia el texto, elimina números, cambia tildes,etc.
-        IgnoredWords = self.IgnoreWords(cleanwordList)                          #Ignora Palabras sin carga semántica
+        texts = self.document.lower()                         #Estadariza todo el texto a minúsculas
+        text = texts.replace('\n', ' ')                       #Elimina espacios de más y saltos de página de un texto.
+        print("Nuevo Goku")
+        
+        wordList = self.splitFileWords(text)                  #Divide el texto en una lista de palabras
+         
+        cleanwordList = self.cleanText(wordList)              #Limpia el texto, elimina números, cambia tildes,etc.
+       
+        IgnoredWords = self.IgnoreWords(cleanwordList)        #Ignora Palabras sin carga semántica
 
         print (IgnoredWords)
         return IgnoredWords
