@@ -88,9 +88,9 @@ class DocxFile(File, ABC):
             index2 = text.rindex(last_table_word)
 
         if index1 > index2:
-            text = text.split(last_paragraph_word)[0] + last_paragraph_word
+            text = text[:index1] + last_paragraph_word
         elif index2 > index1:
-            text = text.split(last_table_word)[0] + last_table_word
+            text = text[:index2] + last_table_word
 
         return text
 
