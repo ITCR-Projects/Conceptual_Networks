@@ -110,7 +110,7 @@ class MainWindow(QMainWindow):
     def add_files(self):
         file_dialog = QFileDialog()
         file_dialog.setFileMode(QFileDialog.FileMode.ExistingFiles)
-        file_dialog.setNameFilter("All Files (*.*)")
+        file_dialog.setNameFilter("Text files (*.txt *.docx)")
         if file_dialog.exec() == QFileDialog.DialogCode.Accepted:
             selected_files = file_dialog.selectedFiles()
             self.file_list.addItems(selected_files)
