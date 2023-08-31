@@ -46,6 +46,8 @@ ellos
 ellas
 mi
 su
+sus
+mas
 nuestro
 vuestro
 este
@@ -74,7 +76,8 @@ al
 aun
 ha
 lo
- 
+
+
 su
 i
 o

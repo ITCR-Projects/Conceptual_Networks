@@ -12,7 +12,11 @@ class MainController:
 
             }
         return self.textHandlerAdmin.add_file(filepath)
-    
+
+    def textAnalysis(self):
+        print ("esta")
+        self.textHandlerAdmin.lexical_analysis()
+
 
 
 
