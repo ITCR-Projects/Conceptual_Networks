@@ -8,6 +8,7 @@ class GraphThread(QThread):
 
     finished = pyqtSignal()
     update_signal = pyqtSignal(str, float)
+    error_signal = pyqtSignal(str)
     def __init__(self, file_list, main_controller):
         super().__init__()
         self.file_list = file_list
@@ -18,8 +19,12 @@ class GraphThread(QThread):
         fileCount = self.file_list.count()
         for i in range(fileCount):
             item = self.file_list.item(i)
-            self.main_controller.addFiles(item.text())
+            response = self.main_controller.addFiles(item.text())
+            if response['response']:
+                self.error_signal.emit(f"ERROR: {response['message']} in element {item.text()}")
+                time.sleep(5)
             self.update_signal.emit(f"COMPLETED: {item.text()}", (count/fileCount)*100)
             count +=1
-            time.sleep(3)
+            #time.sleep(1)
+        self.main_controller.textAnalysis()
         self.finished.emit()

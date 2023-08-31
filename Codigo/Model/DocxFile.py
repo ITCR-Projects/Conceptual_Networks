@@ -69,7 +69,7 @@ class DocxFile(File, ABC):
                 index -= 1
 
             last_paragraph_word = last_paragraph.split()[-1]
-            index1 = text.index(last_paragraph_word)
+            index1 = text.rindex(last_paragraph_word)
 
         # Inicializa un índice para recorrer las tablas hacia atrás
         index = -1
@@ -85,7 +85,7 @@ class DocxFile(File, ABC):
                     break
                 index -= 1
             last_table_word = last_table.split()[-1]
-            index2 = text.index(last_table_word)
+            index2 = text.rindex(last_table_word)
 
         if index1 > index2:
             text = text.split(last_paragraph_word)[0] + last_paragraph_word

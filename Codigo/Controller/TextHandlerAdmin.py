@@ -31,7 +31,7 @@ class TextHandlerAdmin:
         Salidas: Lista de palabras limpia.
         Restricciones: N/A'''
         
-        translateTable= str.maketrans('áéíóúüÜñ', 'aeiouuun', '0123456789.,;|—:#$%&-*+-/()=><«»\@º–')
+        translateTable= str.maketrans('áéíóúüÜñ', 'aeiouuun', '0123456789.,;|—:#$%&-*+-/()=><«»\@º–•¡!¿?')
     
         newCleanWordList =[]
         for word in wordList:
@@ -50,13 +50,15 @@ class TextHandlerAdmin:
             # en ves de el codigo de ler el archibo para ignorar las palabras se
             # puede usar Ignore = ["este", "un"]
             with io.open('../Ignore.txt', 'r', encoding='utf8') as f:
-                Ignore = f.read().splitlines()
+                ignore = f.read().splitlines()
+
             #
-            print("goku")
-            for word in Ignore:
-                while word in wordList:
-                    wordList.remove(word)
-            return wordList
+            result = []
+            for word in wordList:
+                if word not in ignore:
+                    result.append(word)
+
+            return result
 
     # ---- Métodos Públicos ----
 
@@ -106,15 +108,20 @@ class TextHandlerAdmin:
 
         texts = self.document.lower()                         #Estadariza todo el texto a minúsculas
         text = texts.replace('\n', ' ')                       #Elimina espacios de más y saltos de página de un texto.
-        print("Nuevo Goku")
+
         
         wordList = self.splitFileWords(text)                  #Divide el texto en una lista de palabras
-         
+
         cleanwordList = self.cleanText(wordList)              #Limpia el texto, elimina números, cambia tildes,etc.
-       
+
         IgnoredWords = self.IgnoreWords(cleanwordList)        #Ignora Palabras sin carga semántica
 
-        print (IgnoredWords)
+
+        path = "../../Txts/Result" + ".txt"
+        with open(path, 'w', encoding="utf8") as output_file:
+            # Escribe el contenido en el archivo de salida
+            output_file.write(str(IgnoredWords))
+
         return IgnoredWords
 
 
