@@ -19,7 +19,7 @@ class GraphThread(QThread):
         for i in range(fileCount):
             item = self.file_list.item(i)
             self.main_controller.addFiles(item.text())
-            self.update_signal.emit(f"{item.text()} complete", (count/fileCount)*100)
+            self.update_signal.emit(f"COMPLETED: {item.text()}", (count/fileCount)*100)
             count +=1
             time.sleep(3)
         self.finished.emit()

@@ -102,6 +102,31 @@ class MainWindow(QMainWindow):
         create_graph_btn.clicked.connect(self.create_graph)
         self.mwlayout.addWidget(create_graph_btn, 1,0)
 
+        # Creation of a widget with a label and a progress bar
+        self.progressb_widget = QWidget()
+
+        self.progressbar_layout = QHBoxLayout()
+
+
+        self.pbar_lb = QLabel("Starting Process")
+        self.pbar_lb.setStyleSheet(
+            "QLabel { background-color: #3498db; color: white; padding: 10px; border-radius: 5px; max-width: 250px; }"
+        )
+        self.progressbar_layout.addWidget(self.pbar_lb)
+
+        self.progress_bar = QProgressBar()
+        self.progress_bar.setValue(0)
+        self.progress_bar.setStyleSheet(
+            "QProgressBar { background-color: #f0f0f0; border: 1px solid #d0d0d0; border-radius: 5px; text-align: center; }"
+            "QProgressBar::chunk { background-color: #3498db; border-radius: 5px; }"
+        )
+        self.progressbar_layout.addWidget(self.progress_bar)
+
+        self.progressb_widget.setLayout(self.progressbar_layout)
+        self.mwlayout.addWidget(self.progressb_widget, 2, 0)
+
+        self.progressb_widget.setVisible(False)
+
         widget = QWidget()
         widget.setLayout(self.mwlayout)
         self.setCentralWidget(widget)
@@ -125,22 +150,23 @@ class MainWindow(QMainWindow):
     # Function that take the file list and send it to process
     def create_graph(self):
 
-        self.progressbar_layout = QHBoxLayout()
-        self.pbar_lb = QLabel("Starting Process")
-        self.pbar_lb.setStyleSheet(
-            "QLabel { background-color: #3498db; color: white; padding: 10px; border-radius: 5px; max-width: 250px; }"
-        )
-        self.progressbar_layout.addWidget(self.pbar_lb)
+        # self.progressbar_layout = QHBoxLayout()
+        # self.pbar_lb = QLabel("Starting Process")
+        # self.pbar_lb.setStyleSheet(
+        #     "QLabel { background-color: #3498db; color: white; padding: 10px; border-radius: 5px; max-width: 250px; }"
+        # )
+        # self.progressbar_layout.addWidget(self.pbar_lb)
+        #
+        # self.progress_bar = QProgressBar()
+        # self.progress_bar.setStyleSheet(
+        #     "QProgressBar { background-color: #f0f0f0; border: 1px solid #d0d0d0; border-radius: 5px; text-align: center; }"
+        #     "QProgressBar::chunk { background-color: #3498db; border-radius: 5px; }"
+        # )
+        #
+        # self.progressbar_layout.addWidget(self.progress_bar)
+        # self.mwlayout.addLayout(self.progressbar_layout, 2, 0)
 
-        self.progress_bar = QProgressBar()
-        self.progress_bar.setStyleSheet(
-            "QProgressBar { background-color: #f0f0f0; border: 1px solid #d0d0d0; border-radius: 5px; text-align: center; }"
-            "QProgressBar::chunk { background-color: #3498db; border-radius: 5px; }"
-        )
-
-        self.progressbar_layout.addWidget(self.progress_bar)
-        self.mwlayout.addLayout(self.progressbar_layout, 2, 0)
-
+        self.progressb_widget.setVisible(True)
         self.graph_thread = GraphThread(self.file_list, self.mainController) # Here the thread is created
         self.graph_thread.update_signal.connect(self.update_progressbar)
         self.graph_thread.finished.connect(self.graph_thread_finished)
@@ -164,15 +190,18 @@ class MainWindow(QMainWindow):
 
     # Action when the thread finishes its job
     def graph_thread_finished(self):
-        self.pbar_lb.deleteLater()
-        self.progress_bar.deleteLater()
-        self.mwlayout.removeItem(self.progressbar_layout)
-        self.progressbar_layout.deleteLater()
+        # self.pbar_lb.deleteLater()
+        # self.progress_bar.deleteLater()
+        # self.mwlayout.removeItem(self.progressbar_layout)
+        # self.progressbar_layout.deleteLater()
         alert = QMessageBox()
         alert.setWindowTitle("File Process finish")
         alert.setText("¡All the files were process correctly!")
         alert.setIcon(QMessageBox.Icon.Information)
         alert.exec()
+        self.pbar_lb.setText("Starting Process")
+        self.progress_bar.setValue(0)
+        self.progressb_widget.setVisible(False)
 
 
 app = QApplication(sys.argv)
