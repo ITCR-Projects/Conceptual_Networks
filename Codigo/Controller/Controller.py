@@ -16,6 +16,9 @@ class MainController:
     def textAnalysis(self):
         self.textHandlerAdmin.lexical_analysis()
 
+    def cleanText(self):
+        self.textHandlerAdmin.setTextBlank()
+
 
 
 

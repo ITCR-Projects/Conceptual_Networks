@@ -39,7 +39,7 @@ class DocxFile(File, ABC):
         except Exception as e:
             return {
                 'response': True,
-                'message': "Error: No se logró cargar el archivo.",
+                'message': f"Error: No se logró cargar el archivo.{e}",
             }
 
     def verify_footer(self, text):
