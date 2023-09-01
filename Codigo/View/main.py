@@ -1,4 +1,5 @@
 # PyQt6 dependencies
+from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QApplication, QToolBar, QMessageBox, QMainWindow, QGridLayout, QHBoxLayout, QVBoxLayout, QListWidget, QFileDialog, QPushButton, QLineEdit, QWidget, QLabel, QProgressBar
 from PyQt6.QtGui import QIcon
 
@@ -21,7 +22,7 @@ class MainWindow(QMainWindow):
 
         # Define the layout of the window
         self.setWindowTitle("Conceptual Networks")
-        self.resize(700, 400)  # Fijar el tamaño de la ventana a 800x600
+        self.resize(1000, 600)  # Set the window size
         self.mwlayout = QGridLayout()
         self.mwlayout.setSpacing(10)
 
@@ -34,24 +35,43 @@ class MainWindow(QMainWindow):
 
 
         # The list widget
-        list_layout = QVBoxLayout()
+        list_widget_container = QWidget()
+        list_widget_container_layout = QVBoxLayout()
+        list_widget_container.setLayout(list_widget_container_layout)
+        lbl_layout = QVBoxLayout()
+        list_widget_container_layout.addLayout(lbl_layout)
+
         list_label = QLabel("Element List")
         list_label.setStyleSheet(
-            "QLabel { background-color: #3498db; color: white; padding: 10px; border-radius: 5px; max-width: 250px; }"
+            "QLabel { padding: 5px; font-weight: bold; font-size: 16px; }"
         )
 
-        list_layout.addWidget(list_label)
+        lbl_layout.addWidget(list_label)
 
         self.file_list = QListWidget()
         self.file_list.setStyleSheet(
-            "QListWidget { background-color: #f0f0f0; border: none; }"
+            "QListWidget { background-color: #f0f0f0;  }"
             "QListWidget::item { background-color: #ffffff; border: 1px solid #d0d0d0; padding: 10px; }"
             "QListWidget::item:selected { background-color: #3498db; color: white; }"
         )
 
-        list_layout.addWidget(self.file_list)
-        self.mwlayout.addLayout(list_layout, 0, 0)
+        list_widget_container_layout.addWidget(self.file_list)
+        lbl_layout.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+        list_widget_container_layout.setAlignment(Qt.AlignmentFlag.AlignHCenter)
 
+        self.mwlayout.addWidget(list_widget_container, 0, 0)
+
+        # Title lable of the file space
+        lbl_actions_title_layout = QVBoxLayout()
+        file_label = QLabel("Actions")
+        file_label.setStyleSheet(
+            "QLabel { padding: 5px; font-weight: bold; font-size: 16px; }"
+        )
+        lbl_actions_title_layout.addWidget(file_label)
+
+        lbl_actions_title_layout.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+
+        files_layout.addLayout(lbl_actions_title_layout)
         # Text box to contain the URL
         self.url_txb = QLineEdit()
         self.url_txb.setStyleSheet(
@@ -72,6 +92,7 @@ class MainWindow(QMainWindow):
 
         files_layout.addLayout(url_layout)
 
+        file_btn_layout = QVBoxLayout()
         # Add a button to add files
         doc_icon = QIcon("Icons/documento.png")
         add_files_frame_btn = QPushButton("Add Files")
@@ -80,8 +101,11 @@ class MainWindow(QMainWindow):
         add_files_frame_btn.setStyleSheet(
             "QPushButton { border-radius: 10px; padding: 10px; background-color: #3498db; color: white; }"
             "QPushButton:hover { background-color: #2980b9; }")
+        add_files_frame_btn.setFixedSize(200, 40)
 
-        files_layout.addWidget(add_files_frame_btn)
+
+
+        file_btn_layout.addWidget(add_files_frame_btn)
 
         # Add a remove item button
         remove_icon = QIcon("Icons/basura.png")
@@ -95,13 +119,17 @@ class MainWindow(QMainWindow):
         )
         self.remove_button.clicked.connect(self.remove_item)
         self.remove_button.setEnabled(False)  # Desactivate the button
+        self.remove_button.setFixedSize(200, 40)
 
-        files_layout.addWidget(self.remove_button)
+
+        file_btn_layout.addWidget(self.remove_button)
+        file_btn_layout.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+        files_layout.addLayout(file_btn_layout)
 
         self.file_list.itemSelectionChanged.connect(self.update_remove_button)
 
         files_layout.addStretch(1)
-        self.mwlayout.addLayout(files_layout, 0, 1)
+        self.mwlayout.addLayout(files_layout, 0, 2)
 
         # Add a button to start the creation of the graph
         graph_icon = QIcon("Icons/agregar.png")
@@ -111,7 +139,7 @@ class MainWindow(QMainWindow):
             "QPushButton { border-radius: 10px; padding: 10px; background-color: #3498db; color: white; }"
             "QPushButton:hover { background-color: #2980b9; }")
         create_graph_btn.clicked.connect(self.create_graph)
-        self.mwlayout.addWidget(create_graph_btn, 1,0)
+        self.mwlayout.addWidget(create_graph_btn, 1,1)
 
         # Creation of a widget with a label and a progress bar
         self.progressb_widget = QWidget()
