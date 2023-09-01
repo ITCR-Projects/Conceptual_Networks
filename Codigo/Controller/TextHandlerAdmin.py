@@ -130,7 +130,7 @@ class TextHandlerAdmin:
         Salidas: Lista de palabras limpia.
         Restricciones: N/A'''
 
-        self.text = self.text.lower()                               # Estadariza todo el texto a minúsculas
+        self.text = self.text.lower()                               # Estadariza el texto completo a minúsculas
         self.deleteRepeatedLines()                                  # Elimina líneas repetidas
         self.splitFileWords()                                       # Divide el texto en una lista de palabras
         self.cleanText()                                            # Limpia el texto, elimina números, cambia tildes,etc.
