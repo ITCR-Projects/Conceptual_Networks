@@ -2,7 +2,6 @@ import os
 import io
 import re
 
-
 from Codigo.Model.DocxFile import DocxFile
 from Codigo.Model.WebFile import WebFile
 from Codigo.Model.TextFile import TextFile
@@ -11,54 +10,79 @@ from Codigo.Model.TextFile import TextFile
 class TextHandlerAdmin:
     def __init__(self):
         self.files = []
-        self.document = ""
+        self.text = ""
 
-    #----Métodos Privados ----
+    # ----Métodos Privados ----
+    def setTextBlank(self):
+        '''Función que limpia el buffer de texto.
+        Entradas: N/A.
+        Salidas: Buffer de Texto vacio.
+        Restricciones: N/A'''
 
-    def splitFileWords(self,text):
+        self.text = ""
+        return
+
+    def deleteRepeatedLines(self):
+        '''Función que elimina líneas repetidas seguidas.
+        Entradas: Archivo de texto.
+        Salidas: Texto sin líneas repetidas seguidas.
+        Restricciones: N/A'''
+
+        # self.text = '\n'.join([line for line in self.text.split('\n') if line.strip() != ''])
+        # lines = self.text.split('\n')
+        lines = [line for line in self.text.split('\n') if line.strip() != '']
+        new_lines = [lines[i] for i in range(len(lines)) if i == 0 or lines[i] != lines[i - 1]]
+        self.text = '\n'.join(new_lines)
+
+        # return
+
+    def splitFileWords(self):
         '''Función que divide un texto en una lista de palabras.
         Entradas: Archivo de texto.
         Salidas: Lista de palabras.
         Restricciones: N/A'''
-        words = text.split()
-        return words
 
+        self.text = self.text.split()
 
-    #-Limpiar texto  
-    def cleanText(self,wordList):
+        # return words
+
+    # -Limpiar texto
+    def cleanText(self):
         '''Función que limpia una lista de palabras. Elimina números,acentuación, signos de puntuación, etc.
         Entradas: Lista de palabras
         Salidas: Lista de palabras limpia.
         Restricciones: N/A'''
-        
-        translateTable= str.maketrans('áéíóúüÜñ', 'aeiouuun', '0123456789.,;|—:#$%&-*+-/()=><«»\@º–•¡!¿?')
-    
-        newCleanWordList =[]
-        for word in wordList:
+
+        translateTable = str.maketrans('áéíóúüÜñ', 'aeiouuun', '0123456789.,;|—:#$%&-*+-/()=><«»\@º–•¡!¿?')
+        newCleanWordList = []
+
+        for word in self.text:
             if not word.isdigit():
                 newCleanWordList.append(word.translate(translateTable))
-        return newCleanWordList
+        self.text = newCleanWordList
 
-    def IgnoreWords(self,wordList):
-            '''Método que elimina palabras no singnificativas.
+        # return
+
+    def ignoreWords(self):
+        '''Método que elimina palabras no singnificativas.
             Entradas: Texto a procesar.
             Salidas: Documento con texto limpio.
             Restricciones: N/A '''
 
-            #En vez de el codigo de leer el archivo para ignorar las palabras se puede usar Ignore = ["este", "un"]
+        # En vez de el codigo de leer el archivo para ignorar las palabras se puede usar Ignore = ["este", "un"]
 
-            # en ves de el codigo de ler el archibo para ignorar las palabras se
-            # puede usar Ignore = ["este", "un"]
-            with io.open('../Ignore.txt', 'r', encoding='utf8') as f:
-                ignore = f.read().splitlines()
+        # en ves de el codigo de ler el archibo para ignorar las palabras se
+        # puede usar Ignore = ["este", "un"]
+        with io.open('../Ignore.txt', 'r', encoding='utf8') as f:
+            ignore = f.read().splitlines()
 
-            #
-            result = []
-            for word in wordList:
-                if word not in ignore:
-                    result.append(word)
-
-            return result
+        #
+        result = []
+        for word in self.text:
+            if word not in ignore:
+                result.append(word)
+        self.text = result
+        # return
 
     # ---- Métodos Públicos ----
 
@@ -77,7 +101,7 @@ class TextHandlerAdmin:
             if response['response']:
                 return response
 
-            self.document = self.document + response['message']
+            self.text = self.text + response['message']
             return response
 
         elif extension == ".txt":
@@ -87,7 +111,7 @@ class TextHandlerAdmin:
             if response['response']:
                 return response
 
-            self.document = self.document + response['message']
+            self.text = self.text + response['message']
             return response
 
         else:
@@ -97,7 +121,7 @@ class TextHandlerAdmin:
             if response['response']:
                 return response
 
-            self.document = self.document + response['message']
+            self.text = self.text + response['message']
             return response
 
     def lexical_analysis(self):
@@ -106,33 +130,35 @@ class TextHandlerAdmin:
         Salidas: Lista de palabras limpia.
         Restricciones: N/A'''
 
-        texts = self.document.lower()                         #Estadariza todo el texto a minúsculas
-        text = texts.replace('\n', ' ')                       #Elimina espacios de más y saltos de página de un texto.
-
-        
-        wordList = self.splitFileWords(text)                  #Divide el texto en una lista de palabras
-
-        cleanwordList = self.cleanText(wordList)              #Limpia el texto, elimina números, cambia tildes,etc.
-
-        IgnoredWords = self.IgnoreWords(cleanwordList)        #Ignora Palabras sin carga semántica
-
+        self.text = self.text.lower()                               # Estadariza el texto completo a minúsculas
+        self.deleteRepeatedLines()                                  # Elimina líneas repetidas
+        self.splitFileWords()                                       # Divide el texto en una lista de palabras
+        self.cleanText()                                            # Limpia el texto, elimina números, cambia tildes,etc.
+        self.ignoreWords()                                          # Ignora Palabras sin carga semántica
+        self.text = '\n'.join(self.text)
 
         path = "../../Txts/Result" + ".txt"
         with open(path, 'w', encoding="utf8") as output_file:
-            # Escribe el contenido en el archivo de salida
-            output_file.write(str(IgnoredWords))
+            output_file.write(str(self.text))                       # Escribe el contenido en el archivo de salida
 
-        return IgnoredWords
+        return self.text
 
 
-    def stop_words(self):
 
-        return
+    def countWords(self):
+        wordList = self.text.split()
+        wordFrequency = []
 
+        for word in wordList:
+            wordFrequency.append(wordList.count(word))
+        print(wordFrequency)
+
+        #return
     def stemming(self):
 
         return
 
     def indexing(self):
-        
+
         return
+
