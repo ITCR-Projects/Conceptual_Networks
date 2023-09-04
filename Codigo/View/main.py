@@ -191,7 +191,6 @@ class MainWindow(QMainWindow):
 
     # Function that take the file list and send it to process
     def create_graph(self):
-
         self.progressb_widget.setVisible(True)
         self.graph_thread = GraphThread(self.file_list, self.mainController) # Here the thread is created
         self.graph_thread.update_signal.connect(self.update_progressbar)
@@ -261,7 +260,25 @@ class MainWindow(QMainWindow):
         for item in selected_items:
             self.list_widget.takeItem(self.list_widget.row(item))
 
+    def setIgnoreWords(self):
+        iwords = []
+        words_count = self.list_widget.count()
+        for i in range(words_count):
+            iwords.append(self.list_widget.item(i).text().lower())
+        self.mainController.setIgnoreWords(iwords)
 
+        if self.dialog is not None:
+            self.dialog.hide()
+
+    def addwordstoignore(self):
+        iwords = []
+        words_count = self.list_widget.count()
+        for i in range(words_count):
+            iwords.append(self.list_widget.item(i).text().lower())
+        self.mainController.addwordstoignore(iwords)
+
+        if self.dialog is not None:
+            self.dialog.hide()
 
 if __name__ == "__main__":
     app = QApplication([])
@@ -317,18 +334,28 @@ if __name__ == "__main__":
     save_ignore_words_button = QPushButton("Save", main_window.dialog)
     save_ignore_words_button.setIcon(save_button_icon)
     save_ignore_words_button.setStyleSheet(
-            "QPushButton { border-radius: 10px; padding: 10px; background-color: green; color: white; }"
-            "QPushButton:hover { background-color: #339933; }")
+            "QPushButton { border-radius: 10px; padding: 10px; background-color: gray; color: white; }"
+            "QPushButton:hover { background-color: darkgray; }")
+
+    saveP_button_icon = QIcon("Icons/disco.png")
+    saveP_ignore_words_button = QPushButton("Permanent Save", main_window.dialog)
+    saveP_ignore_words_button.setIcon(saveP_button_icon)
+    saveP_ignore_words_button.setStyleSheet(
+        "QPushButton { border-radius: 10px; padding: 10px; background-color: #FFA500; color: white; }"
+        "QPushButton:hover { background-color: #FFC04D; }")
 
     button_layout.addWidget(add_button)
     button_layout.addWidget(remove_ignore_button)
     button_layout.addWidget(save_ignore_words_button)
+    button_layout.addWidget(saveP_ignore_words_button)
 
     dialog_layout.addLayout(button_layout)
 
     # Connect the button to the functions
     add_button.clicked.connect(main_window.add_ignore_word)
     remove_ignore_button.clicked.connect(main_window.remove_ignore_items)
+    save_ignore_words_button.clicked.connect(main_window.setIgnoreWords)
+    saveP_ignore_words_button.clicked.connect(main_window.addwordstoignore)
 
     main_window.dialog.setLayout(dialog_layout)
 

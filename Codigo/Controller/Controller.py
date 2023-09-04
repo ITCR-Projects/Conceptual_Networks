@@ -19,6 +19,12 @@ class MainController:
     def cleanText(self):
         self.textHandlerAdmin.setTextBlank()
 
+    def setIgnoreWords(self,iwords):
+        self.textHandlerAdmin.setIgnoreWords(iwords)
+
+    def addwordstoignore(self, iwords):
+        self.textHandlerAdmin.addwordstoignore(iwords)
+
 
 
 

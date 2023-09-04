@@ -11,6 +11,7 @@ class TextHandlerAdmin:
     def __init__(self):
         self.files = []
         self.text = ""
+        self.ignore_words_added_list = []
 
     # ----Métodos Privados ----
     def setTextBlank(self):
@@ -71,12 +72,16 @@ class TextHandlerAdmin:
 
         # En vez de el codigo de leer el archivo para ignorar las palabras se puede usar Ignore = ["este", "un"]
 
-        # en ves de el codigo de ler el archibo para ignorar las palabras se
+        # en vez de el codigo de leer el archivo para ignorar las palabras se
         # puede usar Ignore = ["este", "un"]
         with io.open('../Ignore.txt', 'r', encoding='utf8') as f:
             ignore = f.read().splitlines()
 
         #
+        if self.ignore_words_added_list:
+            ignore.extend(self.ignore_words_added_list)
+
+        print(ignore)
         result = []
         for word in self.text:
             if word not in ignore:
@@ -162,3 +167,15 @@ class TextHandlerAdmin:
 
         return
 
+    def setIgnoreWords(self, iwords):
+        self.ignore_words_added_list = iwords
+
+    def addwordstoignore(self, iwords):
+        print(f"Llego aqui {iwords}")
+        with io.open('../Ignore.txt', 'r', encoding='utf8') as f:
+            ignore = f.read().splitlines()
+
+        with io.open('../Ignore.txt', 'a', encoding='utf8') as f:
+            for word in iwords:
+                if word not in ignore:
+                    f.write('\n' + word.lower())
