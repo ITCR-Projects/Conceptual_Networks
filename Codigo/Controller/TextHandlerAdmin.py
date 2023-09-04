@@ -81,7 +81,6 @@ class TextHandlerAdmin:
         if self.ignore_words_added_list:
             ignore.extend(self.ignore_words_added_list)
 
-        print(ignore)
         result = []
         for word in self.text:
             if word not in ignore:
@@ -171,7 +170,6 @@ class TextHandlerAdmin:
         self.ignore_words_added_list = iwords
 
     def addwordstoignore(self, iwords):
-        print(f"Llego aqui {iwords}")
         with io.open('../Ignore.txt', 'r', encoding='utf8') as f:
             ignore = f.read().splitlines()
 
