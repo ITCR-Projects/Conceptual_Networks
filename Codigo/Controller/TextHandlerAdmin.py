@@ -1,6 +1,12 @@
 import os
 import io
+import numpy as np
+import matplotlib.pyplot as plt
 import re
+
+from PIL import Image
+from wordcloud import WordCloud
+from collections import Counter
 
 from Codigo.Model.DocxFile import DocxFile
 from Codigo.Model.WebFile import WebFile
@@ -14,6 +20,7 @@ class TextHandlerAdmin:
         self.ignore_words_added_list = []
 
     # ----Métodos Privados ----
+
     def setTextBlank(self):
         '''Función que limpia el buffer de texto.
         Entradas: N/A.
@@ -36,6 +43,14 @@ class TextHandlerAdmin:
         self.text = '\n'.join(new_lines)
 
         # return
+    def getPhrases(self):
+        '''Función que almacena las citas encontradas en un texto.
+        Entradas: N/A.
+        Salidas: Colección de Citas de un Texto.
+        Restricciones: N/A'''
+
+        phrases = re.findall(r'"(.*?)"', self.text)
+        return phrases
 
     def splitFileWords(self):
         '''Función que divide un texto en una lista de palabras.
@@ -59,7 +74,6 @@ class TextHandlerAdmin:
         #Para que no tome en cuenta las tildes:
         #translateTable = str.maketrans('üÜñ', 'uun', '0123456789.,;|—:#$%&-*+-/()=><«»\@º–•¡!¿?')
 
-
         newCleanWordList = []
 
         for word in self.text:
@@ -82,7 +96,6 @@ class TextHandlerAdmin:
         with io.open('../Ignore.txt', 'r', encoding='utf8') as f:
             ignore = f.read().splitlines()
 
-        #
         if self.ignore_words_added_list:
             ignore.extend(self.ignore_words_added_list)
 
@@ -143,13 +156,45 @@ class TextHandlerAdmin:
         wordList = self.text.split()
         #wordFrequency = []
         wordFrequency = {}
-        for word in wordList:
-            wordFrequency[word] = wordList.count(word)
+        wordFrequency = Counter(wordList)
+        #for word in wordList:
+            #wordFrequency[word] = float(wordList.count(word))
 
-        wordFrequencySorted = dict(sorted(wordFrequency.items(), key=lambda item: item[1], reverse=True)) #Usé el lambda para no tener que hacer un import de "operator", no sé si haya algún problema - Rony
+
+        wordFrequencySorted = dict(sorted(wordFrequency.items(), key=lambda item: item[1], reverse=True))#Usé el lambda para no tener que hacer un import de "operator", no sé si haya algún problema - Rony
         print(wordFrequencySorted)
+        return wordFrequencySorted
 
         #return wordFrequency
+
+    def makeWordCloud(self, text):
+        '''print("Goku sj2")
+        alice_mask = np.array(Image.open("nube.png"))
+
+        wc = WordCloud(background_color="white", max_words=1000, mask=alice_mask)
+
+        print("Goku sj3")
+        # generate word cloud
+        wc.generate_from_frequencies(text)
+
+
+        # show
+        plt.imshow(wc, interpolation="bilinear")
+        plt.axis("off")
+        plt.show()'''
+
+        x, y = np.ogrid[:300, :300]
+
+        mask = (x - 150) ** 2 + (y - 150) ** 2 > 130 ** 2
+        mask = 255 * mask.astype(int)
+
+        wc = WordCloud(background_color="white", repeat=True, mask=mask)
+        wc.generate_from_frequencies(text)                          #El diccionario debe estar formado por llave tipo string y valor tipo float para generar la imagen, para generar la tabla, el valor se podría parsear devuelta a int
+
+        plt.axis("off")                             #Genera escalas para mostrarlos por matplotlib, quizás sea bueno buscar otra forma de exportar, es posible exportar a png y svg mediante otras funciones
+        plt.imshow(wc, interpolation="bilinear")
+        plt.show()
+
 
     def lexical_analysis(self):
         '''Método que realiza el análisis léxico del documento de texto de la clase.
@@ -167,11 +212,11 @@ class TextHandlerAdmin:
         path = "../../Txts/Result" + ".txt"
         with open(path, 'w', encoding="utf8") as output_file:
             output_file.write(str(self.text))                       # Escribe el contenido en el archivo de salida
-
-        self.countWords()
         return self.text
 
-
+    def Statistics(self):
+        counteWordsDict = self.countWords()
+        self.makeWordCloud(counteWordsDict)  # Se crea la Nube de Palabras
 
 
     def stemming(self):
