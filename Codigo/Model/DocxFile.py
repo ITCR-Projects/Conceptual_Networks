@@ -12,8 +12,7 @@ def extract_text_from_table(table):
                 for paragraph in cell.paragraphs:
                     table_text += paragraph.text + "\n"
     except Exception as e:
-        table_text = ""
-        print(e)
+        return table_text
 
     return table_text
 
@@ -84,22 +83,15 @@ class DocxFile(File, ABC):
             while index >= -len(doc.tables):
 
                 table = doc.tables[index]
-                try:
-                    t = extract_text_from_table(table)
-                except Exception as e:
-                    print(e)
+                t = extract_text_from_table(table)
 
                 if t.strip() != "" and t != "\x0c":
-                    print("Goku")
                     # Agrega el texto de la tabla al principio de la cadena (hacia atrás)
                     last_table = t
-                    print("Goku 2")
                     break
-                print("Goku 3")
-
                 index -= 1
 
-            if last_table_word != "":
+            if last_table != "":
                 last_table_word = last_table.split()[-1]
                 index2 = text.rindex(last_table_word)
 
@@ -110,6 +102,3 @@ class DocxFile(File, ABC):
 
         return text
 
-
-#x = DocxFile("2", "2.docx")
-#print(x.get_text())
