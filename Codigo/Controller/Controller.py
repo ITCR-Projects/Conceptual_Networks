@@ -16,6 +16,15 @@ class MainController:
     def textAnalysis(self):
         self.textHandlerAdmin.lexical_analysis()
 
+    def cleanText(self):
+        self.textHandlerAdmin.setTextBlank()
+
+    def setIgnoreWords(self,iwords):
+        self.textHandlerAdmin.setIgnoreWords(iwords)
+
+    def addwordstoignore(self, iwords):
+        self.textHandlerAdmin.addwordstoignore(iwords)
+
 
 
 
