@@ -6,10 +6,15 @@ from Codigo.Model.File import File
 
 def extract_text_from_table(table):
     table_text = ""
-    for row in table.rows:
-        for cell in row.cells:
-            for paragraph in cell.paragraphs:
-                table_text += paragraph.text + "\n"
+    try:
+        for row in table.rows:
+            for cell in row.cells:
+                for paragraph in cell.paragraphs:
+                    table_text += paragraph.text + "\n"
+    except Exception as e:
+        table_text = ""
+        print(e)
+
     return table_text
 
 
@@ -20,6 +25,7 @@ class DocxFile(File, ABC):
     def get_text(self):
         try:
             text = textract.process(self.url_file, method='docx', encoding='utf8').decode('utf8')
+
             text = self.verify_footer(text)
 
             # Escribe el texto en un archivo de texto
@@ -76,16 +82,26 @@ class DocxFile(File, ABC):
         if len(doc.tables) > 0:
             # Bucle while para recorrer las tablas hacia atrás
             while index >= -len(doc.tables):
+
                 table = doc.tables[index]
-                t = extract_text_from_table(table)
+                try:
+                    t = extract_text_from_table(table)
+                except Exception as e:
+                    print(e)
 
                 if t.strip() != "" and t != "\x0c":
+                    print("Goku")
                     # Agrega el texto de la tabla al principio de la cadena (hacia atrás)
                     last_table = t
+                    print("Goku 2")
                     break
+                print("Goku 3")
+
                 index -= 1
-            last_table_word = last_table.split()[-1]
-            index2 = text.rindex(last_table_word)
+
+            if last_table_word != "":
+                last_table_word = last_table.split()[-1]
+                index2 = text.rindex(last_table_word)
 
         if index1 > index2:
             text = text[:index1] + last_paragraph_word
