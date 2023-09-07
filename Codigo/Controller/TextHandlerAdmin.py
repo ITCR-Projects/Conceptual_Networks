@@ -69,13 +69,12 @@ class TextHandlerAdmin:
         Salidas: Lista de palabras limpia.
         Restricciones: N/A'''
 
-        translateTable = str.maketrans('áéíóúüÜñ', 'aeiouuun', '0123456789.,;|—:#$%&-*+-/()=><«»\@º–•¡!¿?{}[]')
+        # Para que no tome en cuenta las tildes:
+        #translateTable = str.maketrans('áéíóúüÜñ', 'aeiouuun', '0123456789.,;|—:#$%&-*+-/()=><«»\@º–•¡!¿?{}[]')
 
-        #Para que no tome en cuenta las tildes:
-        #translateTable = str.maketrans('üÜñ', 'uun', '0123456789.,;|—:#$%&-*+-/()=><«»\@º–•¡!¿?')
 
+        translateTable = str.maketrans('', '', '0123456789.,;|—:#$%&-*+-/()=><«»\@º–•¡!¿?{}[]')
         newCleanWordList = []
-
         for word in self.text:
             if not word.isdigit():
                 newCleanWordList.append(word.translate(translateTable))
@@ -188,10 +187,10 @@ class TextHandlerAdmin:
         mask = (x - 150) ** 2 + (y - 150) ** 2 > 130 ** 2
         mask = 255 * mask.astype(int)
 
-        wc = WordCloud(background_color="white", repeat=True, mask=mask)
+        wc = WordCloud(background_color="white", repeat=True, mask=mask, max_words= 100)
         wc.generate_from_frequencies(text)                          #El diccionario debe estar formado por llave tipo string y valor tipo float para generar la imagen, para generar la tabla, el valor se podría parsear devuelta a int
 
-        plt.axis("off")                             #Genera escalas para mostrarlos por matplotlib, quizás sea bueno buscar otra forma de exportar, es posible exportar a png y svg mediante otras funciones
+        plt.axis("off")                                             #Genera escalas para mostrarlos por matplotlib, quizás sea bueno buscar otra forma de exportar, es posible exportar a png y svg mediante otras funciones
         plt.imshow(wc, interpolation="bilinear")
         plt.show()
 
@@ -212,10 +211,12 @@ class TextHandlerAdmin:
         path = "../../Txts/Result" + ".txt"
         with open(path, 'w', encoding="utf8") as output_file:
             output_file.write(str(self.text))                       # Escribe el contenido en el archivo de salida
+        self.statistics()
         return self.text
 
-    def Statistics(self):
+    def statistics(self):
         counteWordsDict = self.countWords()
+        print(counteWordsDict)
         self.makeWordCloud(counteWordsDict)  # Se crea la Nube de Palabras
 
 
