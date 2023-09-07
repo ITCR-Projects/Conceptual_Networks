@@ -54,7 +54,12 @@ class TextHandlerAdmin:
         Salidas: Lista de palabras limpia.
         Restricciones: N/A'''
 
-        translateTable = str.maketrans('áéíóúüÜñ', 'aeiouuun', '0123456789.,;|—:#$%&-*+-/()=><«»\@º–•¡!¿?')
+        translateTable = str.maketrans('áéíóúüÜñ', 'aeiouuun', '0123456789.,;|—:#$%&-*+-/()=><«»\@º–•¡!¿?{}[]')
+
+        #Para que no tome en cuenta las tildes:
+        #translateTable = str.maketrans('üÜñ', 'uun', '0123456789.,;|—:#$%&-*+-/()=><«»\@º–•¡!¿?')
+
+
         newCleanWordList = []
 
         for word in self.text:
@@ -128,6 +133,24 @@ class TextHandlerAdmin:
             self.text = self.text + response['message']
             return response
 
+    def countWords(self):
+        '''Método que realiza el conteo de palabras.
+        Entradas: self
+        Salidas: Diccionario con conteo de palabras.
+        Restricciones: N/A'''
+
+
+        wordList = self.text.split()
+        #wordFrequency = []
+        wordFrequency = {}
+        for word in wordList:
+            wordFrequency[word] = wordList.count(word)
+
+        wordFrequencySorted = dict(sorted(wordFrequency.items(), key=lambda item: item[1], reverse=True)) #Usé el lambda para no tener que hacer un import de "operator", no sé si haya algún problema - Rony
+        print(wordFrequencySorted)
+
+        #return wordFrequency
+
     def lexical_analysis(self):
         '''Método que realiza el análisis léxico del documento de texto de la clase.
         Entradas: self
@@ -145,19 +168,12 @@ class TextHandlerAdmin:
         with open(path, 'w', encoding="utf8") as output_file:
             output_file.write(str(self.text))                       # Escribe el contenido en el archivo de salida
 
+        self.countWords()
         return self.text
 
 
 
-    def countWords(self):
-        wordList = self.text.split()
-        wordFrequency = []
 
-        for word in wordList:
-            wordFrequency.append(wordList.count(word))
-        print(wordFrequency)
-
-        #return
     def stemming(self):
 
         return
