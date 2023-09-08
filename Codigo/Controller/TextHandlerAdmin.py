@@ -53,6 +53,27 @@ class TextHandlerAdmin:
         phrases = re.findall(r'"(.*?)"', self.text)
         return phrases
 
+    def getUrls(self):
+
+        urls = re.findall(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*(),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', self.text)
+        return urls
+
+    def replaceUrls(self):
+        url_regex = re.compile(
+            r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
+        )
+        # Reemplazar las URLs
+        self.text = url_regex.sub("ñjklñjjgra", self.text)
+
+    def relocateUrls(self, urls):
+        parts = self.text.split('ñjklñjjgra')
+        result = parts[0]
+        for i in range(1, len(parts)):
+            result += urls[i - 1] + parts[i]
+        self.text =result
+
+
+
     def splitFileWords(self):
         '''Función que divide un texto en una lista de palabras.
         Entradas: Archivo de texto.
@@ -193,12 +214,16 @@ class TextHandlerAdmin:
         Entradas: self
         Salidas: Lista de palabras limpia.
         Restricciones: N/A'''
-
+        urls = self.getUrls()
+        self.replaceUrls()
         self.text = self.text.lower()  # Estadariza el texto completo a minúsculas
         self.deleteRepeatedLines()  # Elimina líneas repetidas
         self.splitFileWords()  # Divide el texto en una lista de palabras
         self.cleanText()  # Limpia el texto, elimina números, cambia tildes,etc.
         self.ignoreWords()  # Ignora Palabras sin carga semántica
+        self.text = " ".join(self.text)
+        self.relocateUrls(urls)
+        self.text = self.text.split()
         self.text = '\n'.join(self.text)
 
         path = "../../Txts/Result" + ".txt"
