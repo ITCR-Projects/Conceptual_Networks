@@ -219,8 +219,8 @@ class MainWindow(QMainWindow):
         statistics_layout.addWidget(self.table_info_widget)
 
         # Create a bar graph
-        self.bar_widget = pg.PlotWidget()
-        statistics_layout.addWidget(self.bar_widget)
+       # self.bar_widget = pg.PlotWidget()
+       # statistics_layout.addWidget(self.bar_widget)
 
         self.table_widget.setLayout(statistics_layout)
 
@@ -255,31 +255,7 @@ class MainWindow(QMainWindow):
         self.graph_thread.error_signal.connect(self.error_report)
         self.graph_thread.finished.connect(self.graph_thread_finished)
         self.graph_thread.start()
-        word_freq_dict = {
-            "Python": 50,
-            "Qt": 30,
-            "PyQt": 20,
-            "Interfaz": 15,
-            "Gráfico": 10,
-            "Palabras": 5,
-            "Frecuencia": 3,
-            "Porcentaje": 2,
-            "Tabla": 1,
-            "Circular": 1,
-            "1": 50,
-            "2": 30,
-            "3": 20,
-            "4": 15,
-            "5": 10,
-            "6": 5,
-            "7": 3,
-            "8": 2,
-            "9": 1,
-            "10": 1
-        }
-        self.populate_table(word_freq_dict)
-        self.plot_bar_chart(word_freq_dict)
-        self.tab_widget.setTabEnabled(1, True)
+
 
     # Action when the thread updates the progress bar
     def update_progressbar(self, file, progress):
@@ -306,6 +282,7 @@ class MainWindow(QMainWindow):
 
     # Action when the thread finishes its job
     def graph_thread_finished(self):
+
         alert = QMessageBox()
         alert.setWindowTitle("File Process finish")
         alert.setText("¡All the files were process correctly!")
@@ -314,6 +291,10 @@ class MainWindow(QMainWindow):
         self.pbar_lb.setText("Starting Process")
         self.progress_bar.setValue(0)
         self.progressb_widget.setVisible(False)
+        word_freq_dict = self.mainController.getStatistics()
+        self.populate_table(word_freq_dict)
+        #self.plot_bar_chart(word_freq_dict)
+        self.tab_widget.setTabEnabled(1, True)
 
     #  Function to manage the process files errors
     def error_report(self, error_message):
@@ -384,7 +365,7 @@ class MainWindow(QMainWindow):
     def populate_table(self, word_freq_dict):
         sorted_word_freq = sorted(word_freq_dict.items(), key=lambda x: x[1], reverse=True)
 
-        for i, (word, freq) in enumerate(sorted_word_freq[:20]):
+        for i, (word, freq) in enumerate(sorted_word_freq):
             item_word = QTableWidgetItem(word)
             item_freq = QTableWidgetItem(str(freq))
             item_percent = QTableWidgetItem(f"{(freq / sum(word_freq_dict.values())) * 100:.2f}%")
@@ -395,23 +376,23 @@ class MainWindow(QMainWindow):
             self.table_info_widget.setItem(i, 2, item_percent)
 
     # Function that input a map of words and frequency to create a bar graph
-    def plot_bar_chart(self, word_freq_dict):
-        sorted_word_freq = sorted(word_freq_dict.items(), key=lambda x: x[1], reverse=True)
-
-        labels = [word for word, freq in sorted_word_freq[:20]]
-        freqs = [freq for word, freq in sorted_word_freq[:20]]
-
-        self.bar_widget.setTitle("Frecuencia de Palabras")
-        self.bar_widget.setLabel("left", "Frecuencia")
-        self.bar_widget.setLabel("bottom", "Palabras")
-
-        x = range(len(labels))
-        bar = pg.BarGraphItem(x=x, height=freqs, width=0.6, brush='b')
-        self.bar_widget.addItem(bar)
-
-        # Configurar etiquetas personalizadas en el eje X
-        ticks = [(i, label) for i, label in enumerate(labels)]
-        self.bar_widget.getAxis("bottom").setTicks([ticks])
+    # def plot_bar_chart(self, word_freq_dict):
+    #     sorted_word_freq = sorted(word_freq_dict.items(), key=lambda x: x[1], reverse=True)
+    #
+    #     labels = [word for word, freq in sorted_word_freq[:20]]
+    #     freqs = [freq for word, freq in sorted_word_freq[:20]]
+    #
+    #     self.bar_widget.setTitle("Frecuencia de Palabras")
+    #     self.bar_widget.setLabel("left", "Frecuencia")
+    #     self.bar_widget.setLabel("bottom", "Palabras")
+    #
+    #     x = range(len(labels))
+    #     bar = pg.BarGraphItem(x=x, height=freqs, width=0.6, brush='b')
+    #     self.bar_widget.addItem(bar)
+    #
+    #     # Configurar etiquetas personalizadas en el eje X
+    #     ticks = [(i, label) for i, label in enumerate(labels)]
+    #     self.bar_widget.getAxis("bottom").setTicks([ticks])
 
 if __name__ == "__main__":
     app = QApplication([])

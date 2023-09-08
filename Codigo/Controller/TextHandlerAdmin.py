@@ -173,7 +173,9 @@ class TextHandlerAdmin:
         Restricciones: N/A'''
 
         wordList = self.text.split()
+
         wordFrequency = Counter(wordList)
+
 
         wordFrequencySorted = dict(sorted(wordFrequency.items(), key=lambda item: item[1], reverse=True))
         return wordFrequencySorted
@@ -229,13 +231,14 @@ class TextHandlerAdmin:
         path = "../../Txts/Result" + ".txt"
         with open(path, 'w', encoding="utf8") as output_file:
             output_file.write(str(self.text))  # Escribe el contenido en el archivo de salida
-        self.statistics()
+       # print(self.text)
         return self.text
 
     def statistics(self):
         counteWordsDict = self.countWords()
-        # print(counteWordsDict)
-        self.makeWordCloud(counteWordsDict)  # Se crea la Nube de Palabras
+
+        return counteWordsDict
+        #self.makeWordCloud(counteWordsDict)  # Se crea la Nube de Palabras
 
     def stemming(self):
 
