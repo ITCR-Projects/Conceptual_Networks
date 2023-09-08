@@ -1,6 +1,12 @@
 import os
 import io
+import numpy as np
+import matplotlib.pyplot as plt
 import re
+
+from PIL import Image
+from wordcloud import WordCloud
+from collections import Counter
 
 from Codigo.Model.DocxFile import DocxFile
 from Codigo.Model.WebFile import WebFile
@@ -14,6 +20,7 @@ class TextHandlerAdmin:
         self.ignore_words_added_list = []
 
     # ----Métodos Privados ----
+
     def setTextBlank(self):
         '''Función que limpia el buffer de texto.
         Entradas: N/A.
@@ -37,6 +44,15 @@ class TextHandlerAdmin:
 
         # return
 
+    def getPhrases(self):
+        '''Función que almacena las citas encontradas en un texto.
+        Entradas: N/A.
+        Salidas: Colección de Citas de un Texto.
+        Restricciones: N/A'''
+
+        phrases = re.findall(r'"(.*?)"', self.text)
+        return phrases
+
     def splitFileWords(self):
         '''Función que divide un texto en una lista de palabras.
         Entradas: Archivo de texto.
@@ -54,9 +70,11 @@ class TextHandlerAdmin:
         Salidas: Lista de palabras limpia.
         Restricciones: N/A'''
 
-        translateTable = str.maketrans('áéíóúüÜñ', 'aeiouuun', '0123456789.,;|—:#$%&-*+-/()=><«»\@º–•¡!¿?')
-        newCleanWordList = []
+        # Para que no tome en cuenta las tildes:
+        # translateTable = str.maketrans('áéíóúüÜñ', 'aeiouuun', '0123456789.,;|—:#$%&-*+-/()=><«»\@º–•¡!¿?{}[]')
 
+        translateTable = str.maketrans('', '', '0123456789.,;|—:#$%&-*+-/()=><«»\@º–•¡!¿?{}[]')
+        newCleanWordList = []
         for word in self.text:
             if not word.isdigit():
                 newCleanWordList.append(word.translate(translateTable))
@@ -77,7 +95,6 @@ class TextHandlerAdmin:
         with io.open('../Ignore.txt', 'r', encoding='utf8') as f:
             ignore = f.read().splitlines()
 
-        #
         if self.ignore_words_added_list:
             ignore.extend(self.ignore_words_added_list)
 
@@ -128,36 +145,73 @@ class TextHandlerAdmin:
             self.text = self.text + response['message']
             return response
 
+    def countWords(self):
+        '''Método que realiza el conteo de palabras.
+        Entradas: self
+        Salidas: Diccionario con conteo de palabras.
+        Restricciones: N/A'''
+
+        wordList = self.text.split()
+        wordFrequency = Counter(wordList)
+
+        wordFrequencySorted = dict(sorted(wordFrequency.items(), key=lambda item: item[1], reverse=True))
+        return wordFrequencySorted
+
+
+    def makeWordCloud(self, text):
+        '''print("Goku sj2")
+        alice_mask = np.array(Image.open("nube.png"))
+
+        wc = WordCloud(background_color="white", max_words=1000, mask=alice_mask)
+
+        print("Goku sj3")
+        # generate word cloud
+        wc.generate_from_frequencies(text)
+
+
+        # show
+        plt.imshow(wc, interpolation="bilinear")
+        plt.axis("off")
+        plt.show()'''
+
+        x, y = np.ogrid[:300, :300]
+
+        mask = (x - 150) ** 2 + (y - 150) ** 2 > 130 ** 2
+        mask = 255 * mask.astype(int)
+
+        wc = WordCloud(background_color="white", repeat=True, mask=mask, max_words=100)
+        wc.generate_from_frequencies(
+            text)  # El diccionario debe estar formado por llave tipo string y valor tipo float para generar la imagen, para generar la tabla, el valor se podría parsear devuelta a int
+
+        plt.axis(
+            "off")  # Genera escalas para mostrarlos por matplotlib, quizás sea bueno buscar otra forma de exportar, es posible exportar a png y svg mediante otras funciones
+        plt.imshow(wc, interpolation="bilinear")
+        plt.show()
+
     def lexical_analysis(self):
         '''Método que realiza el análisis léxico del documento de texto de la clase.
         Entradas: self
         Salidas: Lista de palabras limpia.
         Restricciones: N/A'''
 
-        self.text = self.text.lower()                               # Estadariza el texto completo a minúsculas
-        self.deleteRepeatedLines()                                  # Elimina líneas repetidas
-        self.splitFileWords()                                       # Divide el texto en una lista de palabras
-        self.cleanText()                                            # Limpia el texto, elimina números, cambia tildes,etc.
-        self.ignoreWords()                                          # Ignora Palabras sin carga semántica
+        self.text = self.text.lower()  # Estadariza el texto completo a minúsculas
+        self.deleteRepeatedLines()  # Elimina líneas repetidas
+        self.splitFileWords()  # Divide el texto en una lista de palabras
+        self.cleanText()  # Limpia el texto, elimina números, cambia tildes,etc.
+        self.ignoreWords()  # Ignora Palabras sin carga semántica
         self.text = '\n'.join(self.text)
 
         path = "../../Txts/Result" + ".txt"
         with open(path, 'w', encoding="utf8") as output_file:
-            output_file.write(str(self.text))                       # Escribe el contenido en el archivo de salida
-
+            output_file.write(str(self.text))  # Escribe el contenido en el archivo de salida
+        self.statistics()
         return self.text
 
+    def statistics(self):
+        counteWordsDict = self.countWords()
+        # print(counteWordsDict)
+        self.makeWordCloud(counteWordsDict)  # Se crea la Nube de Palabras
 
-
-    def countWords(self):
-        wordList = self.text.split()
-        wordFrequency = []
-
-        for word in wordList:
-            wordFrequency.append(wordList.count(word))
-        print(wordFrequency)
-
-        #return
     def stemming(self):
 
         return

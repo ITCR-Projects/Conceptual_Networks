@@ -38,6 +38,8 @@ class MainWindow(QMainWindow):
         lbl_layout = QVBoxLayout()
         list_widget_container_layout.addLayout(lbl_layout)
 
+
+
         list_label = QLabel("Element List")
         list_label.setStyleSheet(
             "QLabel { padding: 5px; font-weight: bold; font-size: 16px; }"
@@ -55,6 +57,9 @@ class MainWindow(QMainWindow):
         list_widget_container_layout.addWidget(self.file_list)
         lbl_layout.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         list_widget_container_layout.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+
+
+
 
         self.mwlayout.addWidget(list_widget_container, 0, 0)
 
