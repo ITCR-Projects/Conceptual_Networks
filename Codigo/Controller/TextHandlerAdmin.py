@@ -3,6 +3,7 @@ import io
 import numpy as np
 import matplotlib.pyplot as plt
 import re
+import Stemmer
 
 from PIL import Image
 from wordcloud import WordCloud
@@ -206,6 +207,7 @@ class TextHandlerAdmin:
         self.splitFileWords()                                       # Divide el texto en una lista de palabras
         self.cleanText()                                            # Limpia el texto, elimina números, cambia tildes,etc.
         self.ignoreWords()                                          # Ignora Palabras sin carga semántica
+        print(self.stemming())
         self.text = '\n'.join(self.text)
 
         path = "../../Txts/Result" + ".txt"
@@ -221,8 +223,12 @@ class TextHandlerAdmin:
 
 
     def stemming(self):
-
-        return
+        'Metodo que utiliza el stemming por medio de la libreria de Stemmer'
+        list_stemmer = []
+        stemmer = Stemmer.Stemmer('spanish')
+        for word in self.text:
+            list_stemmer.append(stemmer.stemWord(word))
+        return list_stemmer
 
     def indexing(self):
 
