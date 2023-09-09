@@ -14,7 +14,7 @@ class MainController:
         return self.textHandlerAdmin.add_file(filepath)
 
     def textAnalysis(self):
-        self.textHandlerAdmin.lexical_analysis()
+        return self.textHandlerAdmin.lexical_analysis()
 
     def cleanText(self):
         self.textHandlerAdmin.setTextBlank()
@@ -24,6 +24,9 @@ class MainController:
 
     def addwordstoignore(self, iwords):
         self.textHandlerAdmin.addwordstoignore(iwords)
+
+    def getStatistics(self):
+        return  self.textHandlerAdmin.statistics()
 
 
 

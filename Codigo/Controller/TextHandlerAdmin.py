@@ -44,6 +44,7 @@ class TextHandlerAdmin:
         self.text = '\n'.join(new_lines)
 
         # return
+
     def getPhrases(self):
         '''Función que almacena las citas encontradas en un texto.
         Entradas: N/A.
@@ -52,6 +53,27 @@ class TextHandlerAdmin:
 
         phrases = re.findall(r'"(.*?)"', self.text)
         return phrases
+
+    def getUrls(self):
+
+        urls = re.findall(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*(),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', self.text)
+        return urls
+
+    def replaceUrls(self):
+        url_regex = re.compile(
+            r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
+        )
+        # Reemplazar las URLs
+        self.text = url_regex.sub("ñjklñjjgra", self.text)
+
+    def relocateUrls(self, urls):
+        parts = self.text.split('ñjklñjjgra')
+        result = parts[0]
+        for i in range(1, len(parts)):
+            result += urls[i - 1] + parts[i]
+        self.text =result
+
+
 
     def splitFileWords(self):
         '''Función que divide un texto en una lista de palabras.
@@ -71,8 +93,7 @@ class TextHandlerAdmin:
         Restricciones: N/A'''
 
         # Para que no tome en cuenta las tildes:
-        #translateTable = str.maketrans('áéíóúüÜñ', 'aeiouuun', '0123456789.,;|—:#$%&-*+-/()=><«»\@º–•¡!¿?{}[]')
-
+        # translateTable = str.maketrans('áéíóúüÜñ', 'aeiouuun', '0123456789.,;|—:#$%&-*+-/()=><«»\@º–•¡!¿?{}[]')
 
         translateTable = str.maketrans('', '', '0123456789.,;|—:#$%&-*+-/()=><«»\@º–•¡!¿?{}[]')
         newCleanWordList = []
@@ -152,20 +173,14 @@ class TextHandlerAdmin:
         Salidas: Diccionario con conteo de palabras.
         Restricciones: N/A'''
 
-
         wordList = self.text.split()
-        #wordFrequency = []
-        wordFrequency = {}
+
         wordFrequency = Counter(wordList)
-        #for word in wordList:
-            #wordFrequency[word] = float(wordList.count(word))
 
 
-        wordFrequencySorted = dict(sorted(wordFrequency.items(), key=lambda item: item[1], reverse=True))#Usé el lambda para no tener que hacer un import de "operator", no sé si haya algún problema - Rony
-        print(wordFrequencySorted)
+        wordFrequencySorted = dict(sorted(wordFrequency.items(), key=lambda item: item[1], reverse=True))
         return wordFrequencySorted
 
-        #return wordFrequency
 
     def makeWordCloud(self, text):
         '''print("Goku sj2")
@@ -188,39 +203,43 @@ class TextHandlerAdmin:
         mask = (x - 150) ** 2 + (y - 150) ** 2 > 130 ** 2
         mask = 255 * mask.astype(int)
 
-        wc = WordCloud(background_color="white", repeat=True, mask=mask, max_words= 100)
-        wc.generate_from_frequencies(text)                          #El diccionario debe estar formado por llave tipo string y valor tipo float para generar la imagen, para generar la tabla, el valor se podría parsear devuelta a int
+        wc = WordCloud(background_color="white", repeat=True, mask=mask, max_words=100)
+        wc.generate_from_frequencies(
+            text)  # El diccionario debe estar formado por llave tipo string y valor tipo float para generar la imagen, para generar la tabla, el valor se podría parsear devuelta a int
 
-        plt.axis("off")                                             #Genera escalas para mostrarlos por matplotlib, quizás sea bueno buscar otra forma de exportar, es posible exportar a png y svg mediante otras funciones
+        plt.axis(
+            "off")  # Genera escalas para mostrarlos por matplotlib, quizás sea bueno buscar otra forma de exportar, es posible exportar a png y svg mediante otras funciones
         plt.imshow(wc, interpolation="bilinear")
         plt.show()
-
 
     def lexical_analysis(self):
         '''Método que realiza el análisis léxico del documento de texto de la clase.
         Entradas: self
         Salidas: Lista de palabras limpia.
         Restricciones: N/A'''
-
-        self.text = self.text.lower()                               # Estadariza el texto completo a minúsculas
-        self.deleteRepeatedLines()                                  # Elimina líneas repetidas
-        self.splitFileWords()                                       # Divide el texto en una lista de palabras
-        self.cleanText()                                            # Limpia el texto, elimina números, cambia tildes,etc.
-        self.ignoreWords()                                          # Ignora Palabras sin carga semántica
-        print(self.stemming())
+        urls = self.getUrls()
+        self.replaceUrls()
+        self.text = self.text.lower()  # Estadariza el texto completo a minúsculas
+        self.deleteRepeatedLines()  # Elimina líneas repetidas
+        self.splitFileWords()  # Divide el texto en una lista de palabras
+        self.cleanText()  # Limpia el texto, elimina números, cambia tildes,etc.
+        self.ignoreWords()  # Ignora Palabras sin carga semántica
+        self.text = " ".join(self.text)
+        self.relocateUrls(urls)
+        self.text = self.text.split()
         self.text = '\n'.join(self.text)
 
         path = "../../Txts/Result" + ".txt"
         with open(path, 'w', encoding="utf8") as output_file:
-            output_file.write(str(self.text))                       # Escribe el contenido en el archivo de salida
-        self.statistics()
+            output_file.write(str(self.text))  # Escribe el contenido en el archivo de salida
+       # print(self.text)
         return self.text
 
     def statistics(self):
         counteWordsDict = self.countWords()
-        print(counteWordsDict)
-        self.makeWordCloud(counteWordsDict)  # Se crea la Nube de Palabras
 
+        return counteWordsDict
+        #self.makeWordCloud(counteWordsDict)  # Se crea la Nube de Palabras
 
     def stemming(self):
         'Metodo que utiliza el stemming por medio de la libreria de Stemmer'

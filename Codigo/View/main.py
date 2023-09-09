@@ -1,7 +1,8 @@
 # PyQt6 dependencies
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QApplication, QDialog, QMessageBox, QMainWindow, QGridLayout, QHBoxLayout, QVBoxLayout, QListWidget, QFileDialog, QPushButton, QLineEdit, QWidget, QLabel, QProgressBar
+from PyQt6.QtWidgets import QApplication, QTableWidget, QTableWidgetItem, QTabWidget, QDialog, QMessageBox, QMainWindow, QGridLayout, QHBoxLayout, QVBoxLayout, QListWidget, QFileDialog, QPushButton, QLineEdit, QWidget, QLabel, QProgressBar
 from PyQt6.QtGui import QIcon
+import pyqtgraph as pg
 
 # Import sys to work with system operations
 import sys
@@ -23,6 +24,7 @@ class MainWindow(QMainWindow):
         # Define the layout of the window
         self.setWindowTitle("Conceptual Networks")
         self.resize(1000, 600)  # Set the window size
+
         self.mwlayout = QGridLayout()
         self.mwlayout.setSpacing(10)
 
@@ -132,7 +134,6 @@ class MainWindow(QMainWindow):
         #file_btn_layout.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         files_layout.addLayout(file_btn_layout)
 
-
         self.file_list.itemSelectionChanged.connect(self.update_remove_button)
 
         files_layout.addStretch(1)
@@ -140,13 +141,15 @@ class MainWindow(QMainWindow):
 
         # Add a button to start the creation of the graph
         graph_icon = QIcon("Icons/agregar.png")
-        create_graph_btn = QPushButton("Create Graph")
-        create_graph_btn.setIcon(graph_icon)
-        create_graph_btn.setStyleSheet(
+        self.create_graph_btn = QPushButton("Create Graph")
+        self.create_graph_btn.setIcon(graph_icon)
+        self.create_graph_btn.setStyleSheet(
             "QPushButton { border-radius: 10px; padding: 10px; background-color: #3498db; color: white; }"
-            "QPushButton:hover { background-color: #2980b9; }")
-        create_graph_btn.clicked.connect(self.create_graph)
-        self.mwlayout.addWidget(create_graph_btn, 1,1)
+            "QPushButton:hover { background-color: #2980b9; }"
+            "QPushButton:disabled { background-color: #bdc3c7; color: #7f8c8d; }")
+        self.create_graph_btn.clicked.connect(self.create_graph)
+        self.create_graph_btn.setEnabled(False)
+        self.mwlayout.addWidget(self.create_graph_btn, 1,1)
 
         # Creation of a widget with a label and a progress bar
         self.progressb_widget = QWidget()
@@ -173,9 +176,57 @@ class MainWindow(QMainWindow):
 
         self.progressb_widget.setVisible(False)
 
-        widget = QWidget()
-        widget.setLayout(self.mwlayout)
-        self.setCentralWidget(widget)
+        self.central_widget = QWidget()
+        self.setCentralWidget(self.central_widget)
+
+        self.tab_widget = QTabWidget(self)
+        self.tab_widget.setTabPosition(QTabWidget.TabPosition.West)
+
+        self.central_layout = QVBoxLayout(self.central_widget)
+        self.central_layout.addWidget(self.tab_widget)
+
+        # About button
+        about_icon = QIcon("Icons/informacion.png")
+        self.about_button = QPushButton("")
+        self.about_button.setIcon(about_icon)
+        self.about_button.setFixedSize(30, 30)
+        self.about_button.setStyleSheet(
+            "QPushButton {border-radius: 10px; padding: 10px; background-color: #3498db; color: white; border: 2px solid #2980b9; }"
+            "QPushButton:hover {background-color: #2980b9;}"
+        )
+        self.about_button.clicked.connect(self.show_about_dialog)
+        self.central_layout.addWidget(self.about_button)
+
+        # Tab widgets
+        self.files_widget = QWidget()
+        self.table_widget = QWidget()
+
+        # Set the widgets to the window
+        self.tab_widget.addTab(self.files_widget, "Files")
+        self.tab_widget.addTab(self.table_widget, "Statistics")
+
+        # Set the content
+        # Files menus
+        self.files_widget.setLayout(self.mwlayout)
+
+        # Table and graph menus
+        statistics_layout = QVBoxLayout()
+
+        # Create a table with the necessary columns
+        self.table_info_widget = QTableWidget()
+        self.table_info_widget.setColumnCount(3)
+        self.table_info_widget.setHorizontalHeaderLabels(["Word", "Frequency", "Percentage"])
+        statistics_layout.addWidget(self.table_info_widget)
+
+        # Create a bar graph
+       # self.bar_widget = pg.PlotWidget()
+       # statistics_layout.addWidget(self.bar_widget)
+
+        self.table_widget.setLayout(statistics_layout)
+
+        self.tab_widget.setTabEnabled(1, False)
+
+        self.setCentralWidget(self.central_widget)
 
 
     # Function that adds the files to the list
@@ -186,6 +237,7 @@ class MainWindow(QMainWindow):
         if file_dialog.exec() == QFileDialog.DialogCode.Accepted:
             selected_files = file_dialog.selectedFiles()
             self.file_list.addItems(selected_files)
+            self.update_graph_button_state()
 
     # Function that adds the URLs to the list
     def add_url_to_list(self):
@@ -193,6 +245,7 @@ class MainWindow(QMainWindow):
         if text:
             self.file_list.addItem(text)
             self.url_txb.clear()
+            self.update_graph_button_state()
 
     # Function that take the file list and send it to process
     def create_graph(self):
@@ -202,6 +255,7 @@ class MainWindow(QMainWindow):
         self.graph_thread.error_signal.connect(self.error_report)
         self.graph_thread.finished.connect(self.graph_thread_finished)
         self.graph_thread.start()
+
 
     # Action when the thread updates the progress bar
     def update_progressbar(self, file, progress):
@@ -213,18 +267,22 @@ class MainWindow(QMainWindow):
         selected_items = self.file_list.selectedItems()
         for item in selected_items:
             self.file_list.takeItem(self.file_list.row(item))
+        self.update_graph_button_state()
 
     # Function that handle the select element event
     def update_remove_button(self):
         selected_items = self.file_list.selectedItems()
         self.remove_button.setEnabled(len(selected_items) > 0)
 
+    def update_graph_button_state(self):
+        if self.file_list.count() > 0:
+            self.create_graph_btn.setEnabled(True)
+        else:
+            self.create_graph_btn.setEnabled(False)
+
     # Action when the thread finishes its job
     def graph_thread_finished(self):
-        # self.pbar_lb.deleteLater()
-        # self.progress_bar.deleteLater()
-        # self.mwlayout.removeItem(self.progressbar_layout)
-        # self.progressbar_layout.deleteLater()
+
         alert = QMessageBox()
         alert.setWindowTitle("File Process finish")
         alert.setText("¡All the files were process correctly!")
@@ -233,6 +291,10 @@ class MainWindow(QMainWindow):
         self.pbar_lb.setText("Starting Process")
         self.progress_bar.setValue(0)
         self.progressb_widget.setVisible(False)
+        word_freq_dict = self.mainController.getStatistics()
+        self.populate_table(word_freq_dict)
+        #self.plot_bar_chart(word_freq_dict)
+        self.tab_widget.setTabEnabled(1, True)
 
     #  Function to manage the process files errors
     def error_report(self, error_message):
@@ -265,6 +327,7 @@ class MainWindow(QMainWindow):
         for item in selected_items:
             self.list_widget.takeItem(self.list_widget.row(item))
 
+    # add the ignore words to the UI list
     def setIgnoreWords(self):
         iwords = []
         words_count = self.list_widget.count()
@@ -275,6 +338,7 @@ class MainWindow(QMainWindow):
         if self.dialog is not None:
             self.dialog.hide()
 
+    # Set to the controller class the word that going to be ignored
     def addwordstoignore(self):
         iwords = []
         words_count = self.list_widget.count()
@@ -284,6 +348,51 @@ class MainWindow(QMainWindow):
 
         if self.dialog is not None:
             self.dialog.hide()
+
+    # Dialog that shows information about the program
+    def show_about_dialog(self):
+
+        about_message_box = QMessageBox()
+        about_message_box.setWindowTitle("About the aplication")
+        about_message_box.setIcon(QMessageBox.Icon.Information)
+        about_message_box.setText("This is a conceptual networks creator program")
+        about_message_box.setDetailedText(
+            "Esta aplicación fue creada con PyQt6 y muestra cómo crear un diálogo 'Acerca de'.\n\nPuedes personalizar este diálogo para mostrar información adicional sobre tu aplicación.")
+        about_message_box.setStandardButtons(QMessageBox.StandardButton.Ok)
+        about_message_box.exec()
+
+    # Function that input a map of words and frequency to introduce in the table
+    def populate_table(self, word_freq_dict):
+        sorted_word_freq = sorted(word_freq_dict.items(), key=lambda x: x[1], reverse=True)
+
+        for i, (word, freq) in enumerate(sorted_word_freq):
+            item_word = QTableWidgetItem(word)
+            item_freq = QTableWidgetItem(str(freq))
+            item_percent = QTableWidgetItem(f"{(freq / sum(word_freq_dict.values())) * 100:.2f}%")
+
+            self.table_info_widget.insertRow(i)
+            self.table_info_widget.setItem(i, 0, item_word)
+            self.table_info_widget.setItem(i, 1, item_freq)
+            self.table_info_widget.setItem(i, 2, item_percent)
+
+    # Function that input a map of words and frequency to create a bar graph
+    # def plot_bar_chart(self, word_freq_dict):
+    #     sorted_word_freq = sorted(word_freq_dict.items(), key=lambda x: x[1], reverse=True)
+    #
+    #     labels = [word for word, freq in sorted_word_freq[:20]]
+    #     freqs = [freq for word, freq in sorted_word_freq[:20]]
+    #
+    #     self.bar_widget.setTitle("Frecuencia de Palabras")
+    #     self.bar_widget.setLabel("left", "Frecuencia")
+    #     self.bar_widget.setLabel("bottom", "Palabras")
+    #
+    #     x = range(len(labels))
+    #     bar = pg.BarGraphItem(x=x, height=freqs, width=0.6, brush='b')
+    #     self.bar_widget.addItem(bar)
+    #
+    #     # Configurar etiquetas personalizadas en el eje X
+    #     ticks = [(i, label) for i, label in enumerate(labels)]
+    #     self.bar_widget.getAxis("bottom").setTicks([ticks])
 
 if __name__ == "__main__":
     app = QApplication([])
