@@ -228,6 +228,7 @@ class TextHandlerAdmin:
         self.relocateUrls(urls)
         self.text = self.text.split()
         self.text = '\n'.join(self.text)
+        self.stemming(self.text.split())
 
         path = "../../Txts/Result" + ".txt"
         with open(path, 'w', encoding="utf8") as output_file:
@@ -241,12 +242,17 @@ class TextHandlerAdmin:
         return counteWordsDict
         #self.makeWordCloud(counteWordsDict)  # Se crea la Nube de Palabras
 
-    def stemming(self):
+    def stemming(self, text):
         'Metodo que utiliza el stemming por medio de la libreria de Stemmer'
         list_stemmer = []
         stemmer = Stemmer.Stemmer('spanish')
-        for word in self.text:
+        for word in text:
             list_stemmer.append(stemmer.stemWord(word))
+
+        # Forma momentanea par mostrar resultados
+        path = "../../Txts/Stemming" + ".txt"
+        with open(path, 'w', encoding="utf8") as output_file:
+            output_file.write("\n".join(list_stemmer))  # manda los datos de las palabras stemmeadas
         return list_stemmer
 
     def indexing(self):
