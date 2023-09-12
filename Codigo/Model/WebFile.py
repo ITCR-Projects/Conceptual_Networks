@@ -13,11 +13,14 @@ class WebFile(File, ABC):
             # Se obtiene la pagina web
             response = requests.get(self.name)
             response.raise_for_status()
-            page = BeautifulSoup(response.content, 'html.parser')
+            html = response.text
+            page = BeautifulSoup(html, 'html.parser')
+            for script in page(['script', 'style']):
+                script.extract()
 
             name_txt = page.title.string.replace(' ', '_')
             self.url_file = name_txt[0:15] + ".txt"
-            text = page.body.div.get_text()
+            text = page.get_text()
 
             # Se crea el archivo .txt y se guarda con la infoamción de la página
             with open(self.path + self.url_file, "w", encoding="utf-8") as f:
