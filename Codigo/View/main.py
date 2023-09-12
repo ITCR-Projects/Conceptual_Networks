@@ -18,6 +18,11 @@ from Codigo.View.GraphThread import GraphThread
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        # Interface control variables
+        self.page_size = 20  # Table Page Size
+        self.current_page = 1  # Actual page
+        self.word_freq_dict = {}
+
         # Main controller class
         self.mainController = MainController()
 
@@ -210,13 +215,39 @@ class MainWindow(QMainWindow):
         self.files_widget.setLayout(self.mwlayout)
 
         # Table and graph menus
-        statistics_layout = QVBoxLayout()
+        statistics_layout = QHBoxLayout()
 
-        # Create a table with the necessary columns
+        # Create a table with the necessary columns and buttons
+        self.table_view_widget = QWidget()
+        table_view_widget_layout = QVBoxLayout()
+        self.table_view_widget.setLayout(table_view_widget_layout)
+
+        # Creation of the table interface
         self.table_info_widget = QTableWidget()
         self.table_info_widget.setColumnCount(3)
         self.table_info_widget.setHorizontalHeaderLabels(["Word", "Frequency", "Percentage"])
-        statistics_layout.addWidget(self.table_info_widget)
+        table_view_widget_layout.addWidget(self.table_info_widget)
+
+        # Creation of the page menu of the table
+        self.pagination_widget = QWidget()
+        pagination_layout = QHBoxLayout()
+        self.pagination_widget.setLayout(pagination_layout)
+
+        self.prevButton = QPushButton("Before")
+        self.prevButton.clicked.connect(self.prev_page)
+        pagination_layout.addWidget(self.prevButton)
+
+        self.pageLabel = QLabel("Página 1 de 1", self)
+        pagination_layout.addWidget(self.pageLabel)
+
+        self.nextButton = QPushButton("Next")
+        self.nextButton.clicked.connect(self.next_page)
+        pagination_layout.addWidget(self.nextButton)
+
+        table_view_widget_layout.addWidget(self.pagination_widget)
+
+        statistics_layout.addWidget(self.table_view_widget)
+
 
         # Create a bar graph
        # self.bar_widget = pg.PlotWidget()
@@ -282,7 +313,10 @@ class MainWindow(QMainWindow):
 
     # Action when the thread finishes its job
     def graph_thread_finished(self):
-
+        self.word_freq_dict = self.mainController.getStatistics()
+        self.populate_table()
+        # self.plot_bar_chart(word_freq_dict)
+        self.tab_widget.setTabEnabled(1, True)
         alert = QMessageBox()
         alert.setWindowTitle("File Process finish")
         alert.setText("¡All the files were process correctly!")
@@ -291,10 +325,6 @@ class MainWindow(QMainWindow):
         self.pbar_lb.setText("Starting Process")
         self.progress_bar.setValue(0)
         self.progressb_widget.setVisible(False)
-        word_freq_dict = self.mainController.getStatistics()
-        self.populate_table(word_freq_dict)
-        #self.plot_bar_chart(word_freq_dict)
-        self.tab_widget.setTabEnabled(1, True)
 
     #  Function to manage the process files errors
     def error_report(self, error_message):
@@ -362,18 +392,44 @@ class MainWindow(QMainWindow):
         about_message_box.exec()
 
     # Function that input a map of words and frequency to introduce in the table
-    def populate_table(self, word_freq_dict):
-        sorted_word_freq = sorted(word_freq_dict.items(), key=lambda x: x[1], reverse=True)
+    def populate_table(self):
+        start = (self.current_page - 1) * self.page_size
+        end = start + self.page_size
+        data_to_display = list(self.word_freq_dict.items())[start:end]
+
+        sorted_word_freq = sorted(data_to_display, key=lambda x: x[1], reverse=True)
+        self.table_info_widget.setRowCount(0)
+
 
         for i, (word, freq) in enumerate(sorted_word_freq):
             item_word = QTableWidgetItem(word)
             item_freq = QTableWidgetItem(str(freq))
-            item_percent = QTableWidgetItem(f"{(freq / sum(word_freq_dict.values())) * 100:.2f}%")
+            item_percent = QTableWidgetItem(f"{(freq / sum(self.word_freq_dict.values())) * 100:.2f}%")
 
             self.table_info_widget.insertRow(i)
             self.table_info_widget.setItem(i, 0, item_word)
             self.table_info_widget.setItem(i, 1, item_freq)
             self.table_info_widget.setItem(i, 2, item_percent)
+
+    def setup_pagination(self):
+        total_pages = len(self.word_freq_dict) // self.page_size + 1
+
+        self.pageLabel.setText(f"Página {self.current_page} de {total_pages}")
+        self.prevButton.setEnabled(self.current_page > 1)
+        self.nextButton.setEnabled(self.current_page < total_pages)
+
+    def prev_page(self):
+        if self.current_page > 1:
+            self.current_page -= 1
+            self.populate_table()
+            self.setup_pagination()
+
+    def next_page(self):
+        total_pages = len(self.word_freq_dict) // self.page_size + 1
+        if self.current_page < total_pages:
+            self.current_page += 1
+            self.populate_table()
+            self.setup_pagination()
 
     # Function that input a map of words and frequency to create a bar graph
     # def plot_bar_chart(self, word_freq_dict):
