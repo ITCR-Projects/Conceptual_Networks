@@ -25,7 +25,7 @@ class GraphThread(QThread):
             if response['response']:
                 self.error_signal.emit(f"ERROR: {response['message']} in element {item.text()}")
                 time.sleep(5)
-            self.update_signal.emit(f"COMPLETED: {item.text()}", (count/fileCount)*100)
+            self.update_signal.emit(f"Finalizado: {item.text()}", (count/fileCount)*100)
             count +=1
             #time.sleep(1)
 

@@ -318,8 +318,12 @@ tuviésemos
 tuvieseis
 tuviesen
 teniendo
+
+
 tenido
 tenida
 tenidos
 tenidas
 tened
+si
+así

@@ -228,7 +228,7 @@ class TextHandlerAdmin:
         self.relocateUrls(urls)
         self.text = self.text.split()
         self.stemming()
-        self.text = str(self.text)
+        self.text = "\n".join(self.text)
 
         path = "../../Txts/Result" + ".txt"
         with open(path, 'w', encoding="utf8") as output_file:
