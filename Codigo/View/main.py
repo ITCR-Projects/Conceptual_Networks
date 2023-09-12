@@ -2,17 +2,12 @@
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QApplication, QTableWidget, QTableWidgetItem, QTabWidget, QDialog, QMessageBox, QMainWindow, QGridLayout, QHBoxLayout, QVBoxLayout, QListWidget, QFileDialog, QPushButton, QLineEdit, QWidget, QLabel, QProgressBar
 from PyQt6.QtGui import QIcon
-import pyqtgraph as pg
-
-# Import sys to work with system operations
-import sys
 
 # Import the main controller
 from Codigo.Controller.Controller import MainController
 
 # Import the Thread using to the interface process
 from Codigo.View.GraphThread import GraphThread
-
 
 # Main window class
 class MainWindow(QMainWindow):
@@ -482,7 +477,7 @@ if __name__ == "__main__":
 
     # Creation of a secondary window that contain the ignore words menu
     main_window.dialog = QDialog(main_window)
-    main_window.dialog.setWindowTitle("Palabaras Ignoradas")
+    main_window.dialog.setWindowTitle("Palabras Ignoradas")
     main_window.dialog.setGeometry(200, 200, 400, 300)
     main_window.dialog.setModal(True)  # Hacer que la ventana secundaria sea modal (bloquear la ventana principal)
 
