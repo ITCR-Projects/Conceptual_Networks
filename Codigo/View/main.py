@@ -2,12 +2,21 @@
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QApplication, QTableWidget, QTableWidgetItem, QTabWidget, QDialog, QMessageBox, QMainWindow, QGridLayout, QHBoxLayout, QVBoxLayout, QListWidget, QFileDialog, QPushButton, QLineEdit, QWidget, QLabel, QProgressBar
 from PyQt6.QtGui import QIcon
+import sys
+import os
 
+codigo_dir = os.path.dirname(os.path.abspath(__file__))
+codigo_dir = os.path.join(codigo_dir, '..')  # Retroceder un nivel
+codigo_dir = os.path.join(codigo_dir, '..')
+sys.path.append(codigo_dir)
 # Import the main controller
 from Codigo.Controller.Controller import MainController
 
 # Import the Thread using to the interface process
 from Codigo.View.GraphThread import GraphThread
+
+
+
 
 # Main window class
 class MainWindow(QMainWindow):
