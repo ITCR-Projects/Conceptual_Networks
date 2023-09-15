@@ -33,7 +33,7 @@ _Ventana de estadísticas, contiene la tabla con la cuenta de las palabras._
 
 Antes de comenzar, asegúrate de tener instalado:
 
-- [Python](https://www.python.org/) 3.6 o superior.
+- [Python](https://www.python.org/) 3.11 o superior.
 - [PIP](https://pip.pypa.io/en/stable/).
 - [Microsoft visual C++](https://visualstudio.microsoft.com/es/visual-cpp-build-tools/) se puede descargar a través de visual build tools.
 
