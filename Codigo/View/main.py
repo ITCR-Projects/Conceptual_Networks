@@ -1,6 +1,8 @@
 # PyQt6 dependencies
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QApplication, QTableWidget, QTableWidgetItem, QTabWidget, QDialog, QMessageBox, QMainWindow, QGridLayout, QHBoxLayout, QVBoxLayout, QListWidget, QFileDialog, QPushButton, QLineEdit, QWidget, QLabel, QProgressBar
+from PyQt6.QtWidgets import QApplication, QTableWidget, QTableWidgetItem, QTabWidget, QDialog, QMessageBox, QMainWindow, \
+    QGridLayout, QHBoxLayout, QVBoxLayout, QListWidget, QFileDialog, QPushButton, QLineEdit, QWidget, QLabel, \
+    QProgressBar
 from PyQt6.QtGui import QIcon
 
 # Import the main controller
@@ -8,6 +10,18 @@ from Codigo.Controller.Controller import MainController
 
 # Import the Thread using to the interface process
 from Codigo.View.GraphThread import GraphThread
+
+import os
+path = ""
+def resource_path(relative_path):
+    global path
+    try:
+        base_path = os.path.dirname(__file__)
+        path = base_path
+    except:
+        base_path = os.path.abspath(".")
+        path = base_path
+    return os.path.join(base_path, relative_path)
 
 # Main window class
 class MainWindow(QMainWindow):
@@ -38,8 +52,6 @@ class MainWindow(QMainWindow):
         lbl_layout = QVBoxLayout()
         list_widget_container_layout.addLayout(lbl_layout)
 
-
-
         list_label = QLabel("Lista de Archivos")
         list_label.setStyleSheet(
             "QLabel { padding: 5px; font-weight: bold; font-size: 16px; }"
@@ -57,9 +69,6 @@ class MainWindow(QMainWindow):
         list_widget_container_layout.addWidget(self.file_list)
         lbl_layout.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         list_widget_container_layout.setAlignment(Qt.AlignmentFlag.AlignHCenter)
-
-
-
 
         self.mwlayout.addWidget(list_widget_container, 0, 0)
 
@@ -83,7 +92,8 @@ class MainWindow(QMainWindow):
         url_layout.addWidget(self.url_txb)
 
         # Button to add the URL to the file list
-        url_icon = QIcon("Icons/globo.png")
+        url_path = resource_path("Icons/globo.png")
+        url_icon = QIcon(url_path)
         add_url_btn = QPushButton("Añadir URL")
         add_url_btn.setStyleSheet(
             "QPushButton { border-radius: 10px; padding: 10px; background-color: #3498db; color: white; }"
@@ -96,7 +106,8 @@ class MainWindow(QMainWindow):
 
         file_btn_layout = QHBoxLayout()
         # Add a button to add files
-        doc_icon = QIcon("Icons/documento.png")
+        doc_path = resource_path("Icons/documento.png")
+        doc_icon = QIcon(doc_path)
         add_files_frame_btn = QPushButton("Añadir Archivo")
         add_files_frame_btn.setIcon(doc_icon)
         add_files_frame_btn.clicked.connect(self.add_files)
@@ -107,7 +118,8 @@ class MainWindow(QMainWindow):
         file_btn_layout.addWidget(add_files_frame_btn)
 
         # Add a remove item button
-        remove_icon = QIcon("Icons/basura.png")
+        remove_path = resource_path("Icons/basura.png")
+        remove_icon = QIcon(remove_path)
         self.remove_button = QPushButton("Remover Archivo")
         self.remove_button.setIcon(remove_icon)
         self.remove_button.setStyleSheet(
@@ -122,7 +134,8 @@ class MainWindow(QMainWindow):
         file_btn_layout.addWidget(self.remove_button)
 
         # Add ignored words
-        ignore_icon = QIcon("Icons/comprobacion-de-lista.png")
+        ignore_path = resource_path("Icons/comprobacion-de-lista.png")
+        ignore_icon = QIcon(ignore_path)
         ignore_btn = QPushButton("Añadir Palabras Ignoradas")
         ignore_btn.setIcon(ignore_icon)
         ignore_btn.setStyleSheet(
@@ -131,7 +144,7 @@ class MainWindow(QMainWindow):
         ignore_btn.clicked.connect(self.open_dialog)
         file_btn_layout.addWidget(ignore_btn)
 
-        #file_btn_layout.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+        # file_btn_layout.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         files_layout.addLayout(file_btn_layout)
 
         self.file_list.itemSelectionChanged.connect(self.update_remove_button)
@@ -140,7 +153,8 @@ class MainWindow(QMainWindow):
         self.mwlayout.addLayout(files_layout, 0, 2)
 
         # Add a button to start the creation of the graph
-        graph_icon = QIcon("Icons/agregar.png")
+        add_path = resource_path("Icons/agregar.png")
+        graph_icon = QIcon(add_path)
         self.create_graph_btn = QPushButton("Procesar Texto")
         self.create_graph_btn.setIcon(graph_icon)
         self.create_graph_btn.setStyleSheet(
@@ -149,13 +163,12 @@ class MainWindow(QMainWindow):
             "QPushButton:disabled { background-color: #bdc3c7; color: #7f8c8d; }")
         self.create_graph_btn.clicked.connect(self.create_graph)
         self.create_graph_btn.setEnabled(False)
-        self.mwlayout.addWidget(self.create_graph_btn, 1,1)
+        self.mwlayout.addWidget(self.create_graph_btn, 1, 1)
 
         # Creation of a widget with a label and a progress bar
         self.progressb_widget = QWidget()
 
         self.progressbar_layout = QHBoxLayout()
-
 
         self.pbar_lb = QLabel("Iniciando Proceso")
         self.pbar_lb.setStyleSheet(
@@ -186,7 +199,8 @@ class MainWindow(QMainWindow):
         self.central_layout.addWidget(self.tab_widget)
 
         # About button
-        about_icon = QIcon("Icons/informacion.png")
+        info_path = resource_path("Icons/informacion.png")
+        about_icon = QIcon(info_path)
         self.about_button = QPushButton("")
         self.about_button.setIcon(about_icon)
         self.about_button.setFixedSize(30, 30)
@@ -230,7 +244,8 @@ class MainWindow(QMainWindow):
         pagination_layout = QHBoxLayout()
         self.pagination_widget.setLayout(pagination_layout)
 
-        prevIcon = QIcon("Icons/angulo-izquierdo.png")
+        prev_path = resource_path("Icons/angulo-izquierdo.png")
+        prevIcon = QIcon(prev_path)
         self.prevButton = QPushButton("")
         self.prevButton.setStyleSheet(
             "QPushButton { border-radius: 10px; padding: 10px; background-color: #3498db; color: white; }"
@@ -244,7 +259,8 @@ class MainWindow(QMainWindow):
         self.pageLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
         pagination_layout.addWidget(self.pageLabel)
 
-        nextIcon = QIcon("Icons/angulo-derecho.png")
+        next_path = resource_path("Icons/angulo-derecho.png")
+        nextIcon = QIcon(next_path)
         self.nextButton = QPushButton("")
         self.nextButton.setStyleSheet(
             "QPushButton { border-radius: 10px; padding: 10px; background-color: #3498db; color: white; }"
@@ -258,17 +274,15 @@ class MainWindow(QMainWindow):
 
         statistics_layout.addWidget(self.table_view_widget)
 
-
         # Create a bar graph
-       # self.bar_widget = pg.PlotWidget()
-       # statistics_layout.addWidget(self.bar_widget)
+        # self.bar_widget = pg.PlotWidget()
+        # statistics_layout.addWidget(self.bar_widget)
 
         self.table_widget.setLayout(statistics_layout)
 
         self.tab_widget.setTabEnabled(1, False)
 
         self.setCentralWidget(self.central_widget)
-
 
     # Function that adds the files to the list
     def add_files(self):
@@ -292,12 +306,11 @@ class MainWindow(QMainWindow):
     def create_graph(self):
         self.current_page = 1
         self.progressb_widget.setVisible(True)
-        self.graph_thread = GraphThread(self.file_list, self.mainController) # Here the thread is created
+        self.graph_thread = GraphThread(self.file_list, self.mainController)  # Here the thread is created
         self.graph_thread.update_signal.connect(self.update_progressbar)
         self.graph_thread.error_signal.connect(self.error_report)
         self.graph_thread.finished.connect(self.graph_thread_finished)
         self.graph_thread.start()
-
 
     # Action when the thread updates the progress bar
     def update_progressbar(self, file, progress):
@@ -442,14 +455,14 @@ class MainWindow(QMainWindow):
         if self.current_page > 1:
             self.current_page -= 1
             self.populate_table()
-            #self.setup_pagination()
+            # self.setup_pagination()
 
     def next_page(self):
         total_pages = len(self.word_freq_dict) // self.page_size + 1
         if self.current_page < total_pages:
             self.current_page += 1
             self.populate_table()
-            #self.setup_pagination()
+            # self.setup_pagination()
 
     # Function that input a map of words and frequency to create a bar graph
     # def plot_bar_chart(self, word_freq_dict):
@@ -470,6 +483,7 @@ class MainWindow(QMainWindow):
     #     ticks = [(i, label) for i, label in enumerate(labels)]
     #     self.bar_widget.getAxis("bottom").setTicks([ticks])
 
+
 if __name__ == "__main__":
     app = QApplication([])
 
@@ -487,47 +501,51 @@ if __name__ == "__main__":
     # Ignore words list
     main_window.list_widget = QListWidget(main_window.dialog)
     main_window.list_widget.setStyleSheet(
-            "QListWidget { background-color: #f0f0f0;  }"
-            "QListWidget::item { background-color: #ffffff; border: 1px solid #d0d0d0; padding: 10px; }"
-            "QListWidget::item:selected { background-color: #3498db; color: white; }"
+        "QListWidget { background-color: #f0f0f0;  }"
+        "QListWidget::item { background-color: #ffffff; border: 1px solid #d0d0d0; padding: 10px; }"
+        "QListWidget::item:selected { background-color: #3498db; color: white; }"
     )
     dialog_layout.addWidget(main_window.list_widget)
 
     # Ignore Word input
     main_window.input_field = QLineEdit(main_window.dialog)
     main_window.input_field.setStyleSheet(
-            "QLineEdit { background-color: #f0f0f0; border: 2px solid #3498db; padding: 5px; color: #333; }"
-            "QLineEdit:hover { border-color: #2980b9; }"
-            "QLineEdit:focus { border-color: #e74c3c; }")
+        "QLineEdit { background-color: #f0f0f0; border: 2px solid #3498db; padding: 5px; color: #333; }"
+        "QLineEdit:hover { border-color: #2980b9; }"
+        "QLineEdit:focus { border-color: #e74c3c; }")
     dialog_layout.addWidget(main_window.input_field)
 
     # Add, delete and save buttons
     button_layout = QHBoxLayout()
 
-    add_button_icon = QIcon("Icons/agregar.png")
+    add2_path = resource_path("Icons/agregar.png")
+    add_button_icon = QIcon(add2_path)
     add_button = QPushButton("Añadir", main_window.dialog)
     add_button.setIcon(add_button_icon)
     add_button.setStyleSheet(
-            "QPushButton { border-radius: 10px; padding: 10px; background-color: #3498db; color: white; }"
-            "QPushButton:hover { background-color: #2980b9; }")
+        "QPushButton { border-radius: 10px; padding: 10px; background-color: #3498db; color: white; }"
+        "QPushButton:hover { background-color: #2980b9; }")
 
-    remove_button_icon = QIcon("Icons/basura.png")
+    remove_path = resource_path("Icons/basura.png")
+    remove_button_icon = QIcon(remove_path)
     remove_ignore_button = QPushButton("Borrar", main_window.dialog)
     remove_ignore_button.setIcon(remove_button_icon)
     remove_ignore_button.setStyleSheet(
-            "QPushButton { border-radius: 10px; padding: 10px; background-color: #e74c3c; color: white; }"
-            "QPushButton:hover { background-color: #c0392b; }"
-            "QPushButton:disabled { background-color: #bdc3c7; color: #7f8c8d; }"
-            "QPushButton:pressed { background-color: #d35400; }")
+        "QPushButton { border-radius: 10px; padding: 10px; background-color: #e74c3c; color: white; }"
+        "QPushButton:hover { background-color: #c0392b; }"
+        "QPushButton:disabled { background-color: #bdc3c7; color: #7f8c8d; }"
+        "QPushButton:pressed { background-color: #d35400; }")
 
-    save_button_icon = QIcon("Icons/controlar.png")
+    save_path = resource_path("Icons/controlar.png")
+    save_button_icon = QIcon(save_path)
     save_ignore_words_button = QPushButton("Guardar", main_window.dialog)
     save_ignore_words_button.setIcon(save_button_icon)
     save_ignore_words_button.setStyleSheet(
-            "QPushButton { border-radius: 10px; padding: 10px; background-color: gray; color: white; }"
-            "QPushButton:hover { background-color: darkgray; }")
+        "QPushButton { border-radius: 10px; padding: 10px; background-color: gray; color: white; }"
+        "QPushButton:hover { background-color: darkgray; }")
 
-    saveP_button_icon = QIcon("Icons/disco.png")
+    saveP_path = resource_path("Icons/disco.png")
+    saveP_button_icon = QIcon(saveP_path)
     saveP_ignore_words_button = QPushButton("Guardar Permanente", main_window.dialog)
     saveP_ignore_words_button.setIcon(saveP_button_icon)
     saveP_ignore_words_button.setStyleSheet(

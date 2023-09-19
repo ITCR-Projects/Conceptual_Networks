@@ -13,6 +13,21 @@ from Codigo.Model.DocxFile import DocxFile
 from Codigo.Model.WebFile import WebFile
 from Codigo.Model.TextFile import TextFile
 
+import os
+
+path = ""
+
+
+def resource_path(relative_path):
+    global path
+    try:
+        base_path = os.path.dirname(__file__)
+        path = base_path
+    except:
+        base_path = os.path.abspath(".")
+        path = base_path
+    return os.path.join(base_path, relative_path)
+
 
 class TextHandlerAdmin:
     def __init__(self):
@@ -71,9 +86,7 @@ class TextHandlerAdmin:
         result = parts[0]
         for i in range(1, len(parts)):
             result += urls[i - 1] + parts[i]
-        self.text =result
-
-
+        self.text = result
 
     def splitFileWords(self):
         '''Función que divide un texto en una lista de palabras.
@@ -95,7 +108,8 @@ class TextHandlerAdmin:
         # Para que no tome en cuenta las tildes:
         # translateTable = str.maketrans('áéíóúüÜñ', 'aeiouuun', '0123456789.,;|—:#$%&-*+-/()=><«»\@º–•¡!¿?{}[]')
 
-        translateTable = str.maketrans('', '', '0123456789.,;|—:#$%&-*+-/()=><«»\@º–•¡!¿?{}[]')
+        translateTable = str.maketrans('', '', '0123456789.,;|—:#$%&-*+-/()=><«»\@º–•¡!¿?{}['
+                                               '▼“”₡°©αβγδηθιρσελξουφψχζνμτκπϛɛɔɣ⟺2−]⋅↑↓ωª_"~§ϻͱϙϟͳϡþʃʝðʕçʦᾱᾳῃῳᾶ`\'␃␊⇔→⇒∃≡∧¬∨⊥÷∀⊨⊢⊕⊤⊻⊃↔ℕ∈ʔṭςɲ·◻⊬⟹˜ǀǀ≤⌝⌜⋆⊽⋄∄∴∵⊭⋄⊽⟡⟢⟣⟤⟥®≠≥⥽⌐')
         newCleanWordList = []
         for word in self.text:
             if not word.isdigit():
@@ -114,8 +128,34 @@ class TextHandlerAdmin:
 
         # en vez de el codigo de leer el archivo para ignorar las palabras se
         # puede usar Ignore = ["este", "un"]
-        with io.open('../Ignore.txt', 'r', encoding='utf8') as f:
-            ignore = f.read().splitlines()
+
+        # Obtén la carpeta de documentos del usuario actual
+        ignore = ""
+        user_documents_folder = os.path.expanduser(os.path.join('~', 'Documents', 'ConceptualNetworks', 'Ignore.txt'))
+        if not os.path.exists(user_documents_folder):
+            path2 = resource_path("Ignore.txt")
+            with open(path2, 'r', encoding='utf8') as f:
+                ignore = f.read()
+                # ignore = f.read().splitlines()
+            # Si no existe, lo crea
+            try:
+                os.mkdir(os.path.expanduser(os.path.join('~', 'Documents', 'ConceptualNetworks')))
+                with open(user_documents_folder, 'w', encoding='utf8') as f2:
+                    f2.write(ignore)
+            except Exception as e:
+                print(e)
+        else:
+            try:
+                with open(user_documents_folder, 'r', encoding='utf8') as f3:
+                    ignore = f3.read()
+            except Exception as e:
+                print(e)
+
+        ignore = ignore.splitlines()
+
+        # path2 = resource_path("Ignore.txt")
+        # with io.open(path2, 'r', encoding='utf8') as f:
+        #     ignore = f.read().splitlines()
 
         if self.ignore_words_added_list:
             ignore.extend(self.ignore_words_added_list)
@@ -177,10 +217,8 @@ class TextHandlerAdmin:
 
         wordFrequency = Counter(wordList)
 
-
         wordFrequencySorted = dict(sorted(wordFrequency.items(), key=lambda item: item[1], reverse=True))
         return wordFrequencySorted
-
 
     def makeWordCloud(self, text):
         '''print("Goku sj2")
@@ -230,16 +268,17 @@ class TextHandlerAdmin:
         self.stemming()
         self.text = "\n".join(self.text)
 
-        path = "../../Txts/Result" + ".txt"
+        # path = "../../Txts/Result" + ".txt"
+        path = "Result.txt"
         with open(path, 'w', encoding="utf8") as output_file:
-            output_file.write(self.text) # Escribe el contenido en el archivo de salida
+            output_file.write(self.text)  # Escribe el contenido en el archivo de salida
         return self.text
 
     def statistics(self):
         counteWordsDict = self.countWords()
 
         return counteWordsDict
-        #self.makeWordCloud(counteWordsDict)  # Se crea la Nube de Palabras
+        # self.makeWordCloud(counteWordsDict)  # Se crea la Nube de Palabras
 
     def stemming(self):
         'Metodo que utiliza el stemming por medio de la libreria de Stemmer'
@@ -250,7 +289,8 @@ class TextHandlerAdmin:
             list_stemmer.append(stemmer.stemWord(word))
 
         # Forma momentanea par mostrar resultados
-        path = "../../Txts/Stemming" + ".txt"
+        # path = "../../Txts/Stemming" + ".txt"
+        path = "Stemming.txt"
         with open(path, 'w', encoding="utf8") as output_file:
             output_file.write("\n".join(list_stemmer))  # manda los datos de las palabras stemmeadas
         return list_stemmer
@@ -263,10 +303,30 @@ class TextHandlerAdmin:
         self.ignore_words_added_list = iwords
 
     def addwordstoignore(self, iwords):
-        with io.open('../Ignore.txt', 'r', encoding='utf8') as f:
-            ignore = f.read().splitlines()
+        ignore = ""
+        user_documents_folder = os.path.expanduser(os.path.join('~', 'Documents', 'ConceptualNetworks', 'Ignore.txt'))
+        if not os.path.exists(user_documents_folder):
+            path2 = resource_path("Ignore.txt")
+            with open(path2, 'r', encoding='utf8') as f:
+                ignore = f.read()
+                # ignore = f.read().splitlines()
+            # Si no existe, lo crea
+            try:
+                os.mkdir(os.path.expanduser(os.path.join('~', 'Documents', 'ConceptualNetworks')))
+                with open(user_documents_folder, 'w', encoding='utf8') as f2:
+                    f2.write(ignore)
+            except Exception as e:
+                print(e)
+        else:
+            try:
+                with open(user_documents_folder, 'r', encoding='utf8') as f3:
+                    ignore = f3.read()
+            except Exception as e:
+                print(e)
 
-        with io.open('../Ignore.txt', 'a', encoding='utf8') as f:
+        ignore = ignore.splitlines()
+
+        with open(user_documents_folder, 'a', encoding='utf8') as f:
             for word in iwords:
                 if word not in ignore:
                     f.write('\n' + word.lower())

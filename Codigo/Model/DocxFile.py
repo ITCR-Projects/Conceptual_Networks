@@ -23,9 +23,26 @@ class DocxFile(File, ABC):
 
     def get_text(self):
         try:
-            text = textract.process(self.url_file, method='docx', encoding='utf8').decode('utf8')
+            #path = self.url_file.replace("/", "\\")
+            #text = textract.process(path, method='docx', encoding='utf8').decode('utf8')
+            #text = self.verify_footer(text)
 
-            text = self.verify_footer(text)
+            text = ""
+            doc = docx.Document(self.url_file)
+            p = 0
+            t = 0
+
+            for paragraph in doc.paragraphs:
+                text += paragraph.text + "\n"
+
+
+            # for element in doc.element.body:
+            #     if isinstance(element, docx.oxml.text.paragraph.CT_P):
+            #         text += doc.paragraphs[p].text + "\n"
+            #         p += 1
+            #     if isinstance(element, docx.oxml.table.CT_Tbl):
+            #         text += extract_text_from_table(doc.tables[t])
+            #         t += 1
 
             # Escribe el texto en un archivo de texto
             path = self.path + self.name + ".txt"
@@ -44,7 +61,7 @@ class DocxFile(File, ABC):
         except Exception as e:
             return {
                 'response': True,
-                'message': f"Error: No se logró cargar el archivo.{e}",
+                'message': f"Error: No se logró cargar el archivo.{e}         {self.url_file}",
             }
 
     def verify_footer(self, text):
@@ -101,4 +118,3 @@ class DocxFile(File, ABC):
             text = text[:index2] + last_table_word
 
         return text
-
