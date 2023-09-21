@@ -1,16 +1,20 @@
 # PyQt6 dependencies
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QApplication, QTableWidget, QTableWidgetItem, QTabWidget, QDialog, QMessageBox, QMainWindow, QGridLayout, QHBoxLayout, QVBoxLayout, QListWidget, QFileDialog, QPushButton, QLineEdit, QWidget, QLabel, QProgressBar
+from PyQt6.QtWidgets import QApplication, QTableWidget, QSpinBox, QTableWidgetItem, QTabWidget, QDialog, QMessageBox, QMainWindow, QGridLayout, QHBoxLayout, QVBoxLayout, QListWidget, QFileDialog, QPushButton, QLineEdit, QWidget, QLabel, QProgressBar
 from PyQt6.QtGui import QIcon
 import sys
 import os
 
 codigo_dir = os.path.dirname(os.path.abspath(__file__))
-codigo_dir = os.path.join(codigo_dir, '..')  # Retroceder un nivel
+codigo_dir = os.path.join(codigo_dir, '..')  # Path file level up
 codigo_dir = os.path.join(codigo_dir, '..')
 sys.path.append(codigo_dir)
+
 # Import the main controller
 from Codigo.Controller.Controller import MainController
+
+# Import the Ignore word dialog
+from Codigo.View.IgnoreWordsDialog import IgnoreWordsDialog
 
 # Import the Thread using to the interface process
 from Codigo.View.GraphThread import GraphThread
@@ -38,6 +42,9 @@ class MainWindow(QMainWindow):
 
         # Main controller class
         self.mainController = MainController()
+
+        # IgnoreWords dialog
+        self.ignore_words_dialog = IgnoreWordsDialog(self.mainController)
 
         # Define the layout of the window
         self.setWindowTitle("Conceptual Networks")
@@ -153,7 +160,6 @@ class MainWindow(QMainWindow):
         ignore_btn.clicked.connect(self.open_dialog)
         file_btn_layout.addWidget(ignore_btn)
 
-        # file_btn_layout.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         files_layout.addLayout(file_btn_layout)
 
         self.file_list.itemSelectionChanged.connect(self.update_remove_button)
@@ -264,9 +270,20 @@ class MainWindow(QMainWindow):
         self.prevButton.clicked.connect(self.prev_page)
         pagination_layout.addWidget(self.prevButton)
 
-        self.pageLabel = QLabel("Página 1 de 1", self)
-        self.pageLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        pagination_layout.addWidget(self.pageLabel)
+        # ------------------------------
+        self.pageLabel1 = QLabel("Página ")
+        self.tpg_number_input = QSpinBox(self)
+        self.tpg_number_input.setMinimum(1)  # Valor mínimo permitido
+        self.tpg_number_input.setMaximum(10000)
+        self.tpg_number_input.setValue(1)  # Valor predeterminado
+        self.tpg_number_input.editingFinished.connect(self.validate_table_nav_text)
+
+        self.pageLabel2 = QLabel(" de 1")
+        self.pageLabel1.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.pageLabel2.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        pagination_layout.addWidget(self.pageLabel1)
+        pagination_layout.addWidget(self.tpg_number_input)
+        pagination_layout.addWidget(self.pageLabel2)
 
         next_path = resource_path("Icons/angulo-derecho.png")
         nextIcon = QIcon(next_path)
@@ -282,11 +299,6 @@ class MainWindow(QMainWindow):
         table_view_widget_layout.addWidget(self.pagination_widget)
 
         statistics_layout.addWidget(self.table_view_widget)
-
-
-        # Create a bar graph
-       # self.bar_widget = pg.PlotWidget()
-       # statistics_layout.addWidget(self.bar_widget)
 
         self.table_widget.setLayout(statistics_layout)
 
@@ -372,52 +384,10 @@ class MainWindow(QMainWindow):
 
     # Function that shows the dialog window, this window is to manage the ignore words in the files
     def open_dialog(self):
-        self.dialog.show()
-
-    # Function to add the items in the Dialog window
-    def add_ignore_word(self):
-        # Obtener el texto del campo de entrada
-        item_text = self.input_field.text()
-
-        # Agregar el texto como un elemento en la lista
-        if item_text:
-            self.list_widget.addItem(item_text)
-            self.input_field.clear()  # Limpiar el campo de entrada después de agregar
-
-    # Function to remove the items in the Dialog window
-    def remove_ignore_items(self):
-        # Obtener los elementos seleccionados en la lista
-        selected_items = self.list_widget.selectedItems()
-
-        # Eliminar los elementos seleccionados de la lista
-        for item in selected_items:
-            self.list_widget.takeItem(self.list_widget.row(item))
-
-    # add the ignore words to the UI list
-    def setIgnoreWords(self):
-        iwords = []
-        words_count = self.list_widget.count()
-        for i in range(words_count):
-            iwords.append(self.list_widget.item(i).text().lower())
-        self.mainController.setIgnoreWords(iwords)
-
-        if self.dialog is not None:
-            self.dialog.hide()
-
-    # Set to the controller class the word that going to be ignored
-    def addwordstoignore(self):
-        iwords = []
-        words_count = self.list_widget.count()
-        for i in range(words_count):
-            iwords.append(self.list_widget.item(i).text().lower())
-        self.mainController.addwordstoignore(iwords)
-
-        if self.dialog is not None:
-            self.dialog.hide()
+        self.ignore_words_dialog.show()
 
     # Dialog that shows information about the program
     def show_about_dialog(self):
-
         about_message_box = QMessageBox()
         about_message_box.setWindowTitle("Acerca de la Aplicación")
         about_message_box.setIcon(QMessageBox.Icon.Information)
@@ -456,19 +426,23 @@ class MainWindow(QMainWindow):
 
         self.setup_pagination()
 
+    # Function that set up the information of the pages
     def setup_pagination(self):
         total_pages = len(self.word_freq_dict) // self.page_size + 1
 
-        self.pageLabel.setText(f"Página {self.current_page} de {total_pages}")
+        self.tpg_number_input.setValue(self.current_page)
+        self.pageLabel2.setText(f" de {total_pages}")
         self.prevButton.setEnabled(self.current_page > 1)
         self.nextButton.setEnabled(self.current_page < total_pages)
 
+    # Move to the previous page
     def prev_page(self):
         if self.current_page > 1:
             self.current_page -= 1
             self.populate_table()
             #self.setup_pagination()
 
+    # Move to the next page
     def next_page(self):
         total_pages = len(self.word_freq_dict) // self.page_size + 1
         if self.current_page < total_pages:
@@ -476,105 +450,18 @@ class MainWindow(QMainWindow):
             self.populate_table()
             #self.setup_pagination()
 
-    # Function that input a map of words and frequency to create a bar graph
-    # def plot_bar_chart(self, word_freq_dict):
-    #     sorted_word_freq = sorted(word_freq_dict.items(), key=lambda x: x[1], reverse=True)
-    #
-    #     labels = [word for word, freq in sorted_word_freq[:20]]
-    #     freqs = [freq for word, freq in sorted_word_freq[:20]]
-    #
-    #     self.bar_widget.setTitle("Frecuencia de Palabras")
-    #     self.bar_widget.setLabel("left", "Frecuencia")
-    #     self.bar_widget.setLabel("bottom", "Palabras")
-    #
-    #     x = range(len(labels))
-    #     bar = pg.BarGraphItem(x=x, height=freqs, width=0.6, brush='b')
-    #     self.bar_widget.addItem(bar)
-    #
-    #     # Configurar etiquetas personalizadas en el eje X
-    #     ticks = [(i, label) for i, label in enumerate(labels)]
-    #     self.bar_widget.getAxis("bottom").setTicks([ticks])
+    # Validate the page number of the number input
+    def validate_table_nav_text(self):
+        total_pages = len(self.word_freq_dict) // self.page_size + 1
+        current_page = self.tpg_number_input.value()
+        if current_page <= total_pages:
+            self.current_page = current_page
+            self.populate_table()
+        else:
+            self.tpg_number_input.setValue(self.current_page)
 
-if __name__ == "__main__":
-    app = QApplication([])
 
-    main_window = MainWindow()
-
-    # Creation of a secondary window that contain the ignore words menu
-    main_window.dialog = QDialog(main_window)
-    main_window.dialog.setWindowTitle("Palabras Ignoradas")
-    main_window.dialog.setGeometry(200, 200, 400, 300)
-    main_window.dialog.setModal(True)  # Hacer que la ventana secundaria sea modal (bloquear la ventana principal)
-
-    # Secondary window layout
-    dialog_layout = QVBoxLayout()
-
-    # Ignore words list
-    main_window.list_widget = QListWidget(main_window.dialog)
-    main_window.list_widget.setStyleSheet(
-            "QListWidget { background-color: #f0f0f0;  }"
-            "QListWidget::item { background-color: #ffffff; border: 1px solid #d0d0d0; padding: 10px; }"
-            "QListWidget::item:selected { background-color: #3498db; color: white; }"
-    )
-    dialog_layout.addWidget(main_window.list_widget)
-
-    # Ignore Word input
-    main_window.input_field = QLineEdit(main_window.dialog)
-    main_window.input_field.setStyleSheet(
-            "QLineEdit { background-color: #f0f0f0; border: 2px solid #3498db; padding: 5px; color: #333; }"
-            "QLineEdit:hover { border-color: #2980b9; }"
-            "QLineEdit:focus { border-color: #e74c3c; }")
-    dialog_layout.addWidget(main_window.input_field)
-
-    # Add, delete and save buttons
-    button_layout = QHBoxLayout()
-
-    add_button_icon = QIcon("Icons/agregar.png")
-    add_button = QPushButton("Añadir", main_window.dialog)
-    add_button.setIcon(add_button_icon)
-    add_button.setStyleSheet(
-            "QPushButton { border-radius: 10px; padding: 10px; background-color: #3498db; color: white; }"
-            "QPushButton:hover { background-color: #2980b9; }")
-
-    remove_button_icon = QIcon("Icons/basura.png")
-    remove_ignore_button = QPushButton("Borrar", main_window.dialog)
-    remove_ignore_button.setIcon(remove_button_icon)
-    remove_ignore_button.setStyleSheet(
-            "QPushButton { border-radius: 10px; padding: 10px; background-color: #e74c3c; color: white; }"
-            "QPushButton:hover { background-color: #c0392b; }"
-            "QPushButton:disabled { background-color: #bdc3c7; color: #7f8c8d; }"
-            "QPushButton:pressed { background-color: #d35400; }")
-
-    save_path = resource_path("Icons/controlar.png")
-    save_button_icon = QIcon(save_path)
-    save_ignore_words_button = QPushButton("Guardar", main_window.dialog)
-    save_ignore_words_button.setIcon(save_button_icon)
-    save_ignore_words_button.setStyleSheet(
-            "QPushButton { border-radius: 10px; padding: 10px; background-color: gray; color: white; }"
-            "QPushButton:hover { background-color: darkgray; }")
-
-    saveP_path = resource_path("Icons/disco.png")
-    saveP_button_icon = QIcon(saveP_path)
-    saveP_ignore_words_button = QPushButton("Guardar Permanente", main_window.dialog)
-    saveP_ignore_words_button.setIcon(saveP_button_icon)
-    saveP_ignore_words_button.setStyleSheet(
-        "QPushButton { border-radius: 10px; padding: 10px; background-color: #FFA500; color: white; }"
-        "QPushButton:hover { background-color: #FFC04D; }")
-
-    button_layout.addWidget(add_button)
-    button_layout.addWidget(remove_ignore_button)
-    button_layout.addWidget(save_ignore_words_button)
-    button_layout.addWidget(saveP_ignore_words_button)
-
-    dialog_layout.addLayout(button_layout)
-
-    # Connect the button to the functions
-    add_button.clicked.connect(main_window.add_ignore_word)
-    remove_ignore_button.clicked.connect(main_window.remove_ignore_items)
-    save_ignore_words_button.clicked.connect(main_window.setIgnoreWords)
-    saveP_ignore_words_button.clicked.connect(main_window.addwordstoignore)
-
-    main_window.dialog.setLayout(dialog_layout)
-
-    main_window.show()
-    app.exec()
+app = QApplication([])
+main_window = MainWindow()
+main_window.show()
+app.exec()
