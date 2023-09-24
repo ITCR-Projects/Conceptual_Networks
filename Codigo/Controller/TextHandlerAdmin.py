@@ -12,6 +12,7 @@ from collections import Counter
 from Codigo.Model.DocxFile import DocxFile
 from Codigo.Model.WebFile import WebFile
 from Codigo.Model.TextFile import TextFile
+from Codigo.Controller.StructureStemming import  StructureStemming
 
 import os
 
@@ -34,6 +35,7 @@ class TextHandlerAdmin:
         self.files = []
         self.text = ""
         self.ignore_words_added_list = []
+        self.structure_stemming = StructureStemming()
 
     # ----Métodos Privados ----
 
@@ -282,18 +284,14 @@ class TextHandlerAdmin:
 
     def stemming(self):
         'Metodo que utiliza el stemming por medio de la libreria de Stemmer'
-        list_stemmer = []
         stemmer = Stemmer.Stemmer('spanish')
 
         for word in self.text:
-            list_stemmer.append(stemmer.stemWord(word))
+            root_word = stemmer.stemWord(word)
+            self.structure_stemming.add(root_word, word)
+        # print(self.structure_stemming.getStemWords())
+        # print(self.structure_stemming.count_words)
 
-        # Forma momentanea par mostrar resultados
-        # path = "../../Txts/Stemming" + ".txt"
-        path = "Stemming.txt"
-        with open(path, 'w', encoding="utf8") as output_file:
-            output_file.write("\n".join(list_stemmer))  # manda los datos de las palabras stemmeadas
-        return list_stemmer
 
     def indexing(self):
 

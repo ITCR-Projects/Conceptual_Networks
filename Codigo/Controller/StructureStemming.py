@@ -1,8 +1,13 @@
 class StructureStemming:
     def __init__(self,):
         self.stem_words = {}
+        self.count_words = 0
 
     def add(self, root, word):
+        '''Método que realiza agrega la raiz y la palabra a la estructura.
+            Entradas: self, root: raiz del stemming, word: palabra que se radicalizo
+            Salidas: N/A.
+            Restricciones: que las entradas sean strings'''
         if root not in self.stem_words:
             self.stem_words[root] = [{word: 1}, 1]
         else:
@@ -12,10 +17,27 @@ class StructureStemming:
             else:
                 self.stem_words[root][0][word] = 1
             self.stem_words[root][1] += 1
+        self.count_words += 1
 
     def merge(self, root1, root2):
-        return
+        '''Método que une dos raices que proviene de la misma.
+            Entradas: self, root1, root2
+            Salidas: N/A.
+            Restricciones: N/A'''
+        if len(root1) < len(root2):
+            aux_list_words = self.stem_words[root2]
+            self.stem_words[root1][0].update(aux_list_words[0])
+            self.stem_words[root1][1] += aux_list_words[1]
+            del self.stem_words[root2]
+        else:
+            aux_list_words = self.stem_words[root1]
+            self.stem_words[root2][0].update(aux_list_words[0])
+            self.stem_words[root2][1] += aux_list_words[1]
+            del self.stem_words[root1]
 
     def getStemWords(self):
-
+        '''Método que devuelve la structura donde se mantiene los datos.
+            Entradas: self
+            Salidas: La estructura creada de stem_words.
+            Restricciones: N/A'''
         return self.stem_words
