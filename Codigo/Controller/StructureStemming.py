@@ -41,3 +41,11 @@ class StructureStemming:
             Salidas: La estructura creada de stem_words.
             Restricciones: N/A'''
         return self.stem_words
+
+    def cleanStructure(self):
+        '''Método que limpia todo el diccionario.'''
+        self.stem_words.clear()
+
+    def sortStruture(self):
+        '''Método que ordena segun llave de raiz de manera alfabética'''
+        self.stem_words = dict(sorted(self.stem_words.items()))

@@ -21,9 +21,21 @@ def test_three():
     assert handleStemming.getStemWords() == {'educ': [{'educacion': 2, 'educa': 1}, 3], 'corr': [{'correr': 1}, 1]}
 
 def test_four():
+    # Prueba de la union de palabras
     handleStemming = StructureStemming()
     handleStemming.add('educ', 'educacion')
     handleStemming.add('educa', 'educacionando')
     handleStemming.merge('educ','educa')
     assert handleStemming.getStemWords() == {'educ': [{'educacion': 1, 'educacionando': 1}, 2]}
+
+
+def test_five():
+    # Prueba del ordenamiento alfabeticop de la raices
+    handleStemming = StructureStemming()
+    handleStemming.add('educ', 'educacion')
+    handleStemming.add('educ', 'educacion')
+    handleStemming.add('educ', 'educa')
+    handleStemming.add('corr', 'correr')
+    handleStemming.sortStruture()
+    assert handleStemming.getStemWords() == {'corr': [{'correr': 1}, 1], 'educ': [{'educacion': 2, 'educa': 1}, 3]}
 

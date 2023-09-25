@@ -285,10 +285,12 @@ class TextHandlerAdmin:
     def stemming(self):
         'Metodo que utiliza el stemming por medio de la libreria de Stemmer'
         stemmer = Stemmer.Stemmer('spanish')
+        self.structure_stemming.cleanStructure()
 
         for word in self.text:
             root_word = stemmer.stemWord(word)
             self.structure_stemming.add(root_word, word)
+        self.structure_stemming.sortStruture()
         # print(self.structure_stemming.getStemWords())
         # print(self.structure_stemming.count_words)
 
