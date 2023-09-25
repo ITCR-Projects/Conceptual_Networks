@@ -52,9 +52,10 @@ class IgnoreWordsDialog(QDialog):
             "QPushButton:hover { background-color: #2980b9; }")
 
         remove_button_icon = QIcon(resource_path("Icons/basura.png"))
-        remove_ignore_button = QPushButton("Borrar", self)
-        remove_ignore_button.setIcon(remove_button_icon)
-        remove_ignore_button.setStyleSheet(
+        self.remove_ignore_button = QPushButton("Borrar", self)
+        self.remove_ignore_button.setIcon(remove_button_icon)
+        self.remove_ignore_button.setEnabled(False)
+        self.remove_ignore_button.setStyleSheet(
             "QPushButton { border-radius: 10px; padding: 10px; background-color: #e74c3c; color: white; }"
             "QPushButton:hover { background-color: #c0392b; }"
             "QPushButton:disabled { background-color: #bdc3c7; color: #7f8c8d; }"
@@ -75,15 +76,17 @@ class IgnoreWordsDialog(QDialog):
             "QPushButton:hover { background-color: #FFC04D; }")
 
         button_layout.addWidget(add_button)
-        button_layout.addWidget(remove_ignore_button)
+        button_layout.addWidget(self.remove_ignore_button)
         button_layout.addWidget(save_ignore_words_button)
         button_layout.addWidget(saveP_ignore_words_button)
+
+        self.list_widget.itemSelectionChanged.connect(self.update_iword_remove_button)
 
         dialog_layout.addLayout(button_layout)
 
         # Conectar los botones a las funciones correspondientes
         add_button.clicked.connect(self.add_ignore_word)
-        remove_ignore_button.clicked.connect(self.remove_ignore_items)
+        self.remove_ignore_button.clicked.connect(self.remove_ignore_items)
         save_ignore_words_button.clicked.connect(self.set_ignore_words)
         saveP_ignore_words_button.clicked.connect(self.add_words_to_ignore)
 
@@ -115,3 +118,7 @@ class IgnoreWordsDialog(QDialog):
             iwords.append(self.list_widget.item(i).text().lower())
         self.mainController.addwordstoignore(iwords)
         self.hide()
+
+    def update_iword_remove_button(self):
+        selected_items = self.list_widget.selectedItems()
+        self.remove_ignore_button.setEnabled(len(selected_items) > 0)
