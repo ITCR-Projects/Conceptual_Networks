@@ -31,6 +31,9 @@ class MainController:
     def getStatistics(self):
         return  self.textHandlerAdmin.statistics()
 
+    def combine_roots(self, roots):
+        return self.textHandlerAdmin.combine_roots(roots)
+
 
 
 

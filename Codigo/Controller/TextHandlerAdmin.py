@@ -277,9 +277,11 @@ class TextHandlerAdmin:
         return self.text
 
     def statistics(self):
-        counteWordsDict = self.countWords()
+        #counteWordsDict = self.countWords()
 
-        return counteWordsDict
+        #return counteWordsDict
+
+        return self.structure_stemming
         # self.makeWordCloud(counteWordsDict)  # Se crea la Nube de Palabras
 
     def stemming(self):
@@ -289,6 +291,7 @@ class TextHandlerAdmin:
         for word in self.text:
             root_word = stemmer.stemWord(word)
             self.structure_stemming.add(root_word, word)
+
         # print(self.structure_stemming.getStemWords())
         # print(self.structure_stemming.count_words)
 
@@ -328,3 +331,6 @@ class TextHandlerAdmin:
             for word in iwords:
                 if word not in ignore:
                     f.write('\n' + word.lower())
+
+    def combine_roots(self, roots):
+        print(roots)

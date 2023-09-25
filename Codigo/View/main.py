@@ -19,6 +19,9 @@ from Codigo.View.IgnoreWordsDialog import IgnoreWordsDialog
 # Import the Thread using to the interface process
 from Codigo.View.GraphThread import GraphThread
 
+# Import the Thread using to the interface process
+from Codigo.Controller.StructureStemming import StructureStemming
+
 import os
 path = ""
 def resource_path(relative_path):
@@ -38,7 +41,7 @@ class MainWindow(QMainWindow):
         # Interface control variables
         self.page_size = 50  # Table Page Size
         self.current_page = 1  # Actual page
-        self.word_freq_dict = {}
+        self.word_freq_dict = StructureStemming()
 
         # Main controller class
         self.mainController = MainController()
@@ -248,10 +251,10 @@ class MainWindow(QMainWindow):
 
         # Creation of the table interface
         self.table_info_widget = QTableWidget()
-        self.table_info_widget.setColumnCount(3)
+        self.table_info_widget.setColumnCount(4)
         header = self.table_info_widget.horizontalHeader()
         header.setStyleSheet("QHeaderView::section { background-color: #3498db; color: white; }")
-        self.table_info_widget.setHorizontalHeaderLabels(["Palabra", "Frecuencia", "Porcentaje"])
+        self.table_info_widget.setHorizontalHeaderLabels(["Raíz", "Palabras", "Frecuencia", "Porcentaje"])
         table_view_widget_layout.addWidget(self.table_info_widget)
 
         # Creation of the page menu of the table
@@ -270,7 +273,6 @@ class MainWindow(QMainWindow):
         self.prevButton.clicked.connect(self.prev_page)
         pagination_layout.addWidget(self.prevButton)
 
-        # ------------------------------
         self.pageLabel1 = QLabel("Página ")
         self.tpg_number_input = QSpinBox(self)
         self.tpg_number_input.setMinimum(1)  # Valor mínimo permitido
@@ -299,6 +301,56 @@ class MainWindow(QMainWindow):
         table_view_widget_layout.addWidget(self.pagination_widget)
 
         statistics_layout.addWidget(self.table_view_widget)
+
+        # ----------------------------------------
+        self.root_list = QWidget()
+        root_list_layout = QVBoxLayout()
+        self.root_list_list = QListWidget()
+        self.root_list_list.setStyleSheet(
+            "QListWidget { background-color: #f0f0f0;  }"
+            "QListWidget::item { background-color: #ffffff; border: 1px solid #d0d0d0; padding: 10px; }"
+            "QListWidget::item:selected { background-color: #3498db; color: white; }"
+        )
+        root_list_layout.addWidget(self.root_list_list)
+
+        self.botton_bar = QWidget()
+        botton_bar_layout = QHBoxLayout()
+
+        add_root_button = QPushButton('Añadir')
+        add_root_button.setStyleSheet(
+            "QPushButton { border-radius: 10px; padding: 10px; background-color: #3498db; color: white; }"
+            "QPushButton:hover { background-color: #2980b9; }")
+        self.remove_root_button = QPushButton('Eliminar')
+        self.remove_root_button.setStyleSheet(
+            "QPushButton { border-radius: 10px; padding: 10px; background-color: #e74c3c; color: white; }"
+            "QPushButton:hover { background-color: #c0392b; }"
+            "QPushButton:disabled { background-color: #bdc3c7; color: #7f8c8d; }"
+            "QPushButton:pressed { background-color: #d35400; }")
+        combine_root_button = QPushButton('Combinar')
+        combine_root_button.setStyleSheet(
+            "QPushButton { border-radius: 10px; padding: 10px; background-color: gray; color: white; }"
+            "QPushButton:hover { background-color: darkgray; }")
+
+        add_root_button.clicked.connect(self.add_item_to_root_list)
+        self.remove_root_button.clicked.connect(self.remove_item_from_root_list)
+
+        self.remove_root_button.setEnabled(False)
+
+        self.root_list_list.itemSelectionChanged.connect(self.update_root_remove_button)
+
+        combine_root_button.clicked.connect(self.combine_roots)
+
+        botton_bar_layout.addWidget(add_root_button)
+        botton_bar_layout.addWidget(self.remove_root_button)
+        botton_bar_layout.addWidget(combine_root_button)
+
+        self.botton_bar.setLayout(botton_bar_layout)
+
+        root_list_layout.addWidget(self.botton_bar)
+
+        self.root_list.setLayout(root_list_layout)
+
+        statistics_layout.addWidget(self.root_list)
 
         self.table_widget.setLayout(statistics_layout)
 
@@ -409,26 +461,27 @@ class MainWindow(QMainWindow):
     def populate_table(self):
         start = (self.current_page - 1) * self.page_size
         end = start + self.page_size
-        data_to_display = list(self.word_freq_dict.items())[start:end]
-
-        sorted_word_freq = sorted(data_to_display, key=lambda x: x[1], reverse=True)
+        data_to_display = list(self.word_freq_dict.getStemWords().items())[start:end]
         self.table_info_widget.setRowCount(0)
 
-        for i, (word, freq) in enumerate(sorted_word_freq):
+        for i, (word, value) in enumerate(data_to_display):
             item_word = QTableWidgetItem(word)
-            item_freq = QTableWidgetItem(str(freq))
-            item_percent = QTableWidgetItem(f"{(freq / sum(self.word_freq_dict.values())) * 100:.2f}%")
+            item_freq = QTableWidgetItem(str(value[1]))
+            words = ", ".join(value[0].keys())
+            words_item = QTableWidgetItem(words)
+            item_percent = QTableWidgetItem(f"{(value[1] / self.word_freq_dict.count_words) * 100:.2f}%")
 
             self.table_info_widget.insertRow(i)
             self.table_info_widget.setItem(i, 0, item_word)
-            self.table_info_widget.setItem(i, 1, item_freq)
-            self.table_info_widget.setItem(i, 2, item_percent)
+            self.table_info_widget.setItem(i, 1, words_item)
+            self.table_info_widget.setItem(i, 2, item_freq)
+            self.table_info_widget.setItem(i, 3, item_percent)
 
         self.setup_pagination()
 
     # Function that set up the information of the pages
     def setup_pagination(self):
-        total_pages = len(self.word_freq_dict) // self.page_size + 1
+        total_pages = len(self.word_freq_dict.getStemWords()) // self.page_size + 1
 
         self.tpg_number_input.setValue(self.current_page)
         self.pageLabel2.setText(f" de {total_pages}")
@@ -444,7 +497,7 @@ class MainWindow(QMainWindow):
 
     # Move to the next page
     def next_page(self):
-        total_pages = len(self.word_freq_dict) // self.page_size + 1
+        total_pages = len(self.word_freq_dict.getStemWords()) // self.page_size + 1
         if self.current_page < total_pages:
             self.current_page += 1
             self.populate_table()
@@ -452,13 +505,48 @@ class MainWindow(QMainWindow):
 
     # Validate the page number of the number input
     def validate_table_nav_text(self):
-        total_pages = len(self.word_freq_dict) // self.page_size + 1
+        total_pages = len(self.word_freq_dict.getStemWords()) // self.page_size + 1
         current_page = self.tpg_number_input.value()
         if current_page <= total_pages:
             self.current_page = current_page
             self.populate_table()
         else:
             self.tpg_number_input.setValue(self.current_page)
+
+    # Add the selected item of the table to the list of roots
+    def add_item_to_root_list(self):
+        selected_item = self.table_info_widget.currentItem()
+        selected_column = self.table_info_widget.currentColumn()
+        if selected_column == 0:
+            if selected_item:
+                text = selected_item.text()
+                self.root_list_list.addItem(text)
+
+
+    # Delete the selected item of the list of roots
+    def remove_item_from_root_list(self):
+        selected_item = self.root_list_list.currentItem()
+        if selected_item:
+            self.root_list_list.takeItem(self.root_list_list.row(selected_item))
+
+    # Update the root remove botton
+    def update_root_remove_button(self):
+        selected_items = self.root_list_list.selectedItems()
+        self.remove_root_button.setEnabled(len(selected_items) > 0)
+
+    def combine_roots(self):
+        items = []
+        fileCount = self.root_list_list.count()
+        for i in range(fileCount):
+            items.append(self.root_list_list.item(i).text())
+        self.mainController.combine_roots(items)
+        alert = QMessageBox()
+        alert.setWindowTitle("Alerta")
+        alert.setText("¡Palabras Combinadas!")
+        alert.setIcon(QMessageBox.Icon.Information)
+        alert.exec()
+        self.root_list_list.clear()
+
 
 
 app = QApplication([])
