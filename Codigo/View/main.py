@@ -1,6 +1,6 @@
 # PyQt6 dependencies
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QApplication, QTableWidget, QSpinBox, QTableWidgetItem, QTabWidget, QDialog, QMessageBox, QMainWindow, QGridLayout, QHBoxLayout, QVBoxLayout, QListWidget, QFileDialog, QPushButton, QLineEdit, QWidget, QLabel, QProgressBar
+from PyQt6.QtWidgets import QApplication, QTableWidget, QSpinBox, QTableWidgetItem, QTabWidget, QMessageBox, QMainWindow, QGridLayout, QHBoxLayout, QVBoxLayout, QListWidget, QFileDialog, QPushButton, QLineEdit, QWidget, QLabel, QProgressBar
 from PyQt6.QtGui import QIcon
 import sys
 import os
@@ -20,7 +20,7 @@ from Codigo.View.IgnoreWordsDialog import IgnoreWordsDialog
 from Codigo.View.GraphThread import GraphThread
 
 # Import the Thread using to the interface process
-from Codigo.Controller.StructureStemming import StructureStemming
+from Codigo.Model.StructureStemming import StructureStemming
 
 import os
 path = ""

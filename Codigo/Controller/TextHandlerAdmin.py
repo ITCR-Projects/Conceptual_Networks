@@ -1,18 +1,15 @@
-import os
-import io
 import numpy as np
 import matplotlib.pyplot as plt
 import re
 import Stemmer
 
-from PIL import Image
 from wordcloud import WordCloud
 from collections import Counter
 
 from Codigo.Model.DocxFile import DocxFile
 from Codigo.Model.WebFile import WebFile
 from Codigo.Model.TextFile import TextFile
-from Codigo.Controller.StructureStemming import  StructureStemming
+from Codigo.Model.StructureStemming import  StructureStemming
 
 import os
 
@@ -292,7 +289,6 @@ class TextHandlerAdmin:
         for word in self.text:
             root_word = stemmer.stemWord(word)
             self.structure_stemming.add(root_word, word)
-        self.structure_stemming.sortStruture()
         # print(self.structure_stemming.getStemWords())
         # print(self.structure_stemming.count_words)
 
