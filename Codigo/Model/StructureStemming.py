@@ -49,3 +49,8 @@ class StructureStemming:
     def sortStruture(self):
         '''Método que ordena segun llave de raiz de manera alfabética'''
         self.stem_words = dict(sorted(self.stem_words.items()))
+
+
+    def sortStrutureWeigth(self):
+        '''Método que ordena segun llave de raiz de manera alfabética'''
+        self.stem_words = dict(sorted(self.stem_words.items(), key=lambda item: (item[1][1]), reverse=True))
