@@ -2,13 +2,6 @@
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QApplication, QTableWidget, QSpinBox, QTableWidgetItem, QTabWidget, QDialog, QMessageBox, QMainWindow, QGridLayout, QHBoxLayout, QVBoxLayout, QListWidget, QFileDialog, QPushButton, QLineEdit, QWidget, QLabel, QProgressBar
 from PyQt6.QtGui import QIcon
-import sys
-import os
-
-codigo_dir = os.path.dirname(os.path.abspath(__file__))
-codigo_dir = os.path.join(codigo_dir, '..')  # Path file level up
-codigo_dir = os.path.join(codigo_dir, '..')
-sys.path.append(codigo_dir)
 
 # Import the main controller
 from Codigo.Controller.Controller import MainController
@@ -37,7 +30,6 @@ codigo_dir = os.path.join(codigo_dir, '..')
 sys.path.append(codigo_dir)
 
 path = ""
-
 
 def resource_path(relative_path):
     global path
