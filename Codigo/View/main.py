@@ -21,6 +21,7 @@ from Codigo.View.SVGWidget import SVGWidget
 # Import the style sheets
 from Codigo.View.Styles.Styles import *
 
+# Import of the system managers
 import sys
 import os
 
