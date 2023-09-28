@@ -1,14 +1,7 @@
-# PyQt6 dependencies
+# PyQt6 dependencies test3
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QApplication, QTableWidget, QSpinBox, QTableWidgetItem, QTabWidget, QDialog, QMessageBox, QMainWindow, QGridLayout, QHBoxLayout, QVBoxLayout, QListWidget, QFileDialog, QPushButton, QLineEdit, QWidget, QLabel, QProgressBar
-from PyQt6.QtGui import QIcon
-import sys
-import os
-
-codigo_dir = os.path.dirname(os.path.abspath(__file__))
-codigo_dir = os.path.join(codigo_dir, '..')  # Path file level up
-codigo_dir = os.path.join(codigo_dir, '..')
-sys.path.append(codigo_dir)
+from PyQt6.QtWidgets import QApplication, QColorDialog, QTableWidget, QSpinBox, QTableWidgetItem, QTabWidget, QDialog, QMessageBox, QMainWindow, QGridLayout, QHBoxLayout, QVBoxLayout, QListWidget, QFileDialog, QPushButton, QLineEdit, QWidget, QLabel, QProgressBar
+from PyQt6.QtGui import QIcon, QPalette
 
 # Import the main controller
 from Codigo.Controller.Controller import MainController
@@ -20,10 +13,25 @@ from Codigo.View.IgnoreWordsDialog import IgnoreWordsDialog
 from Codigo.View.GraphThread import GraphThread
 
 # Import the Thread using to the interface process
-from Codigo.Controller.StructureStemming import StructureStemming
+from Codigo.Model.StructureStemming import StructureStemming
 
+# Import the stemming structure class
+from Codigo.View.SVGWidget import SVGWidget
+
+# Import the style sheets
+from Codigo.View.Styles.Styles import *
+
+# Import of the system managers
+import sys
 import os
+
+codigo_dir = os.path.dirname(os.path.abspath(__file__))
+codigo_dir = os.path.join(codigo_dir, '..')  # Path file level up
+codigo_dir = os.path.join(codigo_dir, '..')
+sys.path.append(codigo_dir)
+
 path = ""
+
 def resource_path(relative_path):
     global path
     try:
@@ -33,6 +41,7 @@ def resource_path(relative_path):
         base_path = os.path.abspath(".")
         path = base_path
     return os.path.join(base_path, relative_path)
+
 
 # Main window class
 class MainWindow(QMainWindow):
@@ -66,37 +75,25 @@ class MainWindow(QMainWindow):
         lbl_layout = QVBoxLayout()
         list_widget_container_layout.addLayout(lbl_layout)
 
-
-
         list_label = QLabel("Lista de Archivos")
-        list_label.setStyleSheet(
-            "QLabel { padding: 5px; font-weight: bold; font-size: 16px; }"
-        )
+        list_label.setStyleSheet(label_style_title)
 
         lbl_layout.addWidget(list_label)
 
         self.file_list = QListWidget()
-        self.file_list.setStyleSheet(
-            "QListWidget { background-color: #f0f0f0;  }"
-            "QListWidget::item { background-color: #ffffff; border: 1px solid #d0d0d0; padding: 10px; }"
-            "QListWidget::item:selected { background-color: #3498db; color: white; }"
-        )
+        self.file_list.setStyleSheet(list_style)
 
         list_widget_container_layout.addWidget(self.file_list)
         lbl_layout.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         list_widget_container_layout.setAlignment(Qt.AlignmentFlag.AlignHCenter)
-
-
-
 
         self.mwlayout.addWidget(list_widget_container, 0, 0)
 
         # Title lable of the file space
         lbl_actions_title_layout = QVBoxLayout()
         file_label = QLabel("Acciones")
-        file_label.setStyleSheet(
-            "QLabel { padding: 5px; font-weight: bold; font-size: 16px; }"
-        )
+        file_label.setStyleSheet(label_style_title)
+
         lbl_actions_title_layout.addWidget(file_label)
 
         lbl_actions_title_layout.setAlignment(Qt.AlignmentFlag.AlignHCenter)
@@ -104,19 +101,14 @@ class MainWindow(QMainWindow):
         files_layout.addLayout(lbl_actions_title_layout)
         # Text box to contain the URL
         self.url_txb = QLineEdit()
-        self.url_txb.setStyleSheet(
-            "QLineEdit { background-color: #f0f0f0; border: 2px solid #3498db; padding: 5px; color: #333; }"
-            "QLineEdit:hover { border-color: #2980b9; }"
-            "QLineEdit:focus { border-color: #e74c3c; }")
+        self.url_txb.setStyleSheet(input_txt_style)
         url_layout.addWidget(self.url_txb)
 
         # Button to add the URL to the file list
         url_path = resource_path("Icons/globo.png")
         url_icon = QIcon(url_path)
         add_url_btn = QPushButton("Añadir URL")
-        add_url_btn.setStyleSheet(
-            "QPushButton { border-radius: 10px; padding: 10px; background-color: #3498db; color: white; }"
-            "QPushButton:hover { background-color: #2980b9; }")
+        add_url_btn.setStyleSheet(button_style_add)
         add_url_btn.setIcon(url_icon)
         add_url_btn.clicked.connect(self.add_url_to_list)
         url_layout.addWidget(add_url_btn)
@@ -130,9 +122,7 @@ class MainWindow(QMainWindow):
         add_files_frame_btn = QPushButton("Añadir Archivo")
         add_files_frame_btn.setIcon(doc_icon)
         add_files_frame_btn.clicked.connect(self.add_files)
-        add_files_frame_btn.setStyleSheet(
-            "QPushButton { border-radius: 10px; padding: 10px; background-color: #3498db; color: white; }"
-            "QPushButton:hover { background-color: #2980b9; }")
+        add_files_frame_btn.setStyleSheet(button_style_add)
 
         file_btn_layout.addWidget(add_files_frame_btn)
 
@@ -141,12 +131,7 @@ class MainWindow(QMainWindow):
         remove_icon = QIcon(remove_path)
         self.remove_button = QPushButton("Remover Archivo")
         self.remove_button.setIcon(remove_icon)
-        self.remove_button.setStyleSheet(
-            "QPushButton { border-radius: 10px; padding: 10px; background-color: #e74c3c; color: white; }"
-            "QPushButton:hover { background-color: #c0392b; }"
-            "QPushButton:disabled { background-color: #bdc3c7; color: #7f8c8d; }"
-            "QPushButton:pressed { background-color: #d35400; }"
-        )
+        self.remove_button.setStyleSheet(button_style_delete)
         self.remove_button.clicked.connect(self.remove_item)
         self.remove_button.setEnabled(False)  # Desactivate the button
 
@@ -157,9 +142,7 @@ class MainWindow(QMainWindow):
         ignore_icon = QIcon(ignore_path)
         ignore_btn = QPushButton("Añadir Palabras Ignoradas")
         ignore_btn.setIcon(ignore_icon)
-        ignore_btn.setStyleSheet(
-            "QPushButton { border-radius: 10px; padding: 10px; background-color: gray; color: white; }"
-            "QPushButton:hover { background-color: darkgray;}")
+        ignore_btn.setStyleSheet(button_style_normal)
         ignore_btn.clicked.connect(self.open_dialog)
         file_btn_layout.addWidget(ignore_btn)
 
@@ -175,10 +158,7 @@ class MainWindow(QMainWindow):
         graph_icon = QIcon(add_path)
         self.create_graph_btn = QPushButton("Procesar Texto")
         self.create_graph_btn.setIcon(graph_icon)
-        self.create_graph_btn.setStyleSheet(
-            "QPushButton { border-radius: 10px; padding: 10px; background-color: #3498db; color: white; }"
-            "QPushButton:hover { background-color: #2980b9; }"
-            "QPushButton:disabled { background-color: #bdc3c7; color: #7f8c8d; }")
+        self.create_graph_btn.setStyleSheet(button_style_add)
         self.create_graph_btn.clicked.connect(self.create_graph)
         self.create_graph_btn.setEnabled(False)
         self.mwlayout.addWidget(self.create_graph_btn, 1, 1)
@@ -189,17 +169,12 @@ class MainWindow(QMainWindow):
         self.progressbar_layout = QHBoxLayout()
 
         self.pbar_lb = QLabel("Iniciando Proceso")
-        self.pbar_lb.setStyleSheet(
-            "QLabel { background-color: #3498db; color: white; padding: 10px; border-radius: 5px; max-width: 250px; }"
-        )
+        self.pbar_lb.setStyleSheet(label_style_progress_bar)
         self.progressbar_layout.addWidget(self.pbar_lb)
 
         self.progress_bar = QProgressBar()
         self.progress_bar.setValue(0)
-        self.progress_bar.setStyleSheet(
-            "QProgressBar { background-color: #f0f0f0; border: 1px solid #d0d0d0; border-radius: 5px; text-align: center; }"
-            "QProgressBar::chunk { background-color: #3498db; border-radius: 5px; }"
-        )
+        self.progress_bar.setStyleSheet(progress_bar_style)
         self.progressbar_layout.addWidget(self.progress_bar)
 
         self.progressb_widget.setLayout(self.progressbar_layout)
@@ -222,20 +197,19 @@ class MainWindow(QMainWindow):
         self.about_button = QPushButton("")
         self.about_button.setIcon(about_icon)
         self.about_button.setFixedSize(30, 30)
-        self.about_button.setStyleSheet(
-            "QPushButton {border-radius: 10px; padding: 10px; background-color: #3498db; color: white; border: 2px solid #2980b9; }"
-            "QPushButton:hover {background-color: #2980b9;}"
-        )
+        self.about_button.setStyleSheet(about_style)
         self.about_button.clicked.connect(self.show_about_dialog)
         self.central_layout.addWidget(self.about_button)
 
         # Tab widgets
         self.files_widget = QWidget()
         self.table_widget = QWidget()
+        self.conceptual_cloud_widget = QWidget()
 
         # Set the widgets to the window
         self.tab_widget.addTab(self.files_widget, "Archivos")
         self.tab_widget.addTab(self.table_widget, "Estadísticas")
+        self.tab_widget.addTab(self.conceptual_cloud_widget, "Nube de Conceptos")
 
         # Set the content
         # Files menus
@@ -253,7 +227,7 @@ class MainWindow(QMainWindow):
         self.table_info_widget = QTableWidget()
         self.table_info_widget.setColumnCount(4)
         header = self.table_info_widget.horizontalHeader()
-        header.setStyleSheet("QHeaderView::section { background-color: #3498db; color: white; }")
+        header.setStyleSheet(table_header_style)
         self.table_info_widget.setHorizontalHeaderLabels(["Raíz", "Palabras", "Frecuencia", "Porcentaje"])
         table_view_widget_layout.addWidget(self.table_info_widget)
 
@@ -265,10 +239,7 @@ class MainWindow(QMainWindow):
         prev_path = resource_path("Icons/angulo-izquierdo.png")
         prevIcon = QIcon(prev_path)
         self.prevButton = QPushButton("")
-        self.prevButton.setStyleSheet(
-            "QPushButton { border-radius: 10px; padding: 10px; background-color: #3498db; color: white; }"
-            "QPushButton:hover { background-color: #2980b9; }"
-            "QPushButton:disabled { background-color: #bdc3c7; color: #7f8c8d; }")
+        self.prevButton.setStyleSheet(button_style_add)
         self.prevButton.setIcon(prevIcon)
         self.prevButton.clicked.connect(self.prev_page)
         pagination_layout.addWidget(self.prevButton)
@@ -290,10 +261,7 @@ class MainWindow(QMainWindow):
         next_path = resource_path("Icons/angulo-derecho.png")
         nextIcon = QIcon(next_path)
         self.nextButton = QPushButton("")
-        self.nextButton.setStyleSheet(
-            "QPushButton { border-radius: 10px; padding: 10px; background-color: #3498db; color: white; }"
-            "QPushButton:hover { background-color: #2980b9; }"
-            "QPushButton:disabled { background-color: #bdc3c7; color: #7f8c8d; }")
+        self.nextButton.setStyleSheet(button_style_add)
         self.nextButton.setIcon(nextIcon)
         self.nextButton.clicked.connect(self.next_page)
         pagination_layout.addWidget(self.nextButton)
@@ -302,34 +270,25 @@ class MainWindow(QMainWindow):
 
         statistics_layout.addWidget(self.table_view_widget)
 
-        # ----------------------------------------
+        # List of combine roots widget
         self.root_list = QWidget()
         root_list_layout = QVBoxLayout()
         self.root_list_list = QListWidget()
-        self.root_list_list.setStyleSheet(
-            "QListWidget { background-color: #f0f0f0;  }"
-            "QListWidget::item { background-color: #ffffff; border: 1px solid #d0d0d0; padding: 10px; }"
-            "QListWidget::item:selected { background-color: #3498db; color: white; }"
-        )
+        self.root_list_list.setStyleSheet(list_style)
         root_list_layout.addWidget(self.root_list_list)
 
         self.botton_bar = QWidget()
         botton_bar_layout = QHBoxLayout()
 
         add_root_button = QPushButton('Añadir')
-        add_root_button.setStyleSheet(
-            "QPushButton { border-radius: 10px; padding: 10px; background-color: #3498db; color: white; }"
-            "QPushButton:hover { background-color: #2980b9; }")
+        add_root_button.setIcon(QIcon(resource_path("Icons/agregar.png")))
+        add_root_button.setStyleSheet(button_style_add)
         self.remove_root_button = QPushButton('Eliminar')
-        self.remove_root_button.setStyleSheet(
-            "QPushButton { border-radius: 10px; padding: 10px; background-color: #e74c3c; color: white; }"
-            "QPushButton:hover { background-color: #c0392b; }"
-            "QPushButton:disabled { background-color: #bdc3c7; color: #7f8c8d; }"
-            "QPushButton:pressed { background-color: #d35400; }")
+        self.remove_root_button.setIcon(QIcon(resource_path("Icons/basura.png")))
+        self.remove_root_button.setStyleSheet(button_style_delete)
         combine_root_button = QPushButton('Combinar')
-        combine_root_button.setStyleSheet(
-            "QPushButton { border-radius: 10px; padding: 10px; background-color: gray; color: white; }"
-            "QPushButton:hover { background-color: darkgray; }")
+        combine_root_button.setIcon(QIcon(resource_path("Icons/controlar.png")))
+        combine_root_button.setStyleSheet(button_style_normal)
 
         add_root_button.clicked.connect(self.add_item_to_root_list)
         self.remove_root_button.clicked.connect(self.remove_item_from_root_list)
@@ -337,7 +296,6 @@ class MainWindow(QMainWindow):
         self.remove_root_button.setEnabled(False)
 
         self.root_list_list.itemSelectionChanged.connect(self.update_root_remove_button)
-
         combine_root_button.clicked.connect(self.combine_roots)
 
         botton_bar_layout.addWidget(add_root_button)
@@ -345,16 +303,54 @@ class MainWindow(QMainWindow):
         botton_bar_layout.addWidget(combine_root_button)
 
         self.botton_bar.setLayout(botton_bar_layout)
-
         root_list_layout.addWidget(self.botton_bar)
-
         self.root_list.setLayout(root_list_layout)
-
         statistics_layout.addWidget(self.root_list)
-
         self.table_widget.setLayout(statistics_layout)
-
         self.tab_widget.setTabEnabled(1, False)
+
+        # Here is the configuration of the conceptual cloud tab
+        conceptual_cloud_widget_layout = QHBoxLayout()
+
+        # Here comes the SVG
+        self.svg_image = SVGWidget()
+        self.svg_image.load_svg("ferrari_logo.svg")
+        conceptual_cloud_widget_layout.addWidget(self.svg_image)
+
+        # Here comes the personalization tools
+        self.svg_personalization_tools = QWidget()
+        svg_personalization_tools_layout = QVBoxLayout()
+        svg_label_tools = QLabel("Herramientas")
+        svg_label_tools.setStyleSheet(label_style_title)
+        svg_label_tools.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+        svg_personalization_tools_layout.addWidget(svg_label_tools)
+
+        self.cloud_personalization_buttons = QWidget()
+        cloud_personalization_buttons_layout = QHBoxLayout()
+        self.cloud_personalization_buttons.setLayout(cloud_personalization_buttons_layout)
+
+        cloud_color_button = QPushButton("Paleta de Colores")
+        cloud_color_button.setStyleSheet(button_style_normal)
+        cloud_color_button.setIcon(QIcon(resource_path("Icons/paleta.png")))
+        cloud_shape_button = QPushButton("Figura")
+        cloud_shape_button.setStyleSheet(button_style_normal)
+        cloud_shape_button.setIcon(QIcon(resource_path("Icons/recursos.png")))
+
+        cloud_color_button.clicked.connect(self.changePalette)
+
+        cloud_personalization_buttons_layout.addWidget(cloud_shape_button)
+        cloud_personalization_buttons_layout.addWidget(cloud_color_button)
+
+        svg_personalization_tools_layout.addWidget(self.cloud_personalization_buttons)
+
+        self.svg_personalization_tools.setLayout(svg_personalization_tools_layout)
+
+        conceptual_cloud_widget_layout.addWidget(self.svg_personalization_tools)
+
+        # Here the layout is loaded to the tab
+        self.conceptual_cloud_widget.setLayout(conceptual_cloud_widget_layout)
+
+        self.tab_widget.setTabEnabled(2, False)
 
         self.setCentralWidget(self.central_widget)
 
@@ -417,6 +413,7 @@ class MainWindow(QMainWindow):
         self.populate_table()
         # self.plot_bar_chart(word_freq_dict)
         self.tab_widget.setTabEnabled(1, True)
+        self.tab_widget.setTabEnabled(2, True)
         alert = QMessageBox()
         alert.setWindowTitle("Proceso Terminado")
         alert.setText("¡Proceso Terminado!")
@@ -493,7 +490,7 @@ class MainWindow(QMainWindow):
         if self.current_page > 1:
             self.current_page -= 1
             self.populate_table()
-            #self.setup_pagination()
+            # self.setup_pagination()
 
     # Move to the next page
     def next_page(self):
@@ -501,7 +498,7 @@ class MainWindow(QMainWindow):
         if self.current_page < total_pages:
             self.current_page += 1
             self.populate_table()
-            #self.setup_pagination()
+            # self.setup_pagination()
 
     # Validate the page number of the number input
     def validate_table_nav_text(self):
@@ -522,7 +519,6 @@ class MainWindow(QMainWindow):
                 text = selected_item.text()
                 self.root_list_list.addItem(text)
 
-
     # Delete the selected item of the list of roots
     def remove_item_from_root_list(self):
         selected_item = self.root_list_list.currentItem()
@@ -536,8 +532,8 @@ class MainWindow(QMainWindow):
 
     def combine_roots(self):
         items = []
-        fileCount = self.root_list_list.count()
-        for i in range(fileCount):
+        filecount = self.root_list_list.count()
+        for i in range(filecount):
             items.append(self.root_list_list.item(i).text())
         self.mainController.combine_roots(items)
         alert = QMessageBox()
@@ -546,7 +542,13 @@ class MainWindow(QMainWindow):
         alert.setIcon(QMessageBox.Icon.Information)
         alert.exec()
         self.root_list_list.clear()
+        self.populate_table()
 
+    # Color Palette dialog
+    def changePalette(self):
+        color = QColorDialog()
+        color.setWindowTitle("Colores de la Nube")
+        color.exec()
 
 
 app = QApplication([])

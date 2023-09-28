@@ -1,5 +1,9 @@
 from PyQt6.QtWidgets import QDialog, QVBoxLayout, QListWidget, QLineEdit, QPushButton, QHBoxLayout
 from PyQt6.QtGui import QIcon
+
+# Import the style sheets
+from Codigo.View.Styles.Styles import *
+
 import os
 path = ""
 def resource_path(relative_path):
@@ -26,19 +30,12 @@ class IgnoreWordsDialog(QDialog):
 
         # Lista de palabras ignoradas
         self.list_widget = QListWidget(self)
-        self.list_widget.setStyleSheet(
-            "QListWidget { background-color: #f0f0f0;  }"
-            "QListWidget::item { background-color: #ffffff; border: 1px solid #d0d0d0; padding: 10px; }"
-            "QListWidget::item:selected { background-color: #3498db; color: white; }"
-        )
+        self.list_widget.setStyleSheet(list_style)
         dialog_layout.addWidget(self.list_widget)
 
         # Campo de entrada de palabra a ignorar
         self.input_field = QLineEdit(self)
-        self.input_field.setStyleSheet(
-            "QLineEdit { background-color: #f0f0f0; border: 2px solid #3498db; padding: 5px; color: #333; }"
-            "QLineEdit:hover { border-color: #2980b9; }"
-            "QLineEdit:focus { border-color: #e74c3c; }")
+        self.input_field.setStyleSheet(input_txt_style)
         dialog_layout.addWidget(self.input_field)
 
         # Botones (Añadir, Borrar, Guardar, Guardar Permanente)
@@ -47,33 +44,23 @@ class IgnoreWordsDialog(QDialog):
         add_button_icon = QIcon(resource_path("Icons/agregar.png"))
         add_button = QPushButton("Añadir", self)
         add_button.setIcon(add_button_icon)
-        add_button.setStyleSheet(
-            "QPushButton { border-radius: 10px; padding: 10px; background-color: #3498db; color: white; }"
-            "QPushButton:hover { background-color: #2980b9; }")
+        add_button.setStyleSheet(button_style_add)
 
         remove_button_icon = QIcon(resource_path("Icons/basura.png"))
         self.remove_ignore_button = QPushButton("Borrar", self)
         self.remove_ignore_button.setIcon(remove_button_icon)
         self.remove_ignore_button.setEnabled(False)
-        self.remove_ignore_button.setStyleSheet(
-            "QPushButton { border-radius: 10px; padding: 10px; background-color: #e74c3c; color: white; }"
-            "QPushButton:hover { background-color: #c0392b; }"
-            "QPushButton:disabled { background-color: #bdc3c7; color: #7f8c8d; }"
-            "QPushButton:pressed { background-color: #d35400; }")
+        self.remove_ignore_button.setStyleSheet(button_style_delete)
 
         save_button_icon = QIcon(resource_path("Icons/controlar.png"))
         save_ignore_words_button = QPushButton("Guardar", self)
         save_ignore_words_button.setIcon(save_button_icon)
-        save_ignore_words_button.setStyleSheet(
-            "QPushButton { border-radius: 10px; padding: 10px; background-color: gray; color: white; }"
-            "QPushButton:hover { background-color: darkgray; }")
+        save_ignore_words_button.setStyleSheet(button_style_normal)
 
         saveP_button_icon = QIcon(resource_path("Icons/disco.png"))
         saveP_ignore_words_button = QPushButton("Guardar Permanente", self)
         saveP_ignore_words_button.setIcon(saveP_button_icon)
-        saveP_ignore_words_button.setStyleSheet(
-            "QPushButton { border-radius: 10px; padding: 10px; background-color: #FFA500; color: white; }"
-            "QPushButton:hover { background-color: #FFC04D; }")
+        saveP_ignore_words_button.setStyleSheet(button_style_warming)
 
         button_layout.addWidget(add_button)
         button_layout.addWidget(self.remove_ignore_button)

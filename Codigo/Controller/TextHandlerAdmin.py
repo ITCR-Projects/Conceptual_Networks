@@ -13,7 +13,7 @@ from collections import Counter
 from Codigo.Model.DocxFile import DocxFile
 from Codigo.Model.WebFile import WebFile
 from Codigo.Model.TextFile import TextFile
-from Codigo.Controller.StructureStemming import StructureStemming
+from Codigo.Model.StructureStemming import  StructureStemming
 
 import os
 
@@ -371,7 +371,7 @@ class TextHandlerAdmin:
                     f.write('\n' + word.lower())
 
     def combine_roots(self, roots):
-        print(roots)
+        self.structure_stemming.mergeList(roots)
 
 
 #x = TextHandlerAdmin()
