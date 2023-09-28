@@ -1,7 +1,8 @@
-# PyQt6 dependencies prueba
+
+# PyQt6 dependencies test
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QApplication, QTableWidget, QSpinBox, QTableWidgetItem, QTabWidget, QDialog, QMessageBox, QMainWindow, QGridLayout, QHBoxLayout, QVBoxLayout, QListWidget, QFileDialog, QPushButton, QLineEdit, QWidget, QLabel, QProgressBar
-from PyQt6.QtGui import QIcon
+from PyQt6.QtWidgets import QApplication, QColorDialog, QTableWidget, QSpinBox, QTableWidgetItem, QTabWidget, QDialog, QMessageBox, QMainWindow, QGridLayout, QHBoxLayout, QVBoxLayout, QListWidget, QFileDialog, QPushButton, QLineEdit, QWidget, QLabel, QProgressBar
+from PyQt6.QtGui import QIcon, QPalette
 
 # Import the main controller
 from Codigo.Controller.Controller import MainController
@@ -324,6 +325,25 @@ class MainWindow(QMainWindow):
         svg_label_tools.setStyleSheet(label_style_title)
         svg_label_tools.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         svg_personalization_tools_layout.addWidget(svg_label_tools)
+
+        self.cloud_personalization_buttons = QWidget()
+        cloud_personalization_buttons_layout = QHBoxLayout()
+        self.cloud_personalization_buttons.setLayout(cloud_personalization_buttons_layout)
+
+        cloud_color_button = QPushButton("Paleta de Colores")
+        cloud_color_button.setStyleSheet(button_style_normal)
+        cloud_color_button.setIcon(QIcon(resource_path("Icons/paleta.png")))
+        cloud_shape_button = QPushButton("Figura")
+        cloud_shape_button.setStyleSheet(button_style_normal)
+        cloud_shape_button.setIcon(QIcon(resource_path("Icons/recursos.png")))
+
+        cloud_color_button.clicked.connect(self.changePalette)
+
+        cloud_personalization_buttons_layout.addWidget(cloud_shape_button)
+        cloud_personalization_buttons_layout.addWidget(cloud_color_button)
+
+        svg_personalization_tools_layout.addWidget(self.cloud_personalization_buttons)
+
         self.svg_personalization_tools.setLayout(svg_personalization_tools_layout)
 
         conceptual_cloud_widget_layout.addWidget(self.svg_personalization_tools)
@@ -523,6 +543,13 @@ class MainWindow(QMainWindow):
         alert.setIcon(QMessageBox.Icon.Information)
         alert.exec()
         self.root_list_list.clear()
+        self.populate_table()
+
+    # Color Palette dialog
+    def changePalette(self):
+        color = QColorDialog()
+        color.setWindowTitle("Colores de la Nube")
+        color.exec()
 
 
 app = QApplication([])
