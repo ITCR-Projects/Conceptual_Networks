@@ -49,3 +49,22 @@ class StructureStemming:
     def sortStruture(self):
         '''Método que ordena segun llave de raiz de manera alfabética'''
         self.stem_words = dict(sorted(self.stem_words.items()))
+
+    def get_nodes_and_weights(self):
+        nodes = list(self.stem_words.keys())
+        # weights = list(map(lambda x: x[1] if len(x) >= 2 else None, self.stem_words.values()))
+        weights = list(map(lambda x: x[1], self.stem_words.values()))
+        return nodes, weights
+
+
+
+#x = StructureStemming()
+#x.add("educ","educativo")
+#x.add("educ","educa")
+#x.add("educ","educativo")
+#x.add("hol","hola")
+#x.add("hol","holi")
+#x.add("universi","universidad")
+#print(x.get_nodes_and_weights())
+
+

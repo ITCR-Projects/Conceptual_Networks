@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import re
 import Stemmer
+import networkx as nx
 
 from PIL import Image
 from wordcloud import WordCloud
@@ -12,7 +13,7 @@ from collections import Counter
 from Codigo.Model.DocxFile import DocxFile
 from Codigo.Model.WebFile import WebFile
 from Codigo.Model.TextFile import TextFile
-from Codigo.Controller.StructureStemming import  StructureStemming
+from Codigo.Controller.StructureStemming import StructureStemming
 
 import os
 
@@ -36,6 +37,9 @@ class TextHandlerAdmin:
         self.text = ""
         self.ignore_words_added_list = []
         self.structure_stemming = StructureStemming()
+        self.graph = nx.DiGraph()
+        # self.graph = nx.Graph()
+        self.roots_words = []
 
     # ----Métodos Privados ----
 
@@ -277,9 +281,9 @@ class TextHandlerAdmin:
         return self.text
 
     def statistics(self):
-        #counteWordsDict = self.countWords()
+        # counteWordsDict = self.countWords()
 
-        #return counteWordsDict
+        # return counteWordsDict
 
         return self.structure_stemming
         # self.makeWordCloud(counteWordsDict)  # Se crea la Nube de Palabras
@@ -292,10 +296,43 @@ class TextHandlerAdmin:
         for word in self.text:
             root_word = stemmer.stemWord(word)
             self.structure_stemming.add(root_word, word)
+            self.roots_words.append(root_word)
         self.structure_stemming.sortStruture()
         # print(self.structure_stemming.getStemWords())
         # print(self.structure_stemming.count_words)
 
+    def create_network(self):
+        # self.graph.add_edges_from(self.roots_words)
+        # Agregar nodos al grafo y asignarles un atributo 'weight'
+        # nodes = ["hola", "jose", "arce", "gato"]
+        # weights = [1, 2, 1, 1]
+
+        nodes, weights = self.structure_stemming.get_nodes_and_weights()
+
+        for node, weight in zip(nodes, weights):
+            if not self.graph.has_node(node):
+                self.graph.add_node(node, weight=weight)
+
+        # self.graph.add_nodes_from(nodes, weights)
+
+    def create_relation(self, step=1):
+        index = 0
+        amount_words = len(self.roots_words)
+        for node in self.roots_words:
+            if index + step < amount_words:
+                u, v = node, self.roots_words[index + step]
+                if self.graph.has_edge(u, v):
+                    self.graph[u][v]['weight'] += 1.0
+                else:
+                    self.graph.add_edge(u, v, weight=1.0)
+            index += 1
+
+    def print_network(self):
+        for node, data in self.graph.nodes(data=True):
+            print(f"{node}: Peso {data['weight']}")
+
+        for u, v, data in self.graph.edges(data=True):
+            print(f"{u} --> {v}: Peso {data['weight']}")
 
     def indexing(self):
 
@@ -335,3 +372,10 @@ class TextHandlerAdmin:
 
     def combine_roots(self, roots):
         print(roots)
+
+
+#x = TextHandlerAdmin()
+#x.roots_words = ["hola", "jose", "arce", "jose", "gato"]
+#x.create_network()
+#x.create_relation()
+#x.print_network()
