@@ -330,4 +330,4 @@ class TextHandlerAdmin:
                     f.write('\n' + word.lower())
 
     def combine_roots(self, roots):
-        print(roots)
+        self.structure_stemming.mergeList(roots)
