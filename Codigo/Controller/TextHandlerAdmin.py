@@ -284,7 +284,6 @@ class TextHandlerAdmin:
         # counteWordsDict = self.countWords()
 
         # return counteWordsDict
-
         return self.structure_stemming
         # self.makeWordCloud(counteWordsDict)  # Se crea la Nube de Palabras
 
@@ -383,6 +382,12 @@ class TextHandlerAdmin:
     def combine_roots(self, roots):
         root = self.structure_stemming.mergeList(roots)
         self.combine_nodes(root, roots)
+
+    def get_cloud_words(self):
+        return self.structure_stemming.get_firts_word_and_weights()
+
+    def alphabeticSort(self):
+        self.structure_stemming.sortStruture()
 
 
 #x = TextHandlerAdmin()

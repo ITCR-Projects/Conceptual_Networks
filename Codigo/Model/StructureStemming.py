@@ -69,6 +69,14 @@ class StructureStemming:
         weights = list(map(lambda x: x[1], self.stem_words.values()))
         return nodes, weights
 
+    def get_firts_word_and_weights(self):
+        results = {}
+        for key, value in self.stem_words.items():
+            results[list(value[0].keys())[0]] = value[1]
+        return results
+
+
+
 
 
 #x = StructureStemming()

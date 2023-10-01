@@ -1,7 +1,11 @@
-# PyQt6 dependencies test3
+# PyQt6 dependencies
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QApplication, QColorDialog, QTableWidget, QSpinBox, QTableWidgetItem, QTabWidget, QDialog, QMessageBox, QMainWindow, QGridLayout, QHBoxLayout, QVBoxLayout, QListWidget, QFileDialog, QPushButton, QLineEdit, QWidget, QLabel, QProgressBar
-from PyQt6.QtGui import QIcon, QPalette
+from PyQt6.QtWidgets import QApplication, QColorDialog, QTableWidget, QSpinBox, QTableWidgetItem, QTabWidget, QDialog, \
+    QMessageBox, QMainWindow, QGridLayout, QHBoxLayout, QVBoxLayout, QListWidget, QFileDialog, QPushButton, QLineEdit, \
+    QWidget, QLabel, QProgressBar, QComboBox
+from PyQt6.QtGui import QIcon, QPalette, QPixmap
+from wordcloud import WordCloud
+import matplotlib.pyplot as plt
 
 # Import the main controller
 from Codigo.Controller.Controller import MainController
@@ -223,6 +227,14 @@ class MainWindow(QMainWindow):
         table_view_widget_layout = QVBoxLayout()
         self.table_view_widget.setLayout(table_view_widget_layout)
 
+        # Creation of the filter
+        self.filterComboBox = QComboBox()
+        self.filterComboBox.addItem("A - Z")
+        self.filterComboBox.addItem("Peso")
+
+        self.filterComboBox.activated.connect(self.onFilterComboBoxActivated)
+        table_view_widget_layout.addWidget(self.filterComboBox)
+
         # Creation of the table interface
         self.table_info_widget = QTableWidget()
         self.table_info_widget.setColumnCount(4)
@@ -313,8 +325,10 @@ class MainWindow(QMainWindow):
         conceptual_cloud_widget_layout = QHBoxLayout()
 
         # Here comes the SVG
-        self.svg_image = SVGWidget()
-        self.svg_image.load_svg("ferrari_logo.svg")
+        # self.svg_image = SVGWidget()
+        # self.svg_image.load_svg(resource_path("Icons/imagen-de-archivo.svg"))
+        self.svg_image = QLabel()
+        self.svg_image.setPixmap(QPixmap(resource_path("Icons/imagen-de-archivo.png")))
         conceptual_cloud_widget_layout.addWidget(self.svg_image)
 
         # Here comes the personalization tools
@@ -342,6 +356,11 @@ class MainWindow(QMainWindow):
         cloud_personalization_buttons_layout.addWidget(cloud_color_button)
 
         svg_personalization_tools_layout.addWidget(self.cloud_personalization_buttons)
+
+        create_word_cloud_button = QPushButton("Crear Nube de Palabras")
+        create_word_cloud_button.clicked.connect(self.generate_word_cloud)
+
+        svg_personalization_tools_layout.addWidget(create_word_cloud_button)
 
         self.svg_personalization_tools.setLayout(svg_personalization_tools_layout)
 
@@ -550,6 +569,24 @@ class MainWindow(QMainWindow):
         color.setWindowTitle("Colores de la Nube")
         color.exec()
 
+    def generate_word_cloud(self):
+        cloud = self.mainController.get_cloud_words()
+        wordcloud = WordCloud(width=800, height=400, background_color='white').generate_from_frequencies(cloud)
+
+        plt.figure(figsize=(8, 4))
+        plt.imshow(wordcloud, interpolation='bilinear')
+        plt.axis("off")
+
+        # Guardar la imagen temporalmente
+        plt.savefig("wordcloud.png", bbox_inches='tight', pad_inches=0, transparent=True)
+        self.svg_image.setPixmap(QPixmap(resource_path("wordcloud.png")))
+
+    # Filter of the table
+    def onFilterComboBoxActivated(self):
+        selected_index = self.filterComboBox.currentIndex()
+        if selected_index == 0:
+            self.mainController.alphabeticSort()
+        self.populate_table()
 
 app = QApplication([])
 main_window = MainWindow()
