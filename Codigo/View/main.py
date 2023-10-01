@@ -209,11 +209,13 @@ class MainWindow(QMainWindow):
         self.files_widget = QWidget()
         self.table_widget = QWidget()
         self.conceptual_cloud_widget = QWidget()
+        self.conceptual_network_widget = QWidget()
 
         # Set the widgets to the window
         self.tab_widget.addTab(self.files_widget, "Archivos")
         self.tab_widget.addTab(self.table_widget, "Estadísticas")
         self.tab_widget.addTab(self.conceptual_cloud_widget, "Nube de Conceptos")
+        self.tab_widget.addTab(self.conceptual_network_widget, "Red de Conceptos")
 
         # Set the content
         # Files menus
@@ -232,8 +234,18 @@ class MainWindow(QMainWindow):
         self.filterComboBox.addItem("A - Z")
         self.filterComboBox.addItem("Peso")
 
+        filter_widget = QWidget()
+        filter_widget_layout = QHBoxLayout()
+        filter_widget.setLayout(filter_widget_layout)
+        filter_label = QLabel()
+        filter_label_icon = QIcon(resource_path("Icons/ordenar-alt.png"))
+        filter_label.setPixmap(filter_label_icon.pixmap(15,15))
+        filter_widget_layout.addWidget(filter_label)
+
         self.filterComboBox.activated.connect(self.onFilterComboBoxActivated)
-        table_view_widget_layout.addWidget(self.filterComboBox)
+        filter_widget_layout.addWidget(self.filterComboBox)
+
+        table_view_widget_layout.addWidget(filter_widget)
 
         # Creation of the table interface
         self.table_info_widget = QTableWidget()
@@ -285,6 +297,10 @@ class MainWindow(QMainWindow):
         # List of combine roots widget
         self.root_list = QWidget()
         root_list_layout = QVBoxLayout()
+        combine_list_label = QLabel("Combinar Raices")
+        combine_list_label.setStyleSheet(label_style_title)
+        combine_list_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+        root_list_layout.addWidget(combine_list_label)
         self.root_list_list = QListWidget()
         self.root_list_list.setStyleSheet(list_style)
         root_list_layout.addWidget(self.root_list_list)
@@ -321,6 +337,7 @@ class MainWindow(QMainWindow):
         self.table_widget.setLayout(statistics_layout)
         self.tab_widget.setTabEnabled(1, False)
 
+        # -------------------------------------Conceptual Cloud-------------------------------------
         # Here is the configuration of the conceptual cloud tab
         conceptual_cloud_widget_layout = QHBoxLayout()
 
@@ -339,9 +356,9 @@ class MainWindow(QMainWindow):
         svg_label_tools.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         svg_personalization_tools_layout.addWidget(svg_label_tools)
 
-        self.cloud_personalization_buttons = QWidget()
-        cloud_personalization_buttons_layout = QHBoxLayout()
-        self.cloud_personalization_buttons.setLayout(cloud_personalization_buttons_layout)
+        self.cloud_personalization_menu = QWidget()
+        cloud_personalization_menu_layout = QVBoxLayout()
+        self.cloud_personalization_menu.setLayout(cloud_personalization_menu_layout)
 
         cloud_color_button = QPushButton("Paleta de Colores")
         cloud_color_button.setStyleSheet(button_style_normal)
@@ -352,10 +369,10 @@ class MainWindow(QMainWindow):
 
         cloud_color_button.clicked.connect(self.changePalette)
 
-        cloud_personalization_buttons_layout.addWidget(cloud_shape_button)
-        cloud_personalization_buttons_layout.addWidget(cloud_color_button)
+        cloud_personalization_menu_layout.addWidget(cloud_shape_button)
+        cloud_personalization_menu_layout.addWidget(cloud_color_button)
 
-        svg_personalization_tools_layout.addWidget(self.cloud_personalization_buttons)
+        svg_personalization_tools_layout.addWidget(self.cloud_personalization_menu)
 
         create_word_cloud_button = QPushButton("Crear Nube de Palabras")
         create_word_cloud_button.clicked.connect(self.generate_word_cloud)
@@ -368,6 +385,15 @@ class MainWindow(QMainWindow):
 
         # Here the layout is loaded to the tab
         self.conceptual_cloud_widget.setLayout(conceptual_cloud_widget_layout)
+        # ------------------------------Conceptual Cloud End------------------------------------------
+
+        # ------------------------------Conceptual Network Tab------------------------------------------
+        conceptual_network_widget_layout = QVBoxLayout()
+        create_concetptual_network_button = QPushButton("Crear Red")
+        create_concetptual_network_button.clicked.connect(self.conceptual_network)
+        conceptual_network_widget_layout.addWidget(create_concetptual_network_button)
+        self.conceptual_network_widget.setLayout(conceptual_network_widget_layout)
+        # ------------------------------Conceptual Network Tab End------------------------------------------
 
         self.tab_widget.setTabEnabled(2, False)
 
@@ -569,6 +595,7 @@ class MainWindow(QMainWindow):
         color.setWindowTitle("Colores de la Nube")
         color.exec()
 
+    # Generate a concept cloud
     def generate_word_cloud(self):
         cloud = self.mainController.get_cloud_words()
         wordcloud = WordCloud(width=800, height=400, background_color='white').generate_from_frequencies(cloud)
@@ -586,7 +613,13 @@ class MainWindow(QMainWindow):
         selected_index = self.filterComboBox.currentIndex()
         if selected_index == 0:
             self.mainController.alphabeticSort()
+        else:
+            self.mainController.weigthSort()
         self.populate_table()
+
+    # Conceptual network manage
+    def conceptual_network(self):
+        print("xd")
 
 app = QApplication([])
 main_window = MainWindow()

@@ -40,6 +40,9 @@ class MainController:
     def alphabeticSort(self):
         self.textHandlerAdmin.alphabeticSort()
 
+    def weigthSort(self):
+        self.textHandlerAdmin.weigthSort()
+
 
 
 

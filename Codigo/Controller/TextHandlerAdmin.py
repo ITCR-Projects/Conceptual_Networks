@@ -389,6 +389,8 @@ class TextHandlerAdmin:
     def alphabeticSort(self):
         self.structure_stemming.sortStruture()
 
+    def weigthSort(self):
+        self.structure_stemming.sortStrutureWeigth()
 
 #x = TextHandlerAdmin()
 #x.roots_words = ["hola", "jose", "arce", "jose", "gato","gato"]
