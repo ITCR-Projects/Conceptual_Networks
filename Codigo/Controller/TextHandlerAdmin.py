@@ -327,6 +327,16 @@ class TextHandlerAdmin:
                     self.graph.add_edge(u, v, weight=1.0)
             index += 1
 
+    def combine_nodes(self, root, roots):
+        roots.remove(root)
+        text = " ".join(self.roots_words)
+        for i in roots:
+            text = text.replace(i, root)
+
+        self.roots_words = text.split()
+        print(self.roots_words)
+
+
     def print_network(self):
         for node, data in self.graph.nodes(data=True):
             print(f"{node}: Peso {data['weight']}")
@@ -371,11 +381,13 @@ class TextHandlerAdmin:
                     f.write('\n' + word.lower())
 
     def combine_roots(self, roots):
-        self.structure_stemming.mergeList(roots)
+        root = self.structure_stemming.mergeList(roots)
+        self.combine_nodes(root, roots)
 
 
 #x = TextHandlerAdmin()
-#x.roots_words = ["hola", "jose", "arce", "jose", "gato"]
+#x.roots_words = ["hola", "jose", "arce", "jose", "gato","gato"]
+#x.combine_nodes("jose", ["jose","gato"])
 #x.create_network()
 #x.create_relation()
 #x.print_network()

@@ -42,6 +42,8 @@ class StructureStemming:
             for root in list_roots:
                 self.merge(root_choice, root)
 
+        return root_choice
+
 
     def getStemWords(self):
         '''Método que devuelve la structura donde se mantiene los datos.
@@ -58,6 +60,9 @@ class StructureStemming:
         '''Método que ordena segun llave de raiz de manera alfabética'''
         self.stem_words = dict(sorted(self.stem_words.items()))
 
+    def sortStrutureWeigth(self):
+        '''Método que ordena segun el cantidad de palabras que tiene una raiz'''
+        self.stem_words = dict(sorted(self.stem_words.items(), key=lambda item: (item[1][1]), reverse=True))
     def get_nodes_and_weights(self):
         nodes = list(self.stem_words.keys())
         # weights = list(map(lambda x: x[1] if len(x) >= 2 else None, self.stem_words.values()))
@@ -78,6 +83,4 @@ class StructureStemming:
 
 
 
-    def sortStrutureWeigth(self):
-        '''Método que ordena segun el cantidad de palabras que tiene una raiz'''
-        self.stem_words = dict(sorted(self.stem_words.items(), key=lambda item: (item[1][1]), reverse=True))
+
