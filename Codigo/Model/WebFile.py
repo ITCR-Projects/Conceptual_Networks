@@ -2,6 +2,7 @@ from abc import ABC
 from Codigo.Model.File import File
 import requests, random, string
 from bs4 import BeautifulSoup
+import re
 
 def generar_nombre_aleatorio(longitud):
     caracteres = string.ascii_letters + string.digits
@@ -27,6 +28,9 @@ class WebFile(File, ABC):
             #name_txt = page.title.string.replace(' ', '_')
             self.url_file = generar_nombre_aleatorio(10) + ".txt"
             text = page.get_text()
+            pattern = r'[a-zA-ZáéíóúüÑÁÉÍÓÚÜñ]+'
+            letters = re.findall(pattern, text)
+            text = "\n".join(letters)
 
             # Se crea el archivo .txt y se guarda con la información de la página
             with open(self.path + self.url_file, "w", encoding="utf-8") as f:
