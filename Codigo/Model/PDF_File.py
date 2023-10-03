@@ -1,7 +1,56 @@
+import re
+
 from pdfminer.high_level import extract_text
-from pdfminer.layout import LAParams
 from abc import ABC
 from Codigo.Model.File import File
+
+
+def replace(match):
+    vocal = match.group(1)
+    if vocal == 'a':
+        return 'á'
+    elif vocal == 'e':
+        return 'é'
+    elif vocal == 'ı':
+        return 'í'
+    elif vocal == 'o':
+        return 'ó'
+    elif vocal == 'u':
+        return 'ú'
+
+
+def replace2(match):
+    vocal = match.group(2)
+    print("vocal")
+    print(vocal)
+    if vocal == 'a':
+        return 'á'
+    elif vocal == 'e':
+        return 'ë'
+    elif vocal == 'ı':
+        return 'ï'
+    elif vocal == 'o':
+        return 'ö'
+    elif vocal == 'u':
+        return 'ü'
+
+
+def modifyText(text):
+    # Método para documentos generados en Látex
+
+    pattern = r'´([aeıou])'
+    text = re.sub(pattern, replace, text)
+
+    pattern2 = r'¨([aeıou])'
+    text = re.sub(pattern2, replace2, text)
+
+    pattern4 = r'˜([n])'
+    text = re.sub(pattern4, "ñ", text)
+
+    text = text.replace("-\n", "")
+    text = text.replace("", "")
+
+    return text
 
 
 class PDFFile(File, ABC):
@@ -11,10 +60,8 @@ class PDFFile(File, ABC):
 
     def get_text(self):
         try:
-            #p_layout = LAParams()
-            #text = extract_text(self.url_file, laparams=p_layout, codec='utf8')
-            text = extract_text(self.url_file, codec=' latin-1')
-            #text = text.encode('utf8', 'ignore').decode('utf8')
+            text = extract_text(self.url_file, codec=' utf8')
+            text = modifyText(text)
 
             # Escribe el texto en un archivo de texto
             path = self.path + self.name + ".txt"
@@ -37,5 +84,6 @@ class PDFFile(File, ABC):
             }
 
 
-x = PDFFile("5", "5.pdf")
+#x = PDFFile("1", "1.pdf")
+x = PDFFile("2", "2.pdf")
 print(x.get_text())
