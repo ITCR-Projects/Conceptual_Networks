@@ -24,7 +24,7 @@ class StructureStemming:
             Entradas: self, root1, root2
             Salidas: N/A.
             Restricciones: N/A'''
-        if len(root1) < len(root2):
+        if len(root1) <= len(root2):
             aux_list_words = self.stem_words[root2]
             self.stem_words[root1][0].update(aux_list_words[0])
             self.stem_words[root1][1] += aux_list_words[1]
@@ -41,7 +41,6 @@ class StructureStemming:
         if len(list_roots) >= 1:
             for root in list_roots:
                 self.merge(root_choice, root)
-
         return root_choice
 
 
