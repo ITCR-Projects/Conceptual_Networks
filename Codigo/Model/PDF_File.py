@@ -20,11 +20,9 @@ def replace(match):
 
 
 def replace2(match):
-    vocal = match.group(2)
-    print("vocal")
-    print(vocal)
+    vocal = match.group(1)
     if vocal == 'a':
-        return 'á'
+        return 'ä'
     elif vocal == 'e':
         return 'ë'
     elif vocal == 'ı':
@@ -60,7 +58,7 @@ class PDFFile(File, ABC):
 
     def get_text(self):
         try:
-            text = extract_text(self.url_file, codec=' utf8')
+            text = extract_text(self.url_file, codec=' utf8').lower()
             text = modifyText(text)
 
             # Escribe el texto en un archivo de texto
@@ -85,5 +83,6 @@ class PDFFile(File, ABC):
 
 
 #x = PDFFile("1", "1.pdf")
-x = PDFFile("2", "2.pdf")
-print(x.get_text())
+#x = PDFFile("2", "2.pdf")
+#x = PDFFile("3", "3.pdf")
+#print(x.get_text())
