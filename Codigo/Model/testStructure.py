@@ -55,5 +55,6 @@ def test_Seven():
     handleStemming = StructureStemming()
     handleStemming.add('educ', 'educacion')
     handleStemming.add('educa', 'educacionando')
-    handleStemming.mergeList({'educ','educa'})
-    assert handleStemming.getStemWords() == {'educ': [{'educacion': 1, 'educacionando': 1}, 2]}
+    handleStemming.add('edus', 'educacio')
+    handleStemming.mergeList(['educ','educa', 'edus'])
+    assert handleStemming.getStemWords() == {'educ': [{'educacion': 1, 'educacionando': 1, 'educacio': 1}, 3]}
