@@ -13,7 +13,8 @@ from collections import Counter
 from Codigo.Model.DocxFile import DocxFile
 from Codigo.Model.WebFile import WebFile
 from Codigo.Model.TextFile import TextFile
-from Codigo.Model.StructureStemming import  StructureStemming
+from Codigo.Model.PDF_File import PDFFile
+from Codigo.Model.StructureStemming import StructureStemming
 
 import os
 
@@ -195,6 +196,16 @@ class TextHandlerAdmin:
 
         elif extension == ".txt":
             file = TextFile(name, filepath)
+            self.files.append(file)
+            response = file.get_text()
+            if response['response']:
+                return response
+
+            self.text = self.text + response['message']
+            return response
+
+        elif extension == ".pdf":
+            file = PDFFile(name, filepath)
             self.files.append(file)
             response = file.get_text()
             if response['response']:
