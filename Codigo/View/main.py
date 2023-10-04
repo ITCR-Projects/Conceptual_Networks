@@ -481,7 +481,7 @@ class MainWindow(QMainWindow):
     def add_files(self):
         file_dialog = QFileDialog()
         file_dialog.setFileMode(QFileDialog.FileMode.ExistingFiles)
-        file_dialog.setNameFilter("Text files (*.txt *.docx)")
+        file_dialog.setNameFilter("Text files (*.txt *.docx *.pdf)")
         if file_dialog.exec() == QFileDialog.DialogCode.Accepted:
             selected_files = file_dialog.selectedFiles()
             self.file_list.addItems(selected_files)
@@ -706,14 +706,12 @@ class MainWindow(QMainWindow):
             return f"rgb({randint(0, 255)}, {randint(0, 255)}, {randint(0, 255)})"
 
         else:
-            print(f"rgb{self.cloudParameters['color']}")
             return f"rgb{self.cloudParameters['color']}"
 
 
     # Generate a concept cloud
     def generate_word_cloud(self):
         cloud = self.mainController.get_cloud_words()
-        print(cloud)
         try:
             wordcloud = WordCloud(
                 font_path=self.fonts[self.cloudParameters['font']],
@@ -726,7 +724,6 @@ class MainWindow(QMainWindow):
             ).generate_from_frequencies(cloud)
         except Exception as e:
             print(e)
-        print("Wuuu")
         plt.figure(figsize=(8, 4))
         plt.imshow(wordcloud, interpolation='bilinear')
         plt.axis("off")
