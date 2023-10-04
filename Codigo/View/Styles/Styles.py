@@ -55,5 +55,8 @@ table_header_style = (
     "QHeaderView::section { background-color: #3498db; color: white; }"
 )
 
+frame_borders_style = (
+    "border: 2px solid black;"
+)
 
 

@@ -327,13 +327,10 @@ class TextHandlerAdmin:
             index += 1
 
     def combine_nodes(self, root, roots):
-        roots.remove(root)
         text = " ".join(self.roots_words)
         for i in roots:
             text = text.replace(i, root)
-
         self.roots_words = text.split()
-        print(self.roots_words)
 
 
     def print_network(self):

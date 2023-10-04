@@ -2,10 +2,12 @@
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QApplication, QColorDialog, QTableWidget, QSpinBox, QTableWidgetItem, QTabWidget, QDialog, \
     QMessageBox, QMainWindow, QGridLayout, QHBoxLayout, QVBoxLayout, QListWidget, QFileDialog, QPushButton, QLineEdit, \
-    QWidget, QLabel, QProgressBar, QComboBox
+    QWidget, QLabel, QProgressBar, QComboBox, QCheckBox
 from PyQt6.QtGui import QIcon, QPalette, QPixmap
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
+import matplotlib.font_manager
+from random import randint
 
 # Import the main controller
 from Codigo.Controller.Controller import MainController
@@ -52,10 +54,11 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         # Interface control variables
+        self.cloudParameters = {'width':1080, 'height':720, 'background_color':None, 'color':(255,255,255), 'mask':None, 'font':None}
         self.page_size = 50  # Table Page Size
         self.current_page = 1  # Actual page
         self.word_freq_dict = StructureStemming()
-
+        self.fonts = {}
         # Main controller class
         self.mainController = MainController()
 
@@ -347,7 +350,8 @@ class MainWindow(QMainWindow):
         self.svg_image = QLabel()
         self.svg_image.setPixmap(QPixmap(resource_path("Icons/imagen-de-archivo.png")))
         conceptual_cloud_widget_layout.addWidget(self.svg_image)
-
+        self.svg_image.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+        self.svg_image.setAlignment(Qt.AlignmentFlag.AlignVCenter)
         # Here comes the personalization tools
         self.svg_personalization_tools = QWidget()
         svg_personalization_tools_layout = QVBoxLayout()
@@ -357,27 +361,100 @@ class MainWindow(QMainWindow):
         svg_personalization_tools_layout.addWidget(svg_label_tools)
 
         self.cloud_personalization_menu = QWidget()
-        cloud_personalization_menu_layout = QVBoxLayout()
+        cloud_personalization_menu_layout = QHBoxLayout()
         self.cloud_personalization_menu.setLayout(cloud_personalization_menu_layout)
 
-        cloud_color_button = QPushButton("Paleta de Colores")
-        cloud_color_button.setStyleSheet(button_style_normal)
-        cloud_color_button.setIcon(QIcon(resource_path("Icons/paleta.png")))
-        cloud_shape_button = QPushButton("Figura")
-        cloud_shape_button.setStyleSheet(button_style_normal)
-        cloud_shape_button.setIcon(QIcon(resource_path("Icons/recursos.png")))
+        self.cloud_personalization_menu_colors = QWidget()
+        cloud_personalization_menu_colors_layout = QVBoxLayout()
+        self.cloud_personalization_menu_colors.setLayout(cloud_personalization_menu_colors_layout)
+        color_label = QLabel("Color")
+        cloud_personalization_menu_colors_layout.addWidget(color_label)
 
-        cloud_color_button.clicked.connect(self.changePalette)
+        self.color_selecctor = QWidget()
+        color_selecctor_layout = QHBoxLayout()
+        self.color_selecctor.setLayout(color_selecctor_layout)
+        self.color_frame = QWidget()
+        self.color_frame.setMinimumSize(20, 20)
+        self.color_frame.setStyleSheet(frame_borders_style)
 
-        cloud_personalization_menu_layout.addWidget(cloud_shape_button)
-        cloud_personalization_menu_layout.addWidget(cloud_color_button)
+        color_selecctor_layout.addWidget(self.color_frame)
+        color_selector_button = QPushButton("")
+        color_selector_button.setToolTip("Color de las palabras de la nube")
+        color_selector_button.setIcon(QIcon(resource_path("Icons/angulo-pequeno-hacia-abajo.png")))
+        color_selector_button.clicked.connect(self.changePalette)
+        color_selecctor_layout.addWidget(color_selector_button)
+
+        self.color_frame2 = QWidget()
+        self.color_frame2.setMinimumSize(20, 20)
+        self.color_frame2.setStyleSheet(frame_borders_style)
+        color_selecctor_layout.addWidget(self.color_frame2)
+
+        background_color_selector_button = QPushButton("")
+        background_color_selector_button.setToolTip("Color del fondo de la nube")
+        background_color_selector_button.setIcon(QIcon(resource_path("Icons/angulo-pequeno-hacia-abajo.png")))
+        background_color_selector_button.clicked.connect(self.changeBGPalette)
+        color_selecctor_layout.addWidget(background_color_selector_button)
+
+        cloud_personalization_menu_colors_layout.addWidget(self.color_selecctor)
+
+        self.random_colors_chkbox = QCheckBox("Random")
+
+        cloud_personalization_menu_colors_layout.addWidget(self.random_colors_chkbox)
+
+        cloud_personalization_menu_layout.addWidget(self.cloud_personalization_menu_colors)
+
+        self.cloud_personalization_menu_shape = QWidget()
+        cloud_personalization_menu_shape_layout = QVBoxLayout()
+        self.cloud_personalization_menu_shape.setLayout(cloud_personalization_menu_shape_layout)
+
+        shape_label = QLabel("Figura")
+        cloud_personalization_menu_shape_layout.addWidget(shape_label)
+
+        self.shape_widget = QWidget()
+        shape_widget_layout = QHBoxLayout()
+        self.shape_widget.setLayout(shape_widget_layout)
+        self.shape_img_label = QLabel()
+        shape_img_label_icon = QIcon(resource_path("Icons/imagen-de-archivo.png"))
+        self.shape_img_label.setPixmap(shape_img_label_icon.pixmap(50, 50))
+        shape_widget_layout.addWidget(self.shape_img_label)
+        shape_selection_button = QPushButton("Figura")
+        shape_widget_layout.addWidget(shape_selection_button)
+
+        cloud_personalization_menu_shape_layout.addWidget(self.shape_widget)
+
+        self.shapeComboBox = QComboBox()
+        self.shapeComboBox.addItem("1080x720")
+        self.shapeComboBox.addItem("800x600")
+        cloud_personalization_menu_shape_layout.addWidget(self.shapeComboBox)
+
+        cloud_personalization_menu_layout.addWidget(self.cloud_personalization_menu_shape)
 
         svg_personalization_tools_layout.addWidget(self.cloud_personalization_menu)
+
+        self.shapeComboBox.activated.connect(self.onZiseComboboxActivivated)
+
+        self.font_widget = QWidget()
+        font_widget_layout = QHBoxLayout()
+        self.font_widget.setLayout(font_widget_layout)
+        font_label = QLabel("Tipografía")
+        self.font_combobox = QComboBox()
+        self.fill_font_combobox()
+        font_widget_layout.addWidget(font_label)
+        font_widget_layout.addWidget(self.font_combobox)
+
+        svg_personalization_tools_layout.addWidget(self.font_widget)
+
+        self.font_combobox.activated.connect(self.onFontComboboxActivated)
 
         create_word_cloud_button = QPushButton("Crear Nube de Palabras")
         create_word_cloud_button.clicked.connect(self.generate_word_cloud)
 
         svg_personalization_tools_layout.addWidget(create_word_cloud_button)
+
+        export_word_cloud_button = QPushButton("Exportar Nube de Palabras")
+        export_word_cloud_button.clicked.connect(self.generate_word_cloud)
+
+        svg_personalization_tools_layout.addWidget(export_word_cloud_button)
 
         self.svg_personalization_tools.setLayout(svg_personalization_tools_layout)
 
@@ -395,7 +472,7 @@ class MainWindow(QMainWindow):
         self.conceptual_network_widget.setLayout(conceptual_network_widget_layout)
         # ------------------------------Conceptual Network Tab End------------------------------------------
 
-        self.tab_widget.setTabEnabled(2, False)
+        #self.tab_widget.setTabEnabled(2, False)
 
         self.setCentralWidget(self.central_widget)
 
@@ -591,15 +668,65 @@ class MainWindow(QMainWindow):
 
     # Color Palette dialog
     def changePalette(self):
-        color = QColorDialog()
-        color.setWindowTitle("Colores de la Nube")
-        color.exec()
+        color_dialog = QColorDialog()
+        color_dialog.setWindowTitle("Colores de la Nube")
+        current_color = self.color_frame.palette().color(QPalette.ColorRole.Window)
+        color_dialog.setCurrentColor(current_color)
+
+        if color_dialog.exec():
+            selected_color = color_dialog.selectedColor()
+            self.update_color(selected_color)
+
+    def update_color(self, color):
+        palette = self.color_frame.palette()
+        palette.setColor(QPalette.ColorRole.Window, color)
+        self.color_frame.setAutoFillBackground(True)
+        self.color_frame.setPalette(palette)
+        self.cloudParameters['color'] = color.getRgb()[:-1]
+
+    def changeBGPalette(self):
+        color_dialog = QColorDialog()
+        color_dialog.setWindowTitle("Colores del Fondo Nube")
+        current_color = self.color_frame2.palette().color(QPalette.ColorRole.Window)
+        color_dialog.setCurrentColor(current_color)
+
+        if color_dialog.exec():
+            selected_color = color_dialog.selectedColor()
+            self.update_BGcolor(selected_color)
+
+    def update_BGcolor(self, color):
+        palette = self.color_frame2.palette()
+        palette.setColor(QPalette.ColorRole.Window, color)
+        self.color_frame2.setAutoFillBackground(True)
+        self.color_frame2.setPalette(palette)
+        self.cloudParameters['background_color'] = color.getRgb()[:-1]
+
+    def random_color(self, word, font_size, position, orientation, random_state=None, **kwargs):
+        if self.random_colors_chkbox.isChecked():
+            return f"rgb({randint(0, 255)}, {randint(0, 255)}, {randint(0, 255)})"
+
+        else:
+            print(f"rgb{self.cloudParameters['color']}")
+            return f"rgb{self.cloudParameters['color']}"
+
 
     # Generate a concept cloud
     def generate_word_cloud(self):
         cloud = self.mainController.get_cloud_words()
-        wordcloud = WordCloud(width=800, height=400, background_color='white').generate_from_frequencies(cloud)
-
+        print(cloud)
+        try:
+            wordcloud = WordCloud(
+                font_path=self.fonts[self.cloudParameters['font']],
+                width=self.cloudParameters['width'],
+                height=self.cloudParameters['height'],
+                background_color=self.cloudParameters['background_color'],
+                mask=self.cloudParameters['mask'],
+                mode='RGBA',
+                color_func=self.random_color,
+            ).generate_from_frequencies(cloud)
+        except Exception as e:
+            print(e)
+        print("Wuuu")
         plt.figure(figsize=(8, 4))
         plt.imshow(wordcloud, interpolation='bilinear')
         plt.axis("off")
@@ -620,6 +747,29 @@ class MainWindow(QMainWindow):
     # Conceptual network manage
     def conceptual_network(self):
         print("xd")
+
+    # Fill the font combo box with the system fonts
+    def fill_font_combobox(self):
+        font_list = matplotlib.font_manager.findSystemFonts(fontpaths=None, fontext='ttf')
+        for font_path in font_list:
+            font_properties = matplotlib.font_manager.FontProperties(fname=font_path)
+            self.fonts[font_properties.get_name()] = font_path
+            self.font_combobox.addItem(font_properties.get_name())
+        self.cloudParameters['font'] = self.font_combobox.currentText()
+        print(self.font_combobox.currentText())
+
+    # Combobox functions
+    def onFontComboboxActivated(self):
+        currentFont = self.font_combobox.currentText()
+        self.cloudParameters['font'] = currentFont
+
+    def onZiseComboboxActivivated(self):
+        currentText = self.shapeComboBox.currentText()
+        sizes = currentText.split('x')
+        self.cloudParameters['width'] = int(sizes[0])
+        self.cloudParameters['height'] = int(sizes[1])
+        print(self.cloudParameters)
+
 
 app = QApplication([])
 main_window = MainWindow()

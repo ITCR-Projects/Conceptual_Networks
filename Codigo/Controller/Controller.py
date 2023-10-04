@@ -32,7 +32,7 @@ class MainController:
         return  self.textHandlerAdmin.statistics()
 
     def combine_roots(self, roots):
-        return self.textHandlerAdmin.combine_roots(roots)
+        self.textHandlerAdmin.combine_roots(roots)
 
     def get_cloud_words(self):
         return self.textHandlerAdmin.get_cloud_words()
