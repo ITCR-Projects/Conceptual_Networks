@@ -1,4 +1,6 @@
 # PyQt6 dependencies
+import csv
+
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QApplication, QColorDialog, QTableWidget, QSpinBox, QTableWidgetItem, QTabWidget, QDialog, \
     QMessageBox, QMainWindow, QGridLayout, QHBoxLayout, QVBoxLayout, QListWidget, QFileDialog, QPushButton, QLineEdit, \
@@ -245,12 +247,21 @@ class MainWindow(QMainWindow):
         filter_label = QLabel()
         filter_label_icon = QIcon(resource_path("Icons/ordenar-alt.png"))
         filter_label.setPixmap(filter_label_icon.pixmap(15,15))
+
+        export_table_stats = QPushButton("Exportar Tabla")
+        export_table_stats.setStyleSheet(button_style_warming)
+        export_table_stats.setToolTip("Exporta las raíces y su frecuencia en un archivo CSV")
+        export_table_stats.setIcon(QIcon(resource_path("Icons/descargar.png")))
+        export_table_stats.clicked.connect(self.export_table)
+
         filter_widget_layout.addWidget(filter_label)
 
         self.filterComboBox.activated.connect(self.onFilterComboBoxActivated)
         filter_widget_layout.addWidget(self.filterComboBox)
 
+        filter_widget_layout.addWidget(export_table_stats)
         table_view_widget_layout.addWidget(filter_widget)
+
 
         # Creation of the table interface
         self.table_info_widget = QTableWidget()
@@ -519,7 +530,7 @@ class MainWindow(QMainWindow):
         # ------------------------------Conceptual Cloud End------------------------------------------
 
         # ------------------------------Conceptual Network Tab------------------------------------------
-        conceptual_network_widget_layout = QVBoxLayout()
+        conceptual_network_widget_layout = QHBoxLayout()
         create_concetptual_network_button = QPushButton("Crear Red")
         create_concetptual_network_button.clicked.connect(self.conceptual_network)
         conceptual_network_widget_layout.addWidget(create_concetptual_network_button)
@@ -651,6 +662,37 @@ class MainWindow(QMainWindow):
             self.table_info_widget.setItem(i, 3, item_percent)
 
         self.setup_pagination()
+
+    def export_table(self):
+        file_dialog = QFileDialog(self)
+        file_dialog.setAcceptMode(QFileDialog.AcceptMode.AcceptSave)
+        file_dialog.setNameFilter("CSV (*.csv)")
+
+        if file_dialog.exec() == QFileDialog.DialogCode.Accepted:
+            selected_files = file_dialog.selectedFiles()
+            if selected_files:
+                file_path = selected_files[0]
+                with open(file_path, mode='w', newline='') as archivo_csv:
+                    try:
+                        # Crear un objeto escritor CSV
+                        writer_csv = csv.DictWriter(archivo_csv, fieldnames=['Raíz', 'Frecuencia'])
+                        # Escribir la fila de encabezados (nombres de las columnas)
+                        writer_csv.writeheader()
+                        # Escribir los datos del diccionario como filas en el archivo CSV
+                        for key, value in self.word_freq_dict.getStemWords().items():
+                            row = {
+                                'Raíz': key,
+                                'Frecuencia': value[1]
+                            }
+                            writer_csv.writerow(row)
+                    except Exception as e:
+                        print(e)
+
+            alert = QMessageBox()
+            alert.setWindowTitle("Alerta")
+            alert.setText("¡Tabla Exportada!")
+            alert.setIcon(QMessageBox.Icon.Information)
+            alert.exec()
 
     # Function that set up the information of the pages
     def setup_pagination(self):
@@ -789,7 +831,7 @@ class MainWindow(QMainWindow):
     def exportwordcloud(self):
         file_dialog = QFileDialog(self)
         file_dialog.setAcceptMode(QFileDialog.AcceptMode.AcceptSave)
-        file_dialog.setNameFilter("PNG (*.png);;JPEG (*.jpg);;All Files (*)")
+        file_dialog.setNameFilter("PNG (*.png);;JPEG (*.jpg);;SVG (*.svg)")
 
         if file_dialog.exec() == QFileDialog.DialogCode.Accepted:
             selected_files = file_dialog.selectedFiles()
@@ -853,8 +895,6 @@ class MainWindow(QMainWindow):
         shape_img_label_icon = QIcon(resource_path("Icons/imagen-de-archivo.png"))
         self.shape_img_label.setPixmap(shape_img_label_icon.pixmap(50, 50))
         self.cloudParameters['mask'] = None
-
-
 
 
 app = QApplication([])
