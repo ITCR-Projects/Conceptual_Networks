@@ -1,5 +1,5 @@
 # PyQt6 dependencies
-from PyQt6.QtCore import Qt, QThread, pyqtSignal
+from PyQt6.QtCore import QThread, pyqtSignal
 
 import time
 

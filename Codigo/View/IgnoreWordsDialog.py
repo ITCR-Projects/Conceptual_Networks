@@ -43,22 +43,26 @@ class IgnoreWordsDialog(QDialog):
 
         add_button_icon = QIcon(resource_path("Icons/agregar.png"))
         add_button = QPushButton("Añadir", self)
+        add_button.setToolTip("Añade la palabra ingresada a la lista de palabras a ignorar")
         add_button.setIcon(add_button_icon)
         add_button.setStyleSheet(button_style_add)
 
         remove_button_icon = QIcon(resource_path("Icons/basura.png"))
         self.remove_ignore_button = QPushButton("Borrar", self)
+        self.remove_ignore_button.setToolTip("Elimina la palabra de la lista")
         self.remove_ignore_button.setIcon(remove_button_icon)
         self.remove_ignore_button.setEnabled(False)
         self.remove_ignore_button.setStyleSheet(button_style_delete)
 
         save_button_icon = QIcon(resource_path("Icons/controlar.png"))
         save_ignore_words_button = QPushButton("Guardar", self)
+        save_ignore_words_button.setToolTip("Guarda la lista de palabras en una lista temporal")
         save_ignore_words_button.setIcon(save_button_icon)
         save_ignore_words_button.setStyleSheet(button_style_normal)
 
         saveP_button_icon = QIcon(resource_path("Icons/disco.png"))
         saveP_ignore_words_button = QPushButton("Guardar Permanente", self)
+        saveP_ignore_words_button.setToolTip("Guarda la lista de palabras de forma permanente")
         saveP_ignore_words_button.setIcon(saveP_button_icon)
         saveP_ignore_words_button.setStyleSheet(button_style_warming)
 
