@@ -59,4 +59,40 @@ frame_borders_style = (
     "border: 2px solid black;"
 )
 
+combobox_normal_style = (
+    "QComboBox { background-color: white; color: #333; border: 1px solid #ccc; padding: 5px; }"
+)
+
+checkbox_style = (
+    """
+        QCheckBox {
+            spacing: 5px;
+            color: #333;
+        }
+    
+        QCheckBox::indicator {
+            width: 20px;
+            height: 20px;
+            background-color: #FFFFFF;
+            border: 2px solid #333;
+            border-radius: 10px;
+        }
+    
+        QCheckBox::indicator:checked {
+            background-color: #2980b9; 
+            border: 2px solid #000000; 
+        }
+    
+        QCheckBox::indicator:unchecked {
+            background-color: #FFFFFF;
+            border: 2px solid #333; 
+        }
+    """
+)
+
+button_style_selection = (
+    "QPushButton { border-radius: 5px; background-color: gray; color: white; }"
+    "QPushButton:hover { background-color: darkgray;}"
+)
+
 
