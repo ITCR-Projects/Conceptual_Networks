@@ -1,7 +1,7 @@
 from Codigo.Controller.TextHandlerAdmin import TextHandlerAdmin
 
 
-# HOLAMUNDO PRUEBA 5
+#HOLAMUNDO PRUEBA 5
 
 class MainController:
     def __init__(self):
@@ -44,10 +44,16 @@ class MainController:
         self.textHandlerAdmin.weigthSort()
 
     def get_graph(self):
-        return self.get_graph()
+        return self.textHandlerAdmin.get_graph()
 
     def get_graph_by_node_grade(self, amount):
-        return self.get_graph_by_node_grade(amount)
+        return self.textHandlerAdmin.get_graph_by_node_grade(amount)
 
     def get_graph_by_edge_weight(self, amount=5):
-        return self.get_graph_by_edge_weight(amount)
+        return self.textHandlerAdmin.get_graph_by_edge_weight(amount)
+
+    def create_network(self):
+        self.textHandlerAdmin.create_network()
+
+    def create_relation(self,step=1):
+        self.textHandlerAdmin.create_relation(step)

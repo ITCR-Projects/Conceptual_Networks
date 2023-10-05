@@ -1,4 +1,5 @@
 # PyQt6 dependencies
+import networkx as nx
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QApplication, QColorDialog, QTableWidget, QSpinBox, QTableWidgetItem, QTabWidget, QDialog, \
     QMessageBox, QMainWindow, QGridLayout, QHBoxLayout, QVBoxLayout, QListWidget, QFileDialog, QPushButton, QLineEdit, \
@@ -815,8 +816,48 @@ class MainWindow(QMainWindow):
         self.populate_table()
 
     # Conceptual network manage
-    def conceptual_network(self):
-        print("xd")
+    def conceptual_network(self,show_lables=1):
+        self.mainController.create_network()
+        self.mainController.create_relation(1)
+
+        #graph = self.mainController.get_graph() #todo en general
+        graph = self.mainController.get_graph_by_node_grade(25)#cantidad de lo nodos que tiene mas grados
+        #graph = self.mainController.get_graph_by_edge_weight(500) # por tamaño de la arista
+        print("toreto")
+        weights = nx.get_node_attributes(graph, 'weight')
+        print("toreto2")
+
+        try:
+            max_weight = max(weights.values())
+            plt.figure()
+            circular_pos = nx.spring_layout(graph, k=0.30)  # Utiliza un diseño circular
+            node_sizes = [(weight / max_weight) * 400 for node, weight in weights.items()]
+
+
+
+            nx.draw_networkx_nodes(graph, circular_pos, node_size=node_sizes)
+
+            # Dibujar las aristas con un grosor proporcional al peso y el mismo color que los nodos
+            for edge in graph.edges(data=True):
+                weight = edge[2]['weight']
+                normalized_weight = (weight / max_weight) * 40
+                nx.draw_networkx_edges(graph, circular_pos, edgelist=[(edge[0], edge[1])],
+                                       width=normalized_weight, arrows=False, edge_color='lightblue')
+
+            # Dibujar las etiquetas de los nodos con un tamaño proporcional a sus pesos y color negro
+            if show_lables==0:
+                for node, weight in weights.items():
+                    normalized_weight = (weight / max_weight) * 30
+                    print(normalized_weight)
+                    nx.draw_networkx_labels(graph, circular_pos, labels={node: node}, font_size = normalized_weight,
+                                            font_color='k')  # Cambia 'w' a 'k' para etiquetas negras
+
+            # Mostrar el gráfico
+            #plt.tight_layout()
+
+            plt.show()
+        except Exception as e:
+            print(e)
 
     # Fill the font combo box with the system fonts
     def fill_font_combobox(self):
