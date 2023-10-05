@@ -36,7 +36,7 @@ class StructureStemming:
             del self.stem_words[root1]
 
     def mergeList(self, list_roots):
-        root_choice = min(list_roots)
+        root_choice = min(list_roots, key=len)
         list_roots.remove(root_choice)
         if len(list_roots) >= 1:
             for root in list_roots:
