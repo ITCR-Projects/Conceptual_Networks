@@ -1,7 +1,7 @@
 from Codigo.Controller.TextHandlerAdmin import TextHandlerAdmin
 
 
-#HOLAMUNDO PRUEBA 5
+# HOLAMUNDO PRUEBA 5
 
 class MainController:
     def __init__(self):
@@ -22,14 +22,14 @@ class MainController:
     def cleanText(self):
         self.textHandlerAdmin.setTextBlank()
 
-    def setIgnoreWords(self,iwords):
+    def setIgnoreWords(self, iwords):
         self.textHandlerAdmin.setIgnoreWords(iwords)
 
     def addwordstoignore(self, iwords):
         self.textHandlerAdmin.addwordstoignore(iwords)
 
     def getStatistics(self):
-        return  self.textHandlerAdmin.statistics()
+        return self.textHandlerAdmin.statistics()
 
     def combine_roots(self, roots):
         self.textHandlerAdmin.combine_roots(roots)
@@ -43,11 +43,11 @@ class MainController:
     def weigthSort(self):
         self.textHandlerAdmin.weigthSort()
 
+    def get_graph(self):
+        return self.get_graph()
 
+    def get_graph_by_node_grade(self, amount):
+        return self.get_graph_by_node_grade(amount)
 
-
-
-
-
-
-
+    def get_graph_by_edge_weight(self, amount=5):
+        return self.get_graph_by_edge_weight(amount)

@@ -38,8 +38,8 @@ class TextHandlerAdmin:
         self.text = ""
         self.ignore_words_added_list = []
         self.structure_stemming = StructureStemming()
-        self.graph = nx.DiGraph()
-        # self.graph = nx.Graph()
+        #self.graph = nx.DiGraph()
+        self.graph = nx.Graph()
         self.roots_words = []
 
     # ----Métodos Privados ----
@@ -343,6 +343,23 @@ class TextHandlerAdmin:
             text = text.replace(i, root)
         self.roots_words = text.split()
 
+    def get_graph(self):
+        return self.graph
+
+    def get_graph_by_node_grade(self, amount=100):
+
+        degree_dict = dict(self.graph.degree())
+        nodes_sorted_by_degree = sorted(degree_dict, key=lambda x: degree_dict[x], reverse=True)
+        top_x_nodes = nodes_sorted_by_degree[:amount]
+        new_graph = self.graph.subgraph(top_x_nodes).copy()
+
+        return new_graph
+
+    def get_graph_by_edge_weight(self, amount=5):
+        weights = nx.get_node_attributes(self.graph, 'weight')
+        filtered_nodes = [node for node, weight in weights.items() if weight > amount]
+        new_graph = self.graph.subgraph(filtered_nodes)
+        return new_graph
 
     def print_network(self):
         for node, data in self.graph.nodes(data=True):
@@ -400,9 +417,9 @@ class TextHandlerAdmin:
     def weigthSort(self):
         self.structure_stemming.sortStrutureWeigth()
 
-#x = TextHandlerAdmin()
-#x.roots_words = ["hola", "jose", "arce", "jose", "gato","gato"]
-#x.combine_nodes("jose", ["jose","gato"])
-#x.create_network()
-#x.create_relation()
-#x.print_network()
+# x = TextHandlerAdmin()
+# x.roots_words = ["hola", "jose", "arce", "jose", "gato","gato"]
+# x.combine_nodes("jose", ["jose","gato"])
+# x.create_network()
+# x.create_relation()
+# x.print_network()
