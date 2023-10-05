@@ -1,5 +1,7 @@
 # PyQt6 dependencies
 import networkx as nx
+import csv
+
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QApplication, QColorDialog, QTableWidget, QSpinBox, QTableWidgetItem, QTabWidget, QDialog, \
     QMessageBox, QMainWindow, QGridLayout, QHBoxLayout, QVBoxLayout, QListWidget, QFileDialog, QPushButton, QLineEdit, \
@@ -118,6 +120,7 @@ class MainWindow(QMainWindow):
         url_path = resource_path("Icons/globo.png")
         url_icon = QIcon(url_path)
         add_url_btn = QPushButton("Añadir URL")
+        add_url_btn.setToolTip("Añade el URL ingresado a la lista de elementos")
         add_url_btn.setStyleSheet(button_style_add)
         add_url_btn.setIcon(url_icon)
         add_url_btn.clicked.connect(self.add_url_to_list)
@@ -130,6 +133,7 @@ class MainWindow(QMainWindow):
         doc_path = resource_path("Icons/documento.png")
         doc_icon = QIcon(doc_path)
         add_files_frame_btn = QPushButton("Añadir Archivo")
+        add_files_frame_btn.setToolTip("Abre un dialogo para seleccionar un archivo")
         add_files_frame_btn.setIcon(doc_icon)
         add_files_frame_btn.clicked.connect(self.add_files)
         add_files_frame_btn.setStyleSheet(button_style_add)
@@ -140,6 +144,7 @@ class MainWindow(QMainWindow):
         remove_path = resource_path("Icons/basura.png")
         remove_icon = QIcon(remove_path)
         self.remove_button = QPushButton("Remover Archivo")
+        self.remove_button.setToolTip("Remueve un elemento seleccionado en la lista")
         self.remove_button.setIcon(remove_icon)
         self.remove_button.setStyleSheet(button_style_delete)
         self.remove_button.clicked.connect(self.remove_item)
@@ -151,6 +156,7 @@ class MainWindow(QMainWindow):
         ignore_path = resource_path("Icons/comprobacion-de-lista.png")
         ignore_icon = QIcon(ignore_path)
         ignore_btn = QPushButton("Añadir Palabras Ignoradas")
+        ignore_btn.setToolTip("Abre la ventana de gestion de palabras a ignorar")
         ignore_btn.setIcon(ignore_icon)
         ignore_btn.setStyleSheet(button_style_normal)
         ignore_btn.clicked.connect(self.open_dialog)
@@ -167,6 +173,7 @@ class MainWindow(QMainWindow):
         add_path = resource_path("Icons/agregar.png")
         graph_icon = QIcon(add_path)
         self.create_graph_btn = QPushButton("Procesar Texto")
+        self.create_graph_btn.setToolTip("Envia a procesar los archivos y URL agregados")
         self.create_graph_btn.setIcon(graph_icon)
         self.create_graph_btn.setStyleSheet(button_style_add)
         self.create_graph_btn.clicked.connect(self.create_graph)
@@ -239,6 +246,8 @@ class MainWindow(QMainWindow):
         self.filterComboBox = QComboBox()
         self.filterComboBox.addItem("A - Z")
         self.filterComboBox.addItem("Peso")
+        self.filterComboBox.setStyleSheet(combobox_normal_style)
+        self.filterComboBox.setToolTip("Ordena la tabla segun la selección")
 
         filter_widget = QWidget()
         filter_widget_layout = QHBoxLayout()
@@ -246,12 +255,21 @@ class MainWindow(QMainWindow):
         filter_label = QLabel()
         filter_label_icon = QIcon(resource_path("Icons/ordenar-alt.png"))
         filter_label.setPixmap(filter_label_icon.pixmap(15,15))
+
+        export_table_stats = QPushButton("Exportar Tabla")
+        export_table_stats.setStyleSheet(button_style_warming)
+        export_table_stats.setToolTip("Exporta las raíces y su frecuencia en un archivo CSV")
+        export_table_stats.setIcon(QIcon(resource_path("Icons/descargar.png")))
+        export_table_stats.clicked.connect(self.export_table)
+
         filter_widget_layout.addWidget(filter_label)
 
         self.filterComboBox.activated.connect(self.onFilterComboBoxActivated)
         filter_widget_layout.addWidget(self.filterComboBox)
 
+        filter_widget_layout.addWidget(export_table_stats)
         table_view_widget_layout.addWidget(filter_widget)
+
 
         # Creation of the table interface
         self.table_info_widget = QTableWidget()
@@ -269,6 +287,7 @@ class MainWindow(QMainWindow):
         prev_path = resource_path("Icons/angulo-izquierdo.png")
         prevIcon = QIcon(prev_path)
         self.prevButton = QPushButton("")
+        self.prevButton.setToolTip("Anterior")
         self.prevButton.setStyleSheet(button_style_add)
         self.prevButton.setIcon(prevIcon)
         self.prevButton.clicked.connect(self.prev_page)
@@ -291,6 +310,7 @@ class MainWindow(QMainWindow):
         next_path = resource_path("Icons/angulo-derecho.png")
         nextIcon = QIcon(next_path)
         self.nextButton = QPushButton("")
+        self.nextButton.setToolTip("Siguiente")
         self.nextButton.setStyleSheet(button_style_add)
         self.nextButton.setIcon(nextIcon)
         self.nextButton.clicked.connect(self.next_page)
@@ -315,12 +335,15 @@ class MainWindow(QMainWindow):
         botton_bar_layout = QHBoxLayout()
 
         add_root_button = QPushButton('Añadir')
+        add_root_button.setToolTip("Añadir raíz a la lista de combinación")
         add_root_button.setIcon(QIcon(resource_path("Icons/agregar.png")))
         add_root_button.setStyleSheet(button_style_add)
         self.remove_root_button = QPushButton('Eliminar')
+        self.remove_root_button.setToolTip("Eliminar raíz de la lista de combinación")
         self.remove_root_button.setIcon(QIcon(resource_path("Icons/basura.png")))
         self.remove_root_button.setStyleSheet(button_style_delete)
         combine_root_button = QPushButton('Combinar')
+        combine_root_button.setToolTip("Combina las palabras en la lista de raices a combinar")
         combine_root_button.setIcon(QIcon(resource_path("Icons/controlar.png")))
         combine_root_button.setStyleSheet(button_style_normal)
 
@@ -454,11 +477,13 @@ class MainWindow(QMainWindow):
         shape_buttons_widget_layout = QVBoxLayout()
         shape_buttons_widget.setLayout(shape_buttons_widget_layout)
         shape_selection_button = QPushButton("Añadir")
+        shape_selection_button.setIcon(QIcon(resource_path("Icons/recursos.png")))
         shape_selection_button.setToolTip("Añade una mascara a la creación de la nube")
         shape_selection_button.setStyleSheet(button_style_add)
         shape_selection_button.clicked.connect(self.selectMask)
         shape_buttons_widget_layout.addWidget(shape_selection_button)
         shape_delete_button = QPushButton("Quitar")
+        shape_delete_button.setIcon(QIcon(resource_path("Icons/basura.png")))
         shape_delete_button.setToolTip("Quita la mascara agregada")
         shape_delete_button.setStyleSheet(button_style_delete)
         shape_delete_button.clicked.connect(self.deleteselectMask)
@@ -498,6 +523,7 @@ class MainWindow(QMainWindow):
         self.font_combobox.activated.connect(self.onFontComboboxActivated)
 
         create_word_cloud_button = QPushButton("Crear Nube de Palabras")
+        create_word_cloud_button.setIcon(QIcon(resource_path("Icons/rodillo.png")))
         create_word_cloud_button.setToolTip("Genera una nube de palabras con la configuración establecida")
         create_word_cloud_button.setStyleSheet(button_style_normal)
         create_word_cloud_button.clicked.connect(self.generate_word_cloud)
@@ -505,6 +531,7 @@ class MainWindow(QMainWindow):
         svg_personalization_tools_layout.addWidget(create_word_cloud_button)
 
         export_word_cloud_button = QPushButton("Exportar Nube de Palabras")
+        export_word_cloud_button.setIcon(QIcon(resource_path("Icons/descargar.png")))
         export_word_cloud_button.setToolTip("Exporta la imagen en un formato seleccionado")
         export_word_cloud_button.setStyleSheet(button_style_warming)
         export_word_cloud_button.clicked.connect(self.exportwordcloud)
@@ -520,14 +547,14 @@ class MainWindow(QMainWindow):
         # ------------------------------Conceptual Cloud End------------------------------------------
 
         # ------------------------------Conceptual Network Tab------------------------------------------
-        conceptual_network_widget_layout = QVBoxLayout()
+        conceptual_network_widget_layout = QHBoxLayout()
         create_concetptual_network_button = QPushButton("Crear Red")
         create_concetptual_network_button.clicked.connect(self.conceptual_network)
         conceptual_network_widget_layout.addWidget(create_concetptual_network_button)
         self.conceptual_network_widget.setLayout(conceptual_network_widget_layout)
         # ------------------------------Conceptual Network Tab End------------------------------------------
 
-        #self.tab_widget.setTabEnabled(2, False)
+        self.tab_widget.setTabEnabled(2, False)
 
         self.setCentralWidget(self.central_widget)
 
@@ -652,6 +679,37 @@ class MainWindow(QMainWindow):
             self.table_info_widget.setItem(i, 3, item_percent)
 
         self.setup_pagination()
+
+    def export_table(self):
+        file_dialog = QFileDialog(self)
+        file_dialog.setAcceptMode(QFileDialog.AcceptMode.AcceptSave)
+        file_dialog.setNameFilter("CSV (*.csv)")
+
+        if file_dialog.exec() == QFileDialog.DialogCode.Accepted:
+            selected_files = file_dialog.selectedFiles()
+            if selected_files:
+                file_path = selected_files[0]
+                with open(file_path, mode='w', newline='') as archivo_csv:
+                    try:
+                        # Crear un objeto escritor CSV
+                        writer_csv = csv.DictWriter(archivo_csv, fieldnames=['Raíz', 'Frecuencia'])
+                        # Escribir la fila de encabezados (nombres de las columnas)
+                        writer_csv.writeheader()
+                        # Escribir los datos del diccionario como filas en el archivo CSV
+                        for key, value in self.word_freq_dict.getStemWords().items():
+                            row = {
+                                'Raíz': key,
+                                'Frecuencia': value[1]
+                            }
+                            writer_csv.writerow(row)
+                    except Exception as e:
+                        print(e)
+
+            alert = QMessageBox()
+            alert.setWindowTitle("Alerta")
+            alert.setText("¡Tabla Exportada!")
+            alert.setIcon(QMessageBox.Icon.Information)
+            alert.exec()
 
     # Function that set up the information of the pages
     def setup_pagination(self):
@@ -790,7 +848,7 @@ class MainWindow(QMainWindow):
     def exportwordcloud(self):
         file_dialog = QFileDialog(self)
         file_dialog.setAcceptMode(QFileDialog.AcceptMode.AcceptSave)
-        file_dialog.setNameFilter("PNG (*.png);;JPEG (*.jpg);;All Files (*)")
+        file_dialog.setNameFilter("PNG (*.png);;JPEG (*.jpg);;SVG (*.svg)")
 
         if file_dialog.exec() == QFileDialog.DialogCode.Accepted:
             selected_files = file_dialog.selectedFiles()
