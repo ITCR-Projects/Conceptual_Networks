@@ -426,6 +426,7 @@ class MainWindow(QMainWindow):
         cloud_personalization_menu_colors_layout.addWidget(self.color_selecctor)
 
         self.random_colors_chkbox = QCheckBox("Random")
+        self.random_colors_chkbox.setChecked(True)
         self.random_colors_chkbox.setStyleSheet(checkbox_style)
         self.random_colors_chkbox.setToolTip("Selecciona el color de las palabras de forma aleatoria")
 
