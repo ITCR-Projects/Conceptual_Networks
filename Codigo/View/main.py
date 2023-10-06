@@ -874,16 +874,17 @@ class MainWindow(QMainWindow):
         self.populate_table()
 
     # Conceptual network manage
-    def conceptual_network(self,show_lables=1):
+    def conceptual_network(self,show_lables=1,type_graph=1,nodeSize=50,edgeWeight=550,relation=1):
         self.mainController.create_network()
-        self.mainController.create_relation(1)
+        self.mainController.create_relation(relation)
+        if type_graph == 1:
+            graph = self.mainController.get_graph() #todo en general
+        elif type_graph == 2:
+            graph = self.mainController.get_graph_by_node_grade(nodeSize)#cantidad de lo nodos que tiene mas grados
+        elif type_graph == 3:
+            graph = self.mainController.get_graph_by_edge_weight(edgeWeight) # por tamaño de la arista
 
-        #graph = self.mainController.get_graph() #todo en general
-        graph = self.mainController.get_graph_by_node_grade(25)#cantidad de lo nodos que tiene mas grados
-        #graph = self.mainController.get_graph_by_edge_weight(500) # por tamaño de la arista
-        print("toreto")
-        weights = nx.get_node_attributes(graph, 'weight')
-        print("toreto2")
+
 
         try:
             max_weight = max(weights.values())
