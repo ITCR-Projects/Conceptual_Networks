@@ -2,12 +2,12 @@
 import networkx as nx
 import csv
 
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, QTimer
 from PyQt6.QtWidgets import QApplication, QColorDialog, QTableWidget, QSpinBox, QTableWidgetItem, QTabWidget, QDialog, \
     QMessageBox, QMainWindow, QGridLayout, QHBoxLayout, QVBoxLayout, QListWidget, QFileDialog, QPushButton, QLineEdit, \
-    QWidget, QLabel, QProgressBar, QComboBox, QCheckBox
+    QWidget, QLabel, QProgressBar, QComboBox, QCheckBox, QGraphicsScene, QGraphicsView, QGraphicsPixmapItem
 from PyQt6.QtGui import QIcon, QPalette, QPixmap
-from wordcloud import WordCloud
+
 import matplotlib.pyplot as plt
 import matplotlib.font_manager
 import numpy as np
@@ -22,6 +22,12 @@ from Codigo.View.IgnoreWordsDialog import IgnoreWordsDialog
 
 # Import the Thread using to the interface process
 from Codigo.View.GraphThread import GraphThread
+
+# Import the Thread using to the interface process
+from Codigo.View.CloudThread import CloudThread
+
+# Import the Thread using to the interface process
+from Codigo.View.NetworkThread import NetworkThread
 
 # Import the Thread using to the interface process
 from Codigo.Model.StructureStemming import StructureStemming
@@ -59,7 +65,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         # Interface control variables
-        self.cloudParameters = {'width':1080, 'height':720, 'background_color':None, 'color':(255,255,255), 'mask':None, 'font':None}
+        self.cloudParameters = {'width':512, 'height':512, 'background_color':(255,255,255), 'color':(255,255,255), 'mask':None, 'font':None}
         self.page_size = 50  # Table Page Size
         self.current_page = 1  # Actual page
         self.word_freq_dict = StructureStemming()
@@ -377,13 +383,60 @@ class MainWindow(QMainWindow):
         svg_image_widget_layout = QVBoxLayout()
         svg_image_widget.setLayout(svg_image_widget_layout)
 
-        self.svg_image = QLabel()
-        self.svg_image.setPixmap(QPixmap(resource_path("Icons/imagen-de-archivo.png")))
-        self.svg_image.setAlignment(Qt.AlignmentFlag.AlignHCenter)
-        self.svg_image.setAlignment(Qt.AlignmentFlag.AlignVCenter)
-        svg_image_widget_layout.addWidget(self.svg_image)
+        self.info_label = QLabel()
+        svg_image_widget_layout.addWidget(self.info_label)
 
-        conceptual_cloud_widget_layout.addWidget(svg_image_widget, 0, 0, Qt.AlignmentFlag.AlignCenter)
+        zoom_btn_widget = QWidget()
+        zoom_btn_widget_layout = QHBoxLayout()
+        zoom_btn_widget.setLayout(zoom_btn_widget_layout)
+
+        self.zoom_in_button = QPushButton("")
+        self.zoom_in_button.setIcon(QIcon(resource_path("Icons/acercarse.png")))
+        self.zoom_in_button.setToolTip("Acerca la imagen")
+        self.zoom_in_button.setStyleSheet(button_style_add)
+        self.zoom_out_button = QPushButton("")
+        self.zoom_out_button.setIcon(QIcon(resource_path("Icons/disminuir-el-zoom.png")))
+        self.zoom_out_button.setToolTip("Aleja la imagen")
+        self.zoom_out_button.setStyleSheet(button_style_add)
+        zoom_btn_widget_layout.addWidget(self.zoom_in_button)
+        zoom_btn_widget_layout.addWidget(self.zoom_out_button)
+
+        self.zoom_in_button.clicked.connect(self.zoom_in)
+        self.zoom_out_button.clicked.connect(self.zoom_out)
+
+        svg_image_widget_layout.addWidget(zoom_btn_widget)
+
+        self.scene = QGraphicsScene()
+        self.view = QGraphicsView(self.scene)
+
+        # self.svg_image = QLabel()
+        # self.svg_image.setPixmap(QPixmap(resource_path("Icons/imagen-de-archivo.png")))
+        # self.svg_image.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+        # self.svg_image.setAlignment(Qt.AlignmentFlag.AlignVCenter)
+
+        svg_image_widget_layout.addWidget(self.view)
+
+        self.image_progress_bar = QWidget()
+        image_progress_bar_layout = QHBoxLayout()
+        self.image_progress_bar.setLayout(image_progress_bar_layout)
+        img_pgrsb_label = QLabel("Procesando")
+        image_progress_bar_layout.addWidget(img_pgrsb_label)
+        self.img_progress_bar = QProgressBar()
+        self.img_progress_bar.setRange(0, 0)
+        self.img_progress_bar.setTextVisible(False)
+        self.img_progress_bar.setStyleSheet(progress_bar_circular_style)
+
+        image_progress_bar_layout.addWidget(self.img_progress_bar)
+
+        # Iniciar un temporizador para simular la carga
+        self.loading_timer = QTimer()
+        self.loading_timer.timeout.connect(self.update_img_progress)
+
+        svg_image_widget_layout.addWidget(self.image_progress_bar)
+
+        self.image_progress_bar.setVisible(False)
+
+        conceptual_cloud_widget_layout.addWidget(svg_image_widget, 0, 0)
 
         # Here comes the personalization tools
         self.svg_personalization_tools = QWidget()
@@ -456,6 +509,13 @@ class MainWindow(QMainWindow):
 
         color_selecctor_layout.addWidget(self.random_colors_chkbox)
 
+        self.transparent_colors_chkbox = QCheckBox("Transparente")
+        self.transparent_colors_chkbox.setChecked(True)
+        self.transparent_colors_chkbox.setStyleSheet(checkbox_style)
+        self.transparent_colors_chkbox.setToolTip("Hace que el fondoo de la imagen sea transparente")
+
+        color_selecctor_layout.addWidget(self.transparent_colors_chkbox)
+
         cloud_personalization_menu_layout.addWidget(self.cloud_personalization_menu_colors)
 
         self.cloud_personalization_menu_shape = QWidget()
@@ -495,9 +555,12 @@ class MainWindow(QMainWindow):
         self.shapeComboBox = QComboBox()
         self.shapeComboBox.setStyleSheet(combobox_normal_style)
         self.shapeComboBox.setToolTip("Tamaño de la figura")
-        self.shapeComboBox.addItem("1080x720")
-        self.shapeComboBox.addItem("800x600")
         self.shapeComboBox.addItem("512x512")
+        self.shapeComboBox.addItem("800x600")
+        self.shapeComboBox.addItem("1080x720")
+        self.shapeComboBox.addItem("2560x1440")
+        self.shapeComboBox.addItem("3840x2160")
+
         cloud_personalization_menu_shape_layout.addWidget(self.shapeComboBox)
 
         cloud_personalization_menu_layout.addWidget(self.cloud_personalization_menu_shape)
@@ -558,6 +621,13 @@ class MainWindow(QMainWindow):
 
         self.setCentralWidget(self.central_widget)
 
+
+    def update_img_progress(self):
+        value = self.img_progress_bar.value()
+        if value >= 100:
+            self.loading_timer.stop()
+        else:
+            self.img_progress_bar.setValue(value + 1)
 
     # Function that adds the files to the list
     def add_files(self):
@@ -814,6 +884,7 @@ class MainWindow(QMainWindow):
         self.color_frame2.setPalette(palette)
         self.cloudParameters['background_color'] = color.getRgb()[:-1]
 
+    # Function to generate the word in the word cloud function randomly
     def random_color(self, word, font_size, position, orientation, random_state=None, **kwargs):
         if self.random_colors_chkbox.isChecked():
             return f"rgb({randint(0, 255)}, {randint(0, 255)}, {randint(0, 255)})"
@@ -821,30 +892,57 @@ class MainWindow(QMainWindow):
         else:
             return f"rgb{self.cloudParameters['color']}"
 
+    # To convert the background of the cloud transparent
+
+    def transparent_background(self):
+        if self.transparent_colors_chkbox.isChecked():
+            return None
+
+        else:
+            return self.cloudParameters['background_color']
 
     # Generate a concept cloud
     def generate_word_cloud(self):
-        cloud = self.mainController.get_cloud_words()
-        try:
-            wordcloud = WordCloud(
-                font_path=self.fonts[self.cloudParameters['font']],
-                width=self.cloudParameters['width'],
-                height=self.cloudParameters['height'],
-                background_color=self.cloudParameters['background_color'],
-                mask=self.cloudParameters['mask'],
-                mode='RGBA',
-                color_func=self.random_color,
-            ).generate_from_frequencies(cloud)
-        except Exception as e:
-            print(e)
-        plt.figure(figsize=(10, 5))
-        plt.imshow(wordcloud, interpolation='bilinear')
-        plt.axis("off")
+        wordcloud_params = {
+            'font_path': self.fonts[self.cloudParameters['font']],
+            'width': self.cloudParameters['width'],
+            'height': self.cloudParameters['height'],
+            'background_color': self.transparent_background(),
+            'mask': self.cloudParameters['mask'],
+            'mode': 'RGBA',
+            'color_func': self.random_color,
+        }
+        dpi = 160
+        figsize = (wordcloud_params['width'] / dpi, wordcloud_params['height'] / dpi)
+        plt.close()
+        plt.figure(1, figsize=figsize, dpi=dpi)
+        self.cloud_thread = CloudThread(wordcloud_params, self.mainController)  # Here the thread is created
+        self.cloud_thread.finished.connect(self.cloud_thread_finish)
+        self.cloud_thread.start()
+        self.image_progress_bar.setVisible(True)
+        self.loading_timer.start(50)
+        #self.svg_image.setPixmap(QPixmap(resource_path("wordcloud.png")))
 
-        # Save temporality the cloud in a png then is show it
-        plt.savefig("wordcloud.png", bbox_inches='tight', pad_inches=0, transparent=True)
-        self.svg_image.setPixmap(QPixmap(resource_path("wordcloud.png")))
+    def cloud_thread_finish(self):
+        self.loading_timer.stop()
+        self.image_progress_bar.setVisible(False)
+        self.load_image(resource_path("wordcloud.png"))
 
+    # Load the image to the scene
+    def load_image(self, file_path):
+        pixmap = QPixmap(file_path)
+        self.scene.clear()
+
+        # Agregar la imagen a la escena como QGraphicsPixmapItem
+        pixmap_item = QGraphicsPixmapItem(pixmap)
+        self.scene.addItem(pixmap_item)
+
+        # Configurar la vista para permitir el arrastre de la imagen
+        self.view.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)
+
+        self.info_label.setText(f"Dimensiones: {pixmap.width()}x{pixmap.height()}")
+
+    # Export the png to a selected location
     def exportwordcloud(self):
         file_dialog = QFileDialog(self)
         file_dialog.setAcceptMode(QFileDialog.AcceptMode.AcceptSave)
@@ -856,7 +954,7 @@ class MainWindow(QMainWindow):
                 file_path = selected_files[0]
 
                 # Export the image to the selected format using matplotlib
-                plt.savefig(file_path, bbox_inches='tight', pad_inches=0, transparent=True)
+                plt.figure(1).savefig(file_path, bbox_inches='tight', pad_inches=0, transparent=True)
 
             alert = QMessageBox()
             alert.setWindowTitle("Alerta")
@@ -875,53 +973,19 @@ class MainWindow(QMainWindow):
 
     # Conceptual network manage
     def conceptual_network(self, show_lables=1, type_graph=1, nodeSize=50, edgeWeight=550, relation=1):
-        self.mainController.create_network()
-        self.mainController.create_relation(relation)
+        plt.figure(2)
+        self.network_thread = NetworkThread(self.mainController, show_lables, type_graph, nodeSize, edgeWeight, relation)
+        self.network_thread.finished.connect(self.network_thread_finish)
+        self.network_thread.start()
 
+    def network_thread_finish(self):
+        alert = QMessageBox()
+        alert.setWindowTitle("Proceso Terminado")
+        alert.setText("¡Proceso Terminado!")
+        alert.setIcon(QMessageBox.Icon.Information)
+        alert.exec()
+        plt.figure(2).show()
 
-
-        if type_graph == 1:
-            graph = self.mainController.get_graph()  # todo en general
-        elif type_graph == 2:
-            graph = self.mainController.get_graph_by_node_grade(nodeSize)  # cantidad de lo nodos que tiene mas grados
-        elif type_graph == 3:
-            graph = self.mainController.get_graph_by_edge_weight(edgeWeight)  # por tamaño de la arista
-
-        weights = nx.get_node_attributes(graph, 'weight')
-        max_node_weight = max(weights.values())
-        edge_weights = [data['weight'] for u, v, data in graph.edges(data=True)]
-        max_edge_weight = max(edge_weights)
-
-        try:
-
-            print(str(max_node_weight))
-            print(str(max_edge_weight))
-            plt.figure()
-            circular_pos = nx.spring_layout(graph, k=0.30)  # Utiliza un diseño circular
-            node_sizes = [(weight / max_node_weight) * 400 for node, weight in weights.items()]
-
-            nx.draw_networkx_nodes(graph, circular_pos, node_size=node_sizes)
-
-            # Dibujar las aristas con un grosor proporcional al peso y el mismo color que los nodos
-            for edge in graph.edges(data=True):
-                num_relations = edge[2]['weight']
-                normalized_weight = (num_relations / max_edge_weight) * 20
-
-                nx.draw_networkx_edges(graph, circular_pos, edgelist=[(edge[0], edge[1])],
-                                       width=normalized_weight, arrows=False, edge_color='lightblue')
-
-            # Dibujar las etiquetas de los nodos con un tamaño proporcional a sus pesos y color negro
-            if show_lables == 0:
-                for node, weight in weights.items():
-                    normalized_weight = (weight / max_node_weight) * 30
-
-                    nx.draw_networkx_labels(graph, circular_pos, labels={node: node}, font_size=normalized_weight,
-                                            font_color='k')  # Cambia 'w' a 'k' para etiquetas negras
-
-            # Mostrar el gráfico
-            plt.show()
-        except Exception as e:
-            print(e)
 
     # Fill the font combo box with the system fonts
     def fill_font_combobox(self):
@@ -958,6 +1022,13 @@ class MainWindow(QMainWindow):
         shape_img_label_icon = QIcon(resource_path("Icons/imagen-de-archivo.png"))
         self.shape_img_label.setPixmap(shape_img_label_icon.pixmap(50, 50))
         self.cloudParameters['mask'] = None
+
+    # Control the zoom of the word cloud visualizer
+    def zoom_in(self):
+        self.view.scale(1.2, 1.2)
+
+    def zoom_out(self):
+        self.view.scale(1 / 1.2, 1 / 1.2)
 
 
 

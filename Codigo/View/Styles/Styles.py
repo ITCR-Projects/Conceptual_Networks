@@ -95,4 +95,20 @@ button_style_selection = (
     "QPushButton:hover { background-color: darkgray;}"
 )
 
+progress_bar_circular_style = (
+    """
+        QProgressBar {
+            border: 2px solid gray;
+            border-radius: 10px;
+            background-color: #E0E0E0;
+        }
+        QProgressBar::chunk {
+            background-color: #1E90FF;
+            width: 10px;
+            margin: 0.5px;
+            border-radius: 5px;
+        }
+    """
+)
+
 
