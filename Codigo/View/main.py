@@ -874,46 +874,51 @@ class MainWindow(QMainWindow):
         self.populate_table()
 
     # Conceptual network manage
-    def conceptual_network(self,show_lables=1,type_graph=1,nodeSize=50,edgeWeight=550,relation=1):
+    def conceptual_network(self, show_lables=1, type_graph=1, nodeSize=50, edgeWeight=550, relation=1):
         self.mainController.create_network()
         self.mainController.create_relation(relation)
+        graph = self.mainController.get_graph()  # todo en general
+        weights = nx.get_node_attributes(graph, 'weight')
+        max_node_weight = max(weights.values())
+        edge_weights = [data['weight'] for u, v, data in graph.edges(data=True)]
+        max_edge_weight = max(edge_weights)
+
+
         if type_graph == 1:
-            graph = self.mainController.get_graph() #todo en general
         elif type_graph == 2:
-            graph = self.mainController.get_graph_by_node_grade(nodeSize)#cantidad de lo nodos que tiene mas grados
+            graph = self.mainController.get_graph_by_node_grade(nodeSize)  # cantidad de lo nodos que tiene mas grados
         elif type_graph == 3:
-            graph = self.mainController.get_graph_by_edge_weight(edgeWeight) # por tamaño de la arista
+            graph = self.mainController.get_graph_by_edge_weight(edgeWeight)  # por tamaño de la arista
 
 
 
         try:
-            max_weight = max(weights.values())
+
+            print(str(max_node_weight))
+            print(str(max_edge_weight))
             plt.figure()
             circular_pos = nx.spring_layout(graph, k=0.30)  # Utiliza un diseño circular
-            node_sizes = [(weight / max_weight) * 400 for node, weight in weights.items()]
-
-
+            node_sizes = [(weight / max_node_weight) * 400 for node, weight in weights.items()]
 
             nx.draw_networkx_nodes(graph, circular_pos, node_size=node_sizes)
 
             # Dibujar las aristas con un grosor proporcional al peso y el mismo color que los nodos
             for edge in graph.edges(data=True):
-                weight = edge[2]['weight']
-                normalized_weight = (weight / max_weight) * 40
+                num_relations = edge[2]['weight']
+                normalized_weight = (num_relations / max_edge_weight) * 20
+
                 nx.draw_networkx_edges(graph, circular_pos, edgelist=[(edge[0], edge[1])],
                                        width=normalized_weight, arrows=False, edge_color='lightblue')
 
             # Dibujar las etiquetas de los nodos con un tamaño proporcional a sus pesos y color negro
-            if show_lables==0:
+            if show_lables == 0:
                 for node, weight in weights.items():
-                    normalized_weight = (weight / max_weight) * 30
-                    print(normalized_weight)
-                    nx.draw_networkx_labels(graph, circular_pos, labels={node: node}, font_size = normalized_weight,
+                    normalized_weight = (weight / max_node_weight) * 30
+
+                    nx.draw_networkx_labels(graph, circular_pos, labels={node: node}, font_size=normalized_weight,
                                             font_color='k')  # Cambia 'w' a 'k' para etiquetas negras
 
             # Mostrar el gráfico
-            #plt.tight_layout()
-
             plt.show()
         except Exception as e:
             print(e)
