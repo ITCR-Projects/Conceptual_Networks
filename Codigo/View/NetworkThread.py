@@ -22,7 +22,7 @@ class NetworkThread(QThread):
         self.main_controller.create_relation(self.relation)
 
         if self.type_graph == 1:
-            graph = self.main_controller.get_graph()  # todo en general
+            graph = self.main_controller.get_graph()  # all in general
         elif self.type_graph == 2:
             graph = self.main_controller.get_graph_by_node_grade(self.nodeSize)  # cantidad de lo nodos que tiene mas grados
         elif self.type_graph == 3:

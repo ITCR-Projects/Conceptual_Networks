@@ -914,7 +914,7 @@ class MainWindow(QMainWindow):
         }
         dpi = 160
         figsize = (wordcloud_params['width'] / dpi, wordcloud_params['height'] / dpi)
-        plt.close()
+        plt.figure(1).clf()
         plt.figure(1, figsize=figsize, dpi=dpi)
         self.cloud_thread = CloudThread(wordcloud_params, self.mainController)  # Here the thread is created
         self.cloud_thread.finished.connect(self.cloud_thread_finish)
@@ -973,6 +973,7 @@ class MainWindow(QMainWindow):
 
     # Conceptual network manage
     def conceptual_network(self, show_lables=1, type_graph=1, nodeSize=50, edgeWeight=550, relation=1):
+        plt.figure(2).clf()
         plt.figure(2)
         self.network_thread = NetworkThread(self.mainController, show_lables, type_graph, nodeSize, edgeWeight, relation)
         self.network_thread.finished.connect(self.network_thread_finish)
