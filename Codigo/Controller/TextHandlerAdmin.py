@@ -238,36 +238,6 @@ class TextHandlerAdmin:
         wordFrequencySorted = dict(sorted(wordFrequency.items(), key=lambda item: item[1], reverse=True))
         return wordFrequencySorted
 
-    def makeWordCloud(self, text):
-        '''print("Goku sj2")
-        alice_mask = np.array(Image.open("nube.png"))
-
-        wc = WordCloud(background_color="white", max_words=1000, mask=alice_mask)
-
-        print("Goku sj3")
-        # generate word cloud
-        wc.generate_from_frequencies(text)
-
-
-        # show
-        plt.imshow(wc, interpolation="bilinear")
-        plt.axis("off")
-        plt.show()'''
-
-        x, y = np.ogrid[:300, :300]
-
-        mask = (x - 150) ** 2 + (y - 150) ** 2 > 130 ** 2
-        mask = 255 * mask.astype(int)
-
-        wc = WordCloud(background_color="white", repeat=True, mask=mask, max_words=100)
-        wc.generate_from_frequencies(
-            text)  # El diccionario debe estar formado por llave tipo string y valor tipo float para generar la imagen, para generar la tabla, el valor se podría parsear devuelta a int
-
-        plt.axis(
-            "off")  # Genera escalas para mostrarlos por matplotlib, quizás sea bueno buscar otra forma de exportar, es posible exportar a png y svg mediante otras funciones
-        plt.imshow(wc, interpolation="bilinear")
-        plt.show()
-
     def lexical_analysis(self):
         '''Método que realiza el análisis léxico del documento de texto de la clase.
         Entradas: self
@@ -345,8 +315,7 @@ class TextHandlerAdmin:
         self.roots_words = text.split()
 
     def get_graph(self):
-        G= self.graph
-        return G
+        return self.graph
 
     def get_graph_by_node_grade(self, amount=100):
 
@@ -362,6 +331,21 @@ class TextHandlerAdmin:
         filtered_nodes = [node for node, weight in weights.items() if weight > amount]
         new_graph = self.graph.subgraph(filtered_nodes)
         return new_graph
+
+    def get_weight_of_heaviest_node(self):
+        weights = nx.get_node_attributes(self.graph, 'weight')
+        max_weight = max(weights.values())
+        return max_weight
+
+    def get_weight_of_heaviest_edge(self):
+        weights = nx.get_edge_attributes(self.graph, 'weight')
+        max_weight = max(weights.values())
+        return max_weight
+
+    def get_weight_of_heaviest_grade(self):
+        degree_dict = dict(self.graph.degree())
+        max_grade = max(degree_dict.values())
+        return max_grade
 
     def print_network(self,show_lables):
         # for node, data in self.graph.nodes(data=True):
@@ -446,9 +430,14 @@ class TextHandlerAdmin:
     def weigthSort(self):
         self.structure_stemming.sortStrutureWeigth()
 
-# x = TextHandlerAdmin()
-# x.roots_words = ["hola", "jose", "arce", "jose", "gato","gato"]
+
+#x = TextHandlerAdmin()
+#x.roots_words = ["hola", "jose", "arce", "jose", "gato", "gato"]
 # x.combine_nodes("jose", ["jose","gato"])
-# x.create_network()
-# x.create_relation()
-# x.print_network()
+#x.create_network()
+#x.create_relation()
+#x.print_network(1)
+#print("------------------------")
+#print(x.get_weight_of_heaviest_edge())
+#print(x.get_weight_of_heaviest_node())
+#print(x.get_weight_of_heaviest_grade())

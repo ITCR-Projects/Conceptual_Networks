@@ -57,3 +57,12 @@ class MainController:
 
     def create_relation(self,step=1):
         self.textHandlerAdmin.create_relation(step)
+
+    def get_weight_of_heaviest_node(self):
+        return self.textHandlerAdmin.get_weight_of_heaviest_node()
+
+    def get_weight_of_heaviest_edge(self):
+        return self.textHandlerAdmin.get_weight_of_heaviest_edge()
+
+    def get_weight_of_heaviest_grade(self):
+        return self.textHandlerAdmin.get_weight_of_heaviest_grade()
