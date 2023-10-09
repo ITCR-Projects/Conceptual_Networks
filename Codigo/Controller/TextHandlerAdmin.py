@@ -430,6 +430,9 @@ class TextHandlerAdmin:
     def weigthSort(self):
         self.structure_stemming.sortStrutureWeigth()
 
+    def delete_graph(self):
+        self.graph.clear()
+
 
 #x = TextHandlerAdmin()
 #x.roots_words = ["hola", "jose", "arce", "jose", "gato", "gato"]
