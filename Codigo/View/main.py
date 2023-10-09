@@ -1031,7 +1031,8 @@ class MainWindow(QMainWindow):
     def zoom_out(self):
         self.view.scale(1 / 1.2, 1 / 1.2)
 
-
+    def borrar_(self):
+        return 1
 
 
 app = QApplication([])
