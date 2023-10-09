@@ -5,7 +5,7 @@ import csv
 from PyQt6.QtCore import Qt, QTimer
 from PyQt6.QtWidgets import QApplication, QColorDialog, QTableWidget, QSpinBox, QTableWidgetItem, QTabWidget, QDialog, \
     QMessageBox, QMainWindow, QGridLayout, QHBoxLayout, QVBoxLayout, QListWidget, QFileDialog, QPushButton, QLineEdit, \
-    QWidget, QLabel, QProgressBar, QComboBox, QCheckBox, QGraphicsScene, QGraphicsView, QGraphicsPixmapItem
+    QWidget, QLabel, QProgressBar, QComboBox, QCheckBox, QGraphicsScene, QGraphicsView, QGraphicsPixmapItem, QSlider
 from PyQt6.QtGui import QIcon, QPalette, QPixmap
 
 import matplotlib.pyplot as plt
@@ -610,14 +610,174 @@ class MainWindow(QMainWindow):
         # ------------------------------Conceptual Cloud End------------------------------------------
 
         # ------------------------------Conceptual Network Tab------------------------------------------
+
         conceptual_network_widget_layout = QHBoxLayout()
-        create_concetptual_network_button = QPushButton("Crear Red")
-        create_concetptual_network_button.clicked.connect(self.conceptual_network)
-        conceptual_network_widget_layout.addWidget(create_concetptual_network_button)
+        conceptual_network_widget_layout = QHBoxLayout()
+        # Poner gráfico de red acá
+
+        '''network_config_label = QLabel("Grafico")
+        network_config_label.setStyleSheet(label_style_title)
+        network_config_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)'''
+
+        self.svg2_image = QLabel()
+        self.svg2_image.setPixmap(QPixmap(resource_path("Icons/imagen-de-archivo.png")))
+        self.svg2_image.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+        self.svg2_image.setAlignment(Qt.AlignmentFlag.AlignVCenter)
+        conceptual_network_widget_layout.addWidget(self.svg2_image)
+
+        # onceptual_network_widget_layout.addWidget(network_config_label)
+
+        conceptual_network_widget_vertical_layout = QVBoxLayout()
+
+        network_config_label = QLabel("Filtos")
+        network_config_label.setStyleSheet(label_style_title)
+        network_config_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+
+        conceptual_network_widget_vertical_layout.addWidget(network_config_label)
+
+        # Node Edge Relation Selection Layout
+        conceptual_network_widget_horizontal_inside_relation_layout = QHBoxLayout()
+
+        relation_layout_label = QLabel("Cantidad de Saltos en Relaciones")
+        relation_layout_label.setStyleSheet(label_style_title)
+        self.relation_combobox = QComboBox()
+        self.relation_combobox.setToolTip("Selección de Cantidad de Saltos en Relaciones Mínimas del Nodo")
+        self.relation_combobox.addItem("1")
+        self.relation_combobox.addItem("2")
+        self.relation_combobox.addItem("3")
+        self.relation_combobox.setStyleSheet(combobox_normal_style)
+
+
+        conceptual_network_widget_horizontal_inside_relation_layout.addWidget(relation_layout_label)
+        conceptual_network_widget_horizontal_inside_relation_layout.addWidget(self.relation_combobox)
+        #self.relation_combobox.currentIndexChanged.connect(self.network_relations_checkbok_manage)
+
+
+
+
+        # Distro Selection Layout
+        conceptual_network_widget_horizontal_inside_distribution_layout = QHBoxLayout()
+        conceptual_network_widget_horizontal_inside_distribution_vertical_layout = QVBoxLayout()
+        graph_layout_label = QLabel("Filtros:")
+        graph_layout_label.setStyleSheet(label_style_title)
+
+        general_network_graph_layout = QHBoxLayout()
+        general_network_graph_Label = QLabel("General")
+        self.general_network_graph_Checkbox = QCheckBox()
+        general_network_graph_layout.addWidget(general_network_graph_Label)
+        general_network_graph_layout.addWidget(self.general_network_graph_Checkbox)
+
+        weight_network_graph_layout = QHBoxLayout()
+        weight_network_graph_label = QLabel("Solo Nodos Con Frecuencia Mayor A Una Cantidad")
+        self.weight_network_graph_Checkbox = QCheckBox()
+        weight_network_graph_layout.addWidget(weight_network_graph_label)
+        weight_network_graph_layout.addWidget(self.weight_network_graph_Checkbox)
+
+        size_network_graph_layout = QHBoxLayout()
+        size_network_graph_label = QLabel("Por Cantidad de Relaciones")
+        self.size_network_graph_Checkbox = QCheckBox()
+        size_network_graph_layout.addWidget(size_network_graph_label)
+        size_network_graph_layout.addWidget(self.size_network_graph_Checkbox)
+
+
+        self.general_network_graph_Checkbox.stateChanged.connect(self.network_checkbox_management)
+        self.weight_network_graph_Checkbox.stateChanged.connect(self.network_checkbox_management)
+        self.size_network_graph_Checkbox.stateChanged.connect(self.network_checkbox_management)
+
+        conceptual_network_widget_horizontal_inside_distribution_layout.addWidget(graph_layout_label)
+
+        conceptual_network_widget_horizontal_inside_distribution_vertical_layout.addLayout(general_network_graph_layout)
+        conceptual_network_widget_horizontal_inside_distribution_vertical_layout.addLayout(weight_network_graph_layout)
+        conceptual_network_widget_horizontal_inside_distribution_vertical_layout.addLayout(size_network_graph_layout)
+
+        conceptual_network_widget_horizontal_inside_distribution_layout.addLayout(
+            conceptual_network_widget_horizontal_inside_distribution_vertical_layout)
+
+
+
+        # Node Size Selection Layout
+        conceptual_network_widget_horizontal_inside_size_layout = QHBoxLayout()
+        node_size_label = QLabel("Nodos De Aparición Mayor A")
+        node_size_label.setStyleSheet(label_style_title)
+
+        self.node_size_slider = QSlider(Qt.Orientation.Horizontal, self)
+        self.node_size_slider.setGeometry(50, 50, 200, 50)
+        self.node_size_slider.setMinimum(1)
+
+        self.node_size_slider.setMaximum(10)
+        self.node_size_slider.setTickPosition(QSlider.TickPosition.TicksBelow)
+        self.node_size_slider.setTickInterval(3)
+        # Crear un QLabel para mostrar el valor del slider
+        self.node_size_value_label = QLabel("Valor: 0")
+
+        conceptual_network_widget_horizontal_inside_size_layout.addWidget(node_size_label)
+        conceptual_network_widget_horizontal_inside_size_layout.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+        conceptual_network_widget_horizontal_inside_size_layout.addWidget(self.node_size_slider)
+        conceptual_network_widget_horizontal_inside_size_layout.addWidget(self.node_size_value_label)
+
+        # Node Size Selection Layout
+        conceptual_network_widget_horizontal_inside_edge_weight_layout = QHBoxLayout()
+        edge_weight_label = QLabel("Nodos Con Relaciones Mayores A:")
+        edge_weight_label.setStyleSheet(label_style_title)
+
+        self.edge_weight_slider = QSlider(Qt.Orientation.Horizontal, self)
+        self.edge_weight_slider.setGeometry(50, 50, 200, 50)
+        self.edge_weight_slider.setMinimum(1)
+        self.edge_weight_slider.setMaximum(10)
+        self.edge_weight_slider.setTickPosition(QSlider.TickPosition.TicksBelow)
+        self.edge_weight_slider.setTickInterval(3)
+        # Crear un QLabel para mostrar el valor del slider
+        self.edge_weight_label = QLabel("Valor: 0")
+
+
+
+        conceptual_network_widget_horizontal_inside_edge_weight_layout.addWidget(edge_weight_label)
+        conceptual_network_widget_horizontal_inside_edge_weight_layout.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+        conceptual_network_widget_horizontal_inside_edge_weight_layout.addWidget(self.edge_weight_slider)
+        conceptual_network_widget_horizontal_inside_edge_weight_layout.addWidget(self.edge_weight_label)
+
+
+        self.node_size_slider.valueChanged.connect(self.displaySlidervalueNodeSize)
+        self.edge_weight_slider.valueChanged.connect(self.displaySlidervalueEdgeWeight)
+
+        # Add Tools Layout to Vertical Layout
+
+        conceptual_network_widget_horizontal_inside_no_words_layout = QHBoxLayout()
+        no_words_network_graph_Label = QLabel("No Mostrar Palabras")
+        no_words_network_graph_Label.setStyleSheet(label_style_title)
+        self.no_words_network_graph_Checkbox = QCheckBox()
+        conceptual_network_widget_horizontal_inside_no_words_layout.addWidget(no_words_network_graph_Label)
+        conceptual_network_widget_horizontal_inside_no_words_layout.addWidget(self.no_words_network_graph_Checkbox)
+
+
+
+        conceptual_network_widget_vertical_layout.addLayout(conceptual_network_widget_horizontal_inside_relation_layout)
+        conceptual_network_widget_vertical_layout.addLayout(conceptual_network_widget_horizontal_inside_distribution_layout)
+        conceptual_network_widget_vertical_layout.addLayout(conceptual_network_widget_horizontal_inside_size_layout)
+        conceptual_network_widget_vertical_layout.addLayout(conceptual_network_widget_horizontal_inside_edge_weight_layout)
+        conceptual_network_widget_vertical_layout.addLayout(conceptual_network_widget_horizontal_inside_no_words_layout)
+
+        create_conceptual_network_button = QPushButton("Crear Red")
+        create_conceptual_network_button.setStyleSheet(button_style_normal)
+        create_conceptual_network_button.setIcon(QIcon(resource_path("Icons/rodillo.png")))
+
+        conceptual_network_widget_vertical_layout.addWidget(create_conceptual_network_button)
+        conceptual_network_widget_layout.addLayout(conceptual_network_widget_vertical_layout)
+
+        # self.graphtype_combobox.currentIndexChanged.connect(self.conceptual_network_tab_manage)
+
         self.conceptual_network_widget.setLayout(conceptual_network_widget_layout)
+        #create_conceptual_network_button.clicked.connect(self.conceptual_network)
+
+        self.node_size_slider.setEnabled(False)
+        self.edge_weight_slider.setEnabled(False)
+
+        create_conceptual_network_button.clicked.connect(self.drawGraph)
+
         # ------------------------------Conceptual Network Tab End------------------------------------------
 
         self.tab_widget.setTabEnabled(2, False)
+        self.tab_widget.setTabEnabled(3, False)
 
         self.setCentralWidget(self.central_widget)
 
@@ -688,6 +848,7 @@ class MainWindow(QMainWindow):
         # self.plot_bar_chart(word_freq_dict)
         self.tab_widget.setTabEnabled(1, True)
         self.tab_widget.setTabEnabled(2, True)
+        self.tab_widget.setTabEnabled(3, True)
         alert = QMessageBox()
         alert.setWindowTitle("Proceso Terminado")
         alert.setText("¡Proceso Terminado!")
@@ -973,6 +1134,15 @@ class MainWindow(QMainWindow):
 
     # Conceptual network manage
     def conceptual_network(self, show_lables=1, type_graph=1, nodeSize=50, edgeWeight=550, relation=1):
+        print(
+            "par1 : " + str(show_lables) +
+            " par2 : " + str(type_graph) +
+            " par3 : " + str(nodeSize) +
+            " par4 : " + str(edgeWeight) +
+            " par5 : " + str(relation)
+
+        )
+
         plt.close(plt.figure(2))
         plt.figure(2)
         self.network_thread = NetworkThread(self.mainController, show_lables, type_graph, nodeSize, edgeWeight, relation)
@@ -1031,8 +1201,133 @@ class MainWindow(QMainWindow):
     def zoom_out(self):
         self.view.scale(1 / 1.2, 1 / 1.2)
 
-    def borrar_(self):
-        return 1
+    def network_relations_checkbok_manage(self):
+        if self.relation_combobox.currentText() == "1":
+            self.mainController.create_network()
+            self.mainController.create_relation(1)
+            self.node_size_slider.setMaximum(self.mainController.get_weight_of_heaviest_node())
+
+
+
+
+    def displaySlidervalueNodeSize(self, value):
+        self.node_size_value_label.setText(f"Valor: {value}")
+        # self.node_size_value_label.adjustSize()            # Ajusta el tamaño del label de acuerdo al tamaño del numero
+
+    def displaySlidervalueEdgeWeight(self, value):
+        self.edge_weight_label.setText(f"Valor: {value}")
+    def network_checkbox_management(self, state):
+        if state == 2:  # Si se marca un QCheckBox
+
+            self.mainController.create_network()
+            self.mainController.create_relation(1)
+            relation_selection = self.relation_combobox.currentText()
+
+            if self.general_network_graph_Checkbox.isChecked():  # General Seleccionado
+                self.weight_network_graph_Checkbox.setEnabled(False)
+                self.size_network_graph_Checkbox.setEnabled(False)
+
+                self.node_size_slider.setEnabled(False)
+                self.edge_weight_slider.setEnabled(False)
+
+
+            elif self.weight_network_graph_Checkbox.isChecked():  # PTamaño de Nodo Seleccionado
+                self.general_network_graph_Checkbox.setEnabled(False)
+                self.size_network_graph_Checkbox.setEnabled(False)
+
+
+                self.node_size_slider.setMaximum(self.mainController.get_weight_of_heaviest_node())
+
+                self.mainController.delete_graph()
+                self.mainController.create_network()
+                self.mainController.create_relation(1)
+
+                self.node_size_slider.setEnabled(True)
+                self.edge_weight_slider.setEnabled(False)
+
+
+            elif self.size_network_graph_Checkbox.isChecked():  # Peso de Arista Seleccionado
+                self.general_network_graph_Checkbox.setEnabled(False)
+                self.weight_network_graph_Checkbox.setEnabled(False)
+
+
+                self.edge_weight_slider.setMaximum(int(self.mainController.get_weight_of_heaviest_grade()))
+
+                try:
+                    self.mainController.delete_graph()
+                    self.mainController.create_network()
+                    self.mainController.create_relation(relation_selection)
+
+
+                except Exception as e:
+                    print(e)
+
+
+                self.node_size_slider.setEnabled(False)
+                self.edge_weight_slider.setEnabled(True)
+
+        else:  # Si se desmarca un QCheckBox
+            self.general_network_graph_Checkbox.setEnabled(True)
+            self.weight_network_graph_Checkbox.setEnabled(True)
+            self.size_network_graph_Checkbox.setEnabled(True)
+
+            try:
+                self.mainController.delete_graph()
+            except Exception as e:
+                print(e)
+
+            self.node_size_slider.setEnabled(False)
+            self.edge_weight_slider.setEnabled(False)
+
+    def drawGraph(self):
+        relation_selection = self.relation_combobox.currentText()
+
+        no_words_flag = "null"
+        #distribution_selection = "null"
+        node_size_slider_selection = "null"
+        edge_weight_slider_selection = "null"
+
+        if self.no_words_network_graph_Checkbox.isChecked():
+            no_words_flag = 1
+        else:
+            no_words_flag = 0
+        if self.general_network_graph_Checkbox.isChecked():  # General Seleccionado
+            #distribution_selection = 1
+            try:
+                self.mainController.delete_graph()
+                self.conceptual_network(int(no_words_flag), 1, 50, 550, int(relation_selection))
+            except Exception as e:
+                print(e)
+
+        elif self.weight_network_graph_Checkbox.isChecked():  # PTamaño de Nodo Seleccionado
+            #distribution_selection = 2
+            node_size_slider_selection = int(self.node_size_slider.value())
+            print(f"Valor del Scrollbar: {node_size_slider_selection}")
+
+            try:
+                self.mainController.delete_graph()
+                self.conceptual_network(int(no_words_flag), 2, node_size_slider_selection, 1, int(relation_selection))
+            except Exception as e:
+                print(e)
+
+        elif self.size_network_graph_Checkbox.isChecked():  # Peso de Arista Seleccionado'''
+            #distribution_selection = 3
+            edge_weight_slider_selection = int(self.edge_weight_slider.value())
+            print(f"Valor del Scrollbar 2: {edge_weight_slider_selection}")
+
+            try:
+                self.mainController.delete_graph()
+                self.conceptual_network(int(no_words_flag), 3, 50, edge_weight_slider_selection, int(relation_selection))
+            except Exception as e:
+                print(e)
+
+
+
+
+
+
+
+
 
 
 app = QApplication([])
