@@ -1155,6 +1155,7 @@ class MainWindow(QMainWindow):
         alert.setText("¡Proceso Terminado!")
         alert.setIcon(QMessageBox.Icon.Information)
         alert.exec()
+        self.mainController.delete_graph()
         plt.figure(2).show()
 
 
@@ -1249,10 +1250,10 @@ class MainWindow(QMainWindow):
             elif self.size_network_graph_Checkbox.isChecked():  # Peso de Arista Seleccionado
                 self.general_network_graph_Checkbox.setEnabled(False)
                 self.weight_network_graph_Checkbox.setEnabled(False)
+                print("goku aaaaaaaaaaaaaaHS")
 
-
-                self.edge_weight_slider.setMaximum(int(self.mainController.get_weight_of_heaviest_grade()))
-
+                self.edge_weight_slider.setMaximum(int(self.mainController.get_weight_of_heaviest_edge()))
+                print("goku 2")
                 try:
                     self.mainController.delete_graph()
                     self.mainController.create_network()
@@ -1312,6 +1313,7 @@ class MainWindow(QMainWindow):
 
         elif self.size_network_graph_Checkbox.isChecked():  # Peso de Arista Seleccionado'''
             #distribution_selection = 3
+            print("funaron a ronaldo el bicho")
             edge_weight_slider_selection = int(self.edge_weight_slider.value())
             print(f"Valor del Scrollbar 2: {edge_weight_slider_selection}")
 

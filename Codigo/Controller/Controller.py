@@ -46,24 +46,26 @@ class MainController:
     def get_graph(self):
         return self.textHandlerAdmin.get_graph()
 
-    def get_graph_by_node_grade(self, amount):
-        return self.textHandlerAdmin.get_graph_by_node_grade(amount)
-
-    def get_graph_by_edge_weight(self, amount=5):
-        return self.textHandlerAdmin.get_graph_by_edge_weight(amount)
-
     def create_network(self):
         self.textHandlerAdmin.create_network()
 
     def create_relation(self,step=1):
         self.textHandlerAdmin.create_relation(step)
 
+    #por tamaño de nodo !
+    def get_graph_by_node_weight(self,amount=0):
+        return self.textHandlerAdmin.get_graph_by_node_weight(amount)
     def get_weight_of_heaviest_node(self):
         return self.textHandlerAdmin.get_weight_of_heaviest_node()
-
+    #por tamaño de arsita
+    def get_graph_by_edge_weight(self, amount=5):
+        return self.textHandlerAdmin.get_graph_by_edge_weight(amount)
     def get_weight_of_heaviest_edge(self):
         return self.textHandlerAdmin.get_weight_of_heaviest_edge()
 
+    #por grado del nodo
+    def get_graph_by_node_grade(self, amount):
+        return self.textHandlerAdmin.get_graph_by_node_grade(amount)
     def get_weight_of_heaviest_grade(self):
         return self.textHandlerAdmin.get_weight_of_heaviest_grade()
     def delete_graph(self):
