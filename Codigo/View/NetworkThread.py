@@ -8,13 +8,14 @@ from matplotlib import pyplot as plt
 class NetworkThread(QThread):
 
     finished = pyqtSignal()
-    def __init__(self, main_controller, show_lables, type_graph, nodeSize, edgeWeight, relation):
+    def __init__(self, main_controller, show_lables, type_graph, nodeSize, edgeWeight, nodeGrade,  relation):
         super().__init__()
         self.main_controller = main_controller
         self.show_lables = show_lables
         self.type_graph = type_graph
         self.nodeSize = nodeSize
         self.edgeWeight = edgeWeight
+        self.nodeGrade = nodeGrade
         self.relation = relation
 
     def run(self):
@@ -33,12 +34,12 @@ class NetworkThread(QThread):
             elif self.type_graph == 3:
                 graph = self.main_controller.get_graph_by_edge_weight(self.edgeWeight)  # por tamaño de la arista
 
+            elif self.type_graph == 4:
+                graph = self.main_controller.get_graph_by_node_grade(self.nodeGrade)  # por tamaño de la arista
 
             weights = nx.get_node_attributes(graph, 'weight')
-            #print(f"GOKUUUUUUUUUUUU   {weights}")
-            print("max 1")
             max_node_weight = max(weights.values())
-            print("max 2")
+
             try:
                 edge_weights = [data['weight'] for u, v, data in graph.edges(data=True)]
                 max_edge_weight = max(edge_weights)

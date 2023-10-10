@@ -320,8 +320,10 @@ class TextHandlerAdmin:
     def get_graph_by_node_grade(self, amount=100):
 
         degree_dict = dict(self.graph.degree())
-        nodes_sorted_by_degree = sorted(degree_dict, key=lambda x: degree_dict[x], reverse=True)
-        top_x_nodes = nodes_sorted_by_degree[:amount]
+        #nodes_sorted_by_degree = sorted(degree_dict, key=lambda x: degree_dict[x], reverse=True)
+        top_x_nodes = {clave: valor for clave, valor in degree_dict.items() if valor >= amount}
+
+        #top_x_nodes = nodes_sorted_by_degree[:amount]
         new_graph = self.graph.subgraph(top_x_nodes).copy()
 
         return new_graph
