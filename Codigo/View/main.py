@@ -49,6 +49,12 @@ sys.path.append(codigo_dir)
 
 path = ""
 
+import matplotlib.backends.backend_qt5agg
+
+matplotlib.use('Qt5Agg')
+
+
+# matplotlib.use('TkAgg')
 def resource_path(relative_path):
     global path
     try:
@@ -65,7 +71,8 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         # Interface control variables
-        self.cloudParameters = {'width':512, 'height':512, 'background_color':(255,255,255), 'color':(255,255,255), 'mask':None, 'font':None}
+        self.cloudParameters = {'width': 512, 'height': 512, 'background_color': (255, 255, 255),
+                                'color': (255, 255, 255), 'mask': None, 'font': None}
         self.page_size = 50  # Table Page Size
         self.current_page = 1  # Actual page
         self.word_freq_dict = StructureStemming()
@@ -260,7 +267,7 @@ class MainWindow(QMainWindow):
         filter_widget.setLayout(filter_widget_layout)
         filter_label = QLabel()
         filter_label_icon = QIcon(resource_path("Icons/ordenar-alt.png"))
-        filter_label.setPixmap(filter_label_icon.pixmap(15,15))
+        filter_label.setPixmap(filter_label_icon.pixmap(15, 15))
 
         export_table_stats = QPushButton("Exportar Tabla")
         export_table_stats.setStyleSheet(button_style_warming)
@@ -275,7 +282,6 @@ class MainWindow(QMainWindow):
 
         filter_widget_layout.addWidget(export_table_stats)
         table_view_widget_layout.addWidget(filter_widget)
-
 
         # Creation of the table interface
         self.table_info_widget = QTableWidget()
@@ -475,7 +481,7 @@ class MainWindow(QMainWindow):
         color_selector_button.setIcon(QIcon(resource_path("Icons/angulo-pequeno-hacia-abajo.png")))
         color_selector_button.setStyleSheet(button_style_selection)
         color_selector_button.setMaximumSize(50, 30)
-        color_selector_button.setContentsMargins(0,0,0,0)
+        color_selector_button.setContentsMargins(0, 0, 0, 0)
         color_selector_button.clicked.connect(self.changePalette)
         color_frame1_widget_layout.addWidget(color_selector_button)
         color_selecctor_layout.addWidget(color_frame1_widget)
@@ -487,7 +493,7 @@ class MainWindow(QMainWindow):
         self.color_frame2.setMinimumSize(30, 30)
         self.color_frame2.setMaximumSize(30, 30)
         self.color_frame2.setStyleSheet(frame_borders_style)
-        self.color_frame2.setContentsMargins(0,0,0,0)
+        self.color_frame2.setContentsMargins(0, 0, 0, 0)
         color_frame2_widget_layout.addWidget(self.color_frame2)
 
         background_color_selector_button = QPushButton("")
@@ -603,7 +609,7 @@ class MainWindow(QMainWindow):
 
         self.svg_personalization_tools.setLayout(svg_personalization_tools_layout)
 
-        conceptual_cloud_widget_layout.addWidget(self.svg_personalization_tools, 0 , 1)
+        conceptual_cloud_widget_layout.addWidget(self.svg_personalization_tools, 0, 1)
         conceptual_cloud_widget_layout.setColumnStretch(0, 2)
         # Here the layout is loaded to the tab
         self.conceptual_cloud_widget.setLayout(conceptual_cloud_widget_layout)
@@ -620,7 +626,6 @@ class MainWindow(QMainWindow):
         self.tab_widget.setTabEnabled(2, False)
 
         self.setCentralWidget(self.central_widget)
-
 
     def update_img_progress(self):
         value = self.img_progress_bar.value()
@@ -656,7 +661,6 @@ class MainWindow(QMainWindow):
         self.graph_thread.error_signal.connect(self.error_report)
         self.graph_thread.finished.connect(self.graph_thread_finished)
         self.graph_thread.start()
-
 
     # Action when the thread updates the progress bar
     def update_progressbar(self, file, progress):
@@ -915,18 +919,19 @@ class MainWindow(QMainWindow):
         plt.close(plt.figure(1))
         dpi = 160
         figsize = (wordcloud_params['width'] / dpi, wordcloud_params['height'] / dpi)
-        plt.figure(1,figsize=figsize, dpi=dpi)
+        plt.figure(1, figsize=figsize, dpi=dpi)
         self.cloud_thread = CloudThread(wordcloud_params, self.mainController)  # Here the thread is created
         self.cloud_thread.finished.connect(self.cloud_thread_finish)
         self.cloud_thread.start()
         self.image_progress_bar.setVisible(True)
         self.loading_timer.start(50)
-        #self.svg_image.setPixmap(QPixmap(resource_path("wordcloud.png")))
+        # self.svg_image.setPixmap(QPixmap(resource_path("wordcloud.png")))
 
     def cloud_thread_finish(self):
         self.loading_timer.stop()
         self.image_progress_bar.setVisible(False)
-        self.load_image(resource_path("wordcloud.png"))
+        wordcloud_path = os.path.expanduser(os.path.join('~', 'Documents', 'ConceptualNetworks'))
+        self.load_image(wordcloud_path + "/wordcloud.png")
 
     # Load the image to the scene
     def load_image(self, file_path):
@@ -975,7 +980,8 @@ class MainWindow(QMainWindow):
     def conceptual_network(self, show_lables=1, type_graph=1, nodeSize=50, edgeWeight=550, relation=1):
         plt.close(plt.figure(2))
         plt.figure(2)
-        self.network_thread = NetworkThread(self.mainController, show_lables, type_graph, nodeSize, edgeWeight, relation)
+        self.network_thread = NetworkThread(self.mainController, show_lables, type_graph, nodeSize, edgeWeight,
+                                            relation)
         self.network_thread.finished.connect(self.network_thread_finish)
         self.network_thread.start()
 
@@ -986,7 +992,6 @@ class MainWindow(QMainWindow):
         alert.setIcon(QMessageBox.Icon.Information)
         alert.exec()
         plt.figure(2).show()
-
 
     # Fill the font combo box with the system fonts
     def fill_font_combobox(self):

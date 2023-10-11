@@ -3,6 +3,7 @@ from PyQt6.QtCore import QThread, pyqtSignal
 from matplotlib import pyplot as plt
 from wordcloud import WordCloud
 
+import os
 # Class that create a thread to process the files
 class CloudThread(QThread):
 
@@ -22,5 +23,6 @@ class CloudThread(QThread):
         plt.imshow(wordcloud, interpolation='bilinear')
         plt.axis("off")
         # Save temporality the cloud in a png then is show it
-        plt.savefig("wordcloud.png", bbox_inches='tight', pad_inches=0, transparent=True)
+        path = os.path.expanduser(os.path.join('~', 'Documents', 'ConceptualNetworks'))
+        plt.savefig(path + "/wordcloud.png", bbox_inches='tight', pad_inches=0, transparent=True)
         self.finished.emit()
