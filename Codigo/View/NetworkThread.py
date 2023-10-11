@@ -8,35 +8,49 @@ from matplotlib import pyplot as plt
 class NetworkThread(QThread):
 
     finished = pyqtSignal()
-    def __init__(self, main_controller, show_lables, type_graph, nodeSize, edgeWeight, relation):
+    def __init__(self, main_controller, show_lables, type_graph, nodeSize, edgeWeight, nodeGrade,  relation):
         super().__init__()
         self.main_controller = main_controller
         self.show_lables = show_lables
         self.type_graph = type_graph
         self.nodeSize = nodeSize
         self.edgeWeight = edgeWeight
+        self.nodeGrade = nodeGrade
         self.relation = relation
 
     def run(self):
         self.main_controller.create_network()
         self.main_controller.create_relation(self.relation)
-
-        if self.type_graph == 1:
-            graph = self.main_controller.get_graph()  # all in general
-        elif self.type_graph == 2:
-            graph = self.main_controller.get_graph_by_node_grade(self.nodeSize)  # cantidad de lo nodos que tiene mas grados
-        elif self.type_graph == 3:
-            graph = self.main_controller.get_graph_by_edge_weight(self.edgeWeight)  # por tamaño de la arista
-
-        weights = nx.get_node_attributes(graph, 'weight')
-        max_node_weight = max(weights.values())
-        edge_weights = [data['weight'] for u, v, data in graph.edges(data=True)]
-        max_edge_weight = max(edge_weights)
-
+        graph= nx.Graph()
+        #print("Aquí voyyyyyyyyy <<<<<<<<<<<<<<")
         try:
 
-            print(str(max_node_weight))
-            print(str(max_edge_weight))
+            if self.type_graph == 1:
+                graph = self.main_controller.get_graph()  # all in general
+
+            elif self.type_graph == 2:
+                graph = self.main_controller.get_graph_by_node_weight(self.nodeSize)  # cantidad de lo nodos que tiene mas grados
+
+            elif self.type_graph == 3:
+                graph = self.main_controller.get_graph_by_edge_weight(self.edgeWeight)  # por tamaño de la arista
+
+            elif self.type_graph == 4:
+                graph = self.main_controller.get_graph_by_node_grade(self.nodeGrade)  # por tamaño de la arista
+
+            weights = nx.get_node_attributes(graph, 'weight')
+            max_node_weight = max(weights.values())
+
+            try:
+                edge_weights = [data['weight'] for u, v, data in graph.edges(data=True)]
+                max_edge_weight = max(edge_weights)
+            except Exception as e:
+                max_edge_weight = 1
+                print(e)
+
+
+
+            #print(str(max_node_weight))
+            #print(str(max_edge_weight))
             circular_pos = nx.spring_layout(graph, k=0.30)  # Utiliza un diseño circular
             node_sizes = [(weight / max_node_weight) * 400 for node, weight in weights.items()]
 
@@ -53,7 +67,7 @@ class NetworkThread(QThread):
             # Dibujar las etiquetas de los nodos con un tamaño proporcional a sus pesos y color negro
             if self.show_lables == 0:
                 for node, weight in weights.items():
-                    normalized_weight = (weight / max_node_weight) * 30
+                    normalized_weight = (weight / max_node_weight) * 40
 
                     nx.draw_networkx_labels(graph, circular_pos, labels={node: node}, font_size=normalized_weight,
                                             font_color='k')  # Cambia 'w' a 'k' para etiquetas negras

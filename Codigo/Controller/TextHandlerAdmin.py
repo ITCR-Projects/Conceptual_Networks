@@ -320,18 +320,28 @@ class TextHandlerAdmin:
     def get_graph_by_node_grade(self, amount=100):
 
         degree_dict = dict(self.graph.degree())
-        nodes_sorted_by_degree = sorted(degree_dict, key=lambda x: degree_dict[x], reverse=True)
-        top_x_nodes = nodes_sorted_by_degree[:amount]
+        #nodes_sorted_by_degree = sorted(degree_dict, key=lambda x: degree_dict[x], reverse=True)
+        top_x_nodes = {clave: valor for clave, valor in degree_dict.items() if valor >= amount}
+
+        #top_x_nodes = nodes_sorted_by_degree[:amount]
         new_graph = self.graph.subgraph(top_x_nodes).copy()
 
         return new_graph
 
     def get_graph_by_edge_weight(self, amount=5):
-        weights = nx.get_node_attributes(self.graph, 'weight')
-        filtered_nodes = [node for node, weight in weights.items() if weight > amount]
-        new_graph = self.graph.subgraph(filtered_nodes)
+        weights = nx.get_edge_attributes(self.graph, 'weight')
+        edges = {clave: valor for clave, valor in weights.items() if valor >= amount}
+       # edges=[ print((x,y, data))for x,y, data in weights if int(data) >= amount]
+
+
+        new_graph = self.graph.edge_subgraph(edges)
         return new_graph
 
+    def get_graph_by_node_weight(self, amount=5):
+        weights = nx.get_node_attributes(self.graph, 'weight')
+        filtered_nodes = [node for node, weight in weights.items() if weight >= amount]
+        new_graph = self.graph.subgraph(filtered_nodes)
+        return new_graph
     def get_weight_of_heaviest_node(self):
         weights = nx.get_node_attributes(self.graph, 'weight')
         max_weight = max(weights.values())
@@ -348,38 +358,13 @@ class TextHandlerAdmin:
         return max_grade
 
     def print_network(self,show_lables):
-        # for node, data in self.graph.nodes(data=True):
-        #     print(f"{node}: Peso {data['weight']}")
-        #
-        # for u, v, data in self.graph.edges(data=True):
-        #     print(f"{u} --> {v}: Peso {data['weight']}")
-        #
-        weights = nx.get_node_attributes(self.graph, 'weight')
+        for node, data in self.graph.nodes(data=True):
+            print(f"{node}: Peso {data['weight']}")
 
-        try:
-            plt.figure(figsize=(16, 9))
-            circular_pos = nx.spring_layout(self.graph, k=0.15)  # Utiliza un diseño circular
-            node_sizes = [weight * 50 for node, weight in weights.items()]
+        for u, v, data in self.graph.edges(data=True):
+            print(f"{u} --> {v}: Peso {data['weight']}")
 
-            nx.draw_networkx_nodes(self.graph, circular_pos, node_size=node_sizes)
 
-            # Dibujar las aristas con un grosor proporcional al peso y el mismo color que los nodos
-            for edge in self.graph.edges(data=True):
-                nx.draw_networkx_edges(self.graph, circular_pos, edgelist=[(edge[0], edge[1])],
-                                       width=2 * edge[2]['weight'], arrows=False, edge_color='lightblue')
-
-            # Dibujar las etiquetas de los nodos con un tamaño proporcional a sus pesos y color negro
-            if show_lables == 1:
-                for node, weight in weights.items():
-                    nx.draw_networkx_labels(self.graph, circular_pos, labels={node: node}, font_size=weight * 3,
-                                            font_color='k')  # Cambia 'w' a 'k' para etiquetas negras
-
-            # Mostrar el gráfico
-
-            plt.ioff()
-            plt.show()
-        except Exception as e:
-            print(e)
 
     def indexing(self):
 
