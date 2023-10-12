@@ -49,7 +49,7 @@ sys.path.append(codigo_dir)
 path = ""
 
 import matplotlib.backends.backend_qt5agg
-
+import matplotlib.backends.backend_svg
 matplotlib.use('Qt5Agg')
 
 
