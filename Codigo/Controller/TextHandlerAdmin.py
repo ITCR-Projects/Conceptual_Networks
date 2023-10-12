@@ -1,14 +1,8 @@
-import os
-import io
-import numpy as np
-import matplotlib.pyplot as plt
 import re
 import Stemmer
 import networkx as nx
 
-from PIL import Image
 
-from wordcloud import WordCloud
 from collections import Counter
 
 from Codigo.Model.DocxFile import DocxFile

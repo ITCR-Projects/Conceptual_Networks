@@ -1,5 +1,4 @@
 # PyQt6 dependencies
-import networkx as nx
 import csv
 
 from PyQt6.QtCore import Qt, QTimer
