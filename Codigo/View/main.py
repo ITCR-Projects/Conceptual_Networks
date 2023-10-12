@@ -1177,15 +1177,14 @@ class MainWindow(QMainWindow):
 
     # Conceptual network manage
     def conceptual_network(self, show_lables=1, type_graph=1, nodeSize=50, edgeWeight=550, nodeGrade = 1, relation=1):
-        print(
+        '''print(
             "par1 : " + str(show_lables) +
             " par2 : " + str(type_graph) +
             " par3 : " + str(nodeSize) +
             " par4 : " + str(edgeWeight) +
             " par5 : " + str(nodeGrade) +
             " par6 : " + str(relation)
-
-        )
+        )'''
 
         plt.close(plt.figure(2))
         plt.figure(2)
@@ -1246,9 +1245,10 @@ class MainWindow(QMainWindow):
         self.view.scale(1 / 1.2, 1 / 1.2)
 
     def network_relations_checkbok_manage(self):
-        self.general_network_graph_Checkbox.setEnabled(False)
-        self.weight_network_graph_Checkbox.setEnabled(False)
-        self.size_network_graph_Checkbox.setEnabled(False)
+        self.general_network_graph_Checkbox.setChecked(False)
+        self.weight_network_graph_Checkbox.setChecked(False)
+        self.size_network_graph_Checkbox.setChecked(False)
+        self.grade_network_graph_Checkbox.setChecked(False)
 
 
 
