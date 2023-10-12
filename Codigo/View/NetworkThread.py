@@ -53,13 +53,10 @@ class NetworkThread(QThread):
 
             #print(str(max_node_weight))
             #print(str(max_edge_weight))
+            plt.figure(num=2,figsize=(16, 9))
             circular_pos = nx.spring_layout(graph, k=0.30)  # Utiliza un diseño circular
             node_sizes = [(weight / max_node_weight) * 400 for node, weight in weights.items()]
-            for node, data in graph.nodes(data=True):
-                print(f"{node}: Peso {data['weight']}")
 
-            for u, v, data in graph.edges(data=True):
-                print(f"{u} --> {v}: Peso {data['weight']}")
             nx.draw_networkx_nodes(graph, circular_pos, node_size=node_sizes)
 
             # Dibujar las aristas con un grosor proporcional al peso y el mismo color que los nodos
