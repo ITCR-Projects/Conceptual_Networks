@@ -1022,10 +1022,12 @@ class MainWindow(QMainWindow):
     def add_item_to_root_list(self):
         selected_item = self.table_info_widget.currentItem()
         selected_column = self.table_info_widget.currentColumn()
+        items = [self.root_list_list.item(i).text() for i in range(self.root_list_list.count())]
         if selected_column == 0:
             if selected_item:
                 text = selected_item.text()
-                self.root_list_list.addItem(text)
+                if text not in items:
+                    self.root_list_list.addItem(text)
 
     # Delete the selected item of the list of roots
     def remove_item_from_root_list(self):
@@ -1043,7 +1045,16 @@ class MainWindow(QMainWindow):
         filecount = self.root_list_list.count()
         for i in range(filecount):
             items.append(self.root_list_list.item(i).text())
-        self.mainController.combine_roots(items)
+        try:
+            self.mainController.combine_roots(items)
+        except Exception as e:
+            alert = QMessageBox()
+            alert.setWindowTitle("Alerta")
+            alert.setText(f"¡Warming! la raiz {e} se agrego mas de una vez \n Puede que ocurriera un error al combinarlas")
+            alert.setIcon(QMessageBox.Icon.Information)
+            alert.exec()
+            self.root_list_list.clear()
+            self.populate_table()
         alert = QMessageBox()
         alert.setWindowTitle("Alerta")
         alert.setText("¡Palabras Combinadas!")
