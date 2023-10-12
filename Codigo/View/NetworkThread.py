@@ -73,6 +73,10 @@ class NetworkThread(QThread):
                                             font_color='k')  # Cambia 'w' a 'k' para etiquetas negras
 
             # Mostrar el gráfico
+
+            plt.subplots_adjust(left=0, right=1, top=1, bottom=0) #posible solucion tengo mis dudas
+
+
             #plt.show()
             #plt.savefig("network.png", bbox_inches='tight', pad_inches=0, transparent=True)
         except Exception as e:
