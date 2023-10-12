@@ -1198,6 +1198,7 @@ class MainWindow(QMainWindow):
         alert.setText("¡Proceso Terminado!")
         alert.setIcon(QMessageBox.Icon.Information)
         alert.exec()
+        self.mainController.delete_graph()
         plt.figure(2).show()
 
 

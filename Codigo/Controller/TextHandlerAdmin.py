@@ -312,7 +312,7 @@ class TextHandlerAdmin:
         self.roots_words = text.split()
 
     def get_graph(self):
-        return self.graph
+        return self.graph.copy()
 
     def get_graph_by_node_grade(self, amount=100):
 

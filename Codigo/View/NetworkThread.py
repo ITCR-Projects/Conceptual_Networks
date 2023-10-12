@@ -21,12 +21,14 @@ class NetworkThread(QThread):
     def run(self):
         self.main_controller.create_network()
         self.main_controller.create_relation(self.relation)
+
         graph= nx.Graph()
         #print("Aquí voyyyyyyyyy <<<<<<<<<<<<<<")
         try:
 
             if self.type_graph == 1:
-                graph = self.main_controller.get_graph()  # all in general
+                graph = self.main_controller.get_graph_by_node_weight(0)# all in general
+               #graph = self.main_controller.get_graph()  # all in general
 
             elif self.type_graph == 2:
                 graph = self.main_controller.get_graph_by_node_weight(self.nodeSize)  # cantidad de lo nodos que tiene mas grados
@@ -53,11 +55,16 @@ class NetworkThread(QThread):
             #print(str(max_edge_weight))
             circular_pos = nx.spring_layout(graph, k=0.30)  # Utiliza un diseño circular
             node_sizes = [(weight / max_node_weight) * 400 for node, weight in weights.items()]
+            for node, data in graph.nodes(data=True):
+                print(f"{node}: Peso {data['weight']}")
 
+            for u, v, data in graph.edges(data=True):
+                print(f"{u} --> {v}: Peso {data['weight']}")
             nx.draw_networkx_nodes(graph, circular_pos, node_size=node_sizes)
 
             # Dibujar las aristas con un grosor proporcional al peso y el mismo color que los nodos
             for edge in graph.edges(data=True):
+
                 num_relations = edge[2]['weight']
                 normalized_weight = (num_relations / max_edge_weight) * 20
 
@@ -67,6 +74,7 @@ class NetworkThread(QThread):
             # Dibujar las etiquetas de los nodos con un tamaño proporcional a sus pesos y color negro
             if self.show_lables == 0:
                 for node, weight in weights.items():
+
                     normalized_weight = (weight / max_node_weight) * 40
 
                     nx.draw_networkx_labels(graph, circular_pos, labels={node: node}, font_size=normalized_weight,
