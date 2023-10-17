@@ -799,11 +799,11 @@ class MainWindow(QMainWindow):
         conceptual_network_widget_vertical_layout.addLayout(conceptual_network_widget_horizontal_inside_grade_layout)
         conceptual_network_widget_vertical_layout.addLayout(conceptual_network_widget_horizontal_inside_no_words_layout)
 
-        create_conceptual_network_button = QPushButton("Crear Red")
-        create_conceptual_network_button.setStyleSheet(button_style_normal)
-        create_conceptual_network_button.setIcon(QIcon(resource_path("Icons/rodillo.png")))
+        self.create_conceptual_network_button = QPushButton("Crear Red")
+        self.create_conceptual_network_button.setStyleSheet(button_style_normal)
+        self.create_conceptual_network_button.setIcon(QIcon(resource_path("Icons/rodillo.png")))
 
-        conceptual_network_widget_vertical_layout.addWidget(create_conceptual_network_button)
+        conceptual_network_widget_vertical_layout.addWidget(self.create_conceptual_network_button)
         conceptual_network_widget_layout.addLayout(conceptual_network_widget_vertical_layout)
 
         # self.graphtype_combobox.currentIndexChanged.connect(self.conceptual_network_tab_manage)
@@ -815,7 +815,7 @@ class MainWindow(QMainWindow):
         self.edge_weight_slider.setEnabled(False)
         self.node_grade_slider.setEnabled(False)
 
-        create_conceptual_network_button.clicked.connect(self.drawGraph)
+        self.create_conceptual_network_button.clicked.connect(self.drawGraph)
 
         # ------------------------------Conceptual Network Tab End------------------------------------------
 
@@ -1209,6 +1209,7 @@ class MainWindow(QMainWindow):
         alert.setText("¡Proceso Terminado!")
         alert.setIcon(QMessageBox.Icon.Information)
         alert.exec()
+        self.create_conceptual_network_button.setEnabled(True)
         self.mainController.delete_graph()
         plt.figure(2).show()
 
@@ -1262,9 +1263,6 @@ class MainWindow(QMainWindow):
         self.size_network_graph_Checkbox.setChecked(False)
         self.grade_network_graph_Checkbox.setChecked(False)
 
-
-
-
     def displaySlidervalueNodeSize(self, value):
         self.node_size_value_label.setText(f"Valor: {value}")
         # self.node_size_value_label.adjustSize()            # Ajusta el tamaño del label de acuerdo al tamaño del numero
@@ -1274,6 +1272,7 @@ class MainWindow(QMainWindow):
 
     def displaySlidervalueNodeGrade(self, value):
         self.node_grade_value_label.setText(f"Valor: {value}")
+
     def network_checkbox_management(self, state):
         if state == 2:  # Si se marca un QCheckBox
 
@@ -1355,6 +1354,7 @@ class MainWindow(QMainWindow):
             self.node_grade_slider.setEnabled(False)
 
     def drawGraph(self):
+        self.create_conceptual_network_button.setEnabled(False)
         relation_selection = self.relation_combobox.currentText()
 
         no_words_flag = "null"
