@@ -591,13 +591,13 @@ class MainWindow(QMainWindow):
 
         self.font_combobox.activated.connect(self.onFontComboboxActivated)
 
-        create_word_cloud_button = QPushButton("Crear Nube de Palabras")
-        create_word_cloud_button.setIcon(QIcon(resource_path("Icons/rodillo.png")))
-        create_word_cloud_button.setToolTip("Genera una nube de palabras con la configuración establecida")
-        create_word_cloud_button.setStyleSheet(button_style_normal)
-        create_word_cloud_button.clicked.connect(self.generate_word_cloud)
+        self.create_word_cloud_button = QPushButton("Crear Nube de Palabras")
+        self.create_word_cloud_button.setIcon(QIcon(resource_path("Icons/rodillo.png")))
+        self.create_word_cloud_button.setToolTip("Genera una nube de palabras con la configuración establecida")
+        self.create_word_cloud_button.setStyleSheet(button_style_normal)
+        self.create_word_cloud_button.clicked.connect(self.generate_word_cloud)
 
-        svg_personalization_tools_layout.addWidget(create_word_cloud_button)
+        svg_personalization_tools_layout.addWidget(self.create_word_cloud_button)
 
         export_word_cloud_button = QPushButton("Exportar Nube de Palabras")
         export_word_cloud_button.setIcon(QIcon(resource_path("Icons/descargar.png")))
@@ -1117,6 +1117,7 @@ class MainWindow(QMainWindow):
 
     # Generate a concept cloud
     def generate_word_cloud(self):
+        self.create_word_cloud_button.setEnabled(False)
         wordcloud_params = {
             'font_path': self.fonts[self.cloudParameters['font']],
             'width': self.cloudParameters['width'],
@@ -1142,6 +1143,7 @@ class MainWindow(QMainWindow):
         self.image_progress_bar.setVisible(False)
         wordcloud_path = os.path.expanduser(os.path.join('~', 'Documents', 'ConceptualNetworks'))
         self.load_image(wordcloud_path + "/wordcloud.png")
+        self.create_word_cloud_button.setEnabled(True)
 
     # Load the image to the scene
     def load_image(self, file_path):
