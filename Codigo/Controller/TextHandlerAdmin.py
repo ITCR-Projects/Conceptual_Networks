@@ -1,10 +1,6 @@
-
 import re
 import Stemmer
 import networkx as nx
-
-
-
 
 from collections import Counter
 
@@ -30,13 +26,39 @@ def resource_path(relative_path):
     return os.path.join(base_path, relative_path)
 
 
+def get_graph_by_node_grade(graph, amount=100):
+    degree_dict = dict(graph.degree())
+    # nodes_sorted_by_degree = sorted(degree_dict, key=lambda x: degree_dict[x], reverse=True)
+    top_x_nodes = {clave: valor for clave, valor in degree_dict.items() if valor >= amount}
+
+    # top_x_nodes = nodes_sorted_by_degree[:amount]
+    new_graph = graph.subgraph(top_x_nodes).copy()
+
+    return new_graph
+
+
+def get_graph_by_edge_weight(graph, amount=5):
+    weights = nx.get_edge_attributes(graph, 'weight')
+    edges = {clave: valor for clave, valor in weights.items() if valor >= amount}
+    # edges=[ print((x,y, data))for x,y, data in weights if int(data) >= amount]
+    new_graph = graph.edge_subgraph(edges)
+    return new_graph
+
+
+def get_graph_by_node_weight(graph, amount=5):
+    weights = nx.get_node_attributes(graph, 'weight')
+    filtered_nodes = [node for node, weight in weights.items() if weight >= amount]
+    new_graph = graph.subgraph(filtered_nodes)
+    return new_graph
+
+
 class TextHandlerAdmin:
     def __init__(self):
         self.files = []
         self.text = ""
         self.ignore_words_added_list = []
         self.structure_stemming = StructureStemming()
-        #self.graph = nx.DiGraph()
+        # self.graph = nx.DiGraph()
         self.graph = nx.Graph()
         self.roots_words = []
 
@@ -312,33 +334,26 @@ class TextHandlerAdmin:
         self.roots_words = text.split()
 
     def get_graph(self):
-        return self.graph.copy()
-
-    def get_graph_by_node_grade(self, amount=100):
-
-        degree_dict = dict(self.graph.degree())
-        #nodes_sorted_by_degree = sorted(degree_dict, key=lambda x: degree_dict[x], reverse=True)
-        top_x_nodes = {clave: valor for clave, valor in degree_dict.items() if valor >= amount}
-
-        #top_x_nodes = nodes_sorted_by_degree[:amount]
-        new_graph = self.graph.subgraph(top_x_nodes).copy()
-
-        return new_graph
-
-    def get_graph_by_edge_weight(self, amount=5):
-        weights = nx.get_edge_attributes(self.graph, 'weight')
-        edges = {clave: valor for clave, valor in weights.items() if valor >= amount}
-       # edges=[ print((x,y, data))for x,y, data in weights if int(data) >= amount]
-
-
-        new_graph = self.graph.edge_subgraph(edges)
-        return new_graph
-
-    def get_graph_by_node_weight(self, amount=5):
         weights = nx.get_node_attributes(self.graph, 'weight')
-        filtered_nodes = [node for node, weight in weights.items() if weight >= amount]
+        filtered_nodes = [node for node, weight in weights.items() if weight >= 0]
         new_graph = self.graph.subgraph(filtered_nodes)
         return new_graph
+
+    def get_graph_by_filters(self, node_weight, edge_weight, node_grade):
+        new_graph = self.graph
+
+        if node_weight == 0 and edge_weight == 0 and node_grade == 0:
+            return self.get_graph()
+
+        if node_weight > 0:
+            new_graph = get_graph_by_node_weight(new_graph, node_weight)
+        if edge_weight > 0:
+            new_graph = get_graph_by_edge_weight(new_graph, edge_weight)
+        if node_grade > 0:
+            new_graph = get_graph_by_node_grade(new_graph, node_grade)
+
+        return new_graph
+
     def get_weight_of_heaviest_node(self):
         weights = nx.get_node_attributes(self.graph, 'weight')
         max_weight = max(weights.values())
@@ -354,14 +369,12 @@ class TextHandlerAdmin:
         max_grade = max(degree_dict.values())
         return max_grade
 
-    def print_network(self,show_lables):
+    def print_network(self, show_lables):
         for node, data in self.graph.nodes(data=True):
             print(f"{node}: Peso {data['weight']}")
 
         for u, v, data in self.graph.edges(data=True):
             print(f"{u} --> {v}: Peso {data['weight']}")
-
-
 
     def indexing(self):
 
@@ -415,14 +428,13 @@ class TextHandlerAdmin:
     def delete_graph(self):
         self.graph.clear()
 
-
-#x = TextHandlerAdmin()
-#x.roots_words = ["hola", "jose", "arce", "jose", "gato", "gato"]
+# x = TextHandlerAdmin()
+# x.roots_words = ["hola", "jose", "arce", "jose", "gato", "gato"]
 # x.combine_nodes("jose", ["jose","gato"])
-#x.create_network()
-#x.create_relation()
-#x.print_network(1)
-#print("------------------------")
-#print(x.get_weight_of_heaviest_edge())
-#print(x.get_weight_of_heaviest_node())
-#print(x.get_weight_of_heaviest_grade())
+# x.create_network()
+# x.create_relation()
+# x.print_network(1)
+# print("------------------------")
+# print(x.get_weight_of_heaviest_edge())
+# print(x.get_weight_of_heaviest_node())
+# print(x.get_weight_of_heaviest_grade())
