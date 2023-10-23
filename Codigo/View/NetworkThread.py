@@ -25,19 +25,19 @@ class NetworkThread(QThread):
         graph= nx.Graph()
         #print("Aquí voyyyyyyyyy <<<<<<<<<<<<<<")
         try:
-
-            if self.type_graph == 1:
-                graph = self.main_controller.get_graph_by_node_weight(0)# all in general
-               #graph = self.main_controller.get_graph()  # all in general
-
-            elif self.type_graph == 2:
-                graph = self.main_controller.get_graph_by_node_weight(self.nodeSize)  # cantidad de lo nodos que tiene mas grados
-
-            elif self.type_graph == 3:
-                graph = self.main_controller.get_graph_by_edge_weight(self.edgeWeight)  # por tamaño de la arista
-
-            elif self.type_graph == 4:
-                graph = self.main_controller.get_graph_by_node_grade(self.nodeGrade)  # por tamaño de la arista
+            graph = self.main_controller.get_graph_by_filters(self.nodeSize,self.edgeWeight,self.nodeGrade)
+            # if self.type_graph == 1:
+            #     graph = self.main_controller.get_graph_by_node_weight(0)# all in general
+            #    #graph = self.main_controller.get_graph()  # all in general
+            #
+            # elif self.type_graph == 2:
+            #     graph = self.main_controller.get_graph_by_node_weight(self.nodeSize)  # cantidad de lo nodos que tiene mas grados
+            #
+            # elif self.type_graph == 3:
+            #     graph = self.main_controller.get_graph_by_edge_weight(self.edgeWeight)  # por tamaño de la arista
+            #
+            # elif self.type_graph == 4:
+            #     graph = self.main_controller.get_graph_by_node_grade(self.nodeGrade)  # por tamaño de la arista
 
             weights = nx.get_node_attributes(graph, 'weight')
             max_node_weight = max(weights.values())

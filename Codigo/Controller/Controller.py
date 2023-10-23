@@ -73,3 +73,4 @@ class MainController:
         return self.textHandlerAdmin.get_weight_of_heaviest_grade()
     def delete_graph(self):
         self.textHandlerAdmin.delete_graph()
+
