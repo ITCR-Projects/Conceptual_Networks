@@ -74,9 +74,20 @@ class StructureStemming:
             results[list(value[0].keys())[0]] = value[1]
         return results
 
+    def get_valuable_word_and_weights(self):
+        results = {}
+        for key, value in self.stem_words.items():
+            dicc = value[0]
+            results[max(dicc, key=lambda key: dicc[key])] = value[1]
+        return results
 
 
-
+    def get_short_word_and_weights(self):
+        results = {}
+        for key_i, value in self.stem_words.items():
+            dicc = value[0]
+            results[sorted(dicc, key=lambda x: len(x))[0]] = value[1]
+        return results
 
 #x = StructureStemming()
 #x.add("educ","educativo")

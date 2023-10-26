@@ -416,8 +416,13 @@ class TextHandlerAdmin:
         root = self.structure_stemming.mergeList(roots)
         self.combine_nodes(root, roots)
 
-    def get_cloud_words(self):
-        return self.structure_stemming.get_firts_word_and_weights()
+    def get_cloud_words(self, number):
+        if number == 0:
+            return self.structure_stemming.get_firts_word_and_weights()
+        elif number == 1:
+            return self.structure_stemming.get_valuable_word_and_weights()
+        else:
+            return self.structure_stemming.get_short_word_and_weights()
 
     def alphabeticSort(self):
         self.structure_stemming.sortStruture()

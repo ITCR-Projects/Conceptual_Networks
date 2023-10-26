@@ -72,6 +72,7 @@ class MainWindow(QMainWindow):
         # Interface control variables
         self.cloudParameters = {'width': 512, 'height': 512, 'background_color': (255, 255, 255),
                                 'color': (255, 255, 255), 'mask': None, 'font': None}
+        self.num_func_words = 0
         self.page_size = 50  # Table Page Size
         self.current_page = 1  # Actual page
         self.word_freq_dict = StructureStemming()
@@ -589,7 +590,24 @@ class MainWindow(QMainWindow):
 
         svg_personalization_tools_layout.addWidget(self.font_widget)
 
+        self.select_word_func_widget = QWidget()
+        select_word_func_widget_layout = QHBoxLayout()
+        self.select_word_func_widget.setLayout(select_word_func_widget_layout)
+        word_func_label = QLabel("Palabras")
+        word_func_label.setStyleSheet(label_style_title)
+        self.word_func_combobox = QComboBox()
+        self.word_func_combobox.setToolTip("Selección del algoritmo de selección de palabras")
+        self.word_func_combobox.setStyleSheet(combobox_normal_style)
+        self.word_func_combobox.addItem("Primera en aparecer")
+        self.word_func_combobox.addItem("Con más apariciones")
+        self.word_func_combobox.addItem("Mas corta")
+        select_word_func_widget_layout.addWidget(word_func_label)
+        select_word_func_widget_layout.addWidget(self.word_func_combobox)
+
+        svg_personalization_tools_layout.addWidget(self.select_word_func_widget)
+
         self.font_combobox.activated.connect(self.onFontComboboxActivated)
+        self.word_func_combobox.activated.connect(self.onFuncWordComboboxActivated)
 
         self.create_word_cloud_button = QPushButton("Crear Nube de Palabras")
         self.create_word_cloud_button.setIcon(QIcon(resource_path("Icons/rodillo.png")))
@@ -1131,7 +1149,7 @@ class MainWindow(QMainWindow):
         dpi = 160
         figsize = (wordcloud_params['width'] / dpi, wordcloud_params['height'] / dpi)
         plt.figure(1,figsize=figsize, dpi=dpi)
-        self.cloud_thread = CloudThread(wordcloud_params, self.mainController)  # Here the thread is created
+        self.cloud_thread = CloudThread(wordcloud_params, self.mainController, self.num_func_words)  # Here the thread is created
         self.cloud_thread.finished.connect(self.cloud_thread_finish)
         self.cloud_thread.start()
         self.image_progress_bar.setVisible(True)
@@ -1229,6 +1247,10 @@ class MainWindow(QMainWindow):
     def onFontComboboxActivated(self):
         currentFont = self.font_combobox.currentText()
         self.cloudParameters['font'] = currentFont
+
+    def onFuncWordComboboxActivated(self):
+        currentI = self.word_func_combobox.currentIndex()
+        self.num_func_words = currentI
 
     def onZiseComboboxActivivated(self):
         currentText = self.shapeComboBox.currentText()
