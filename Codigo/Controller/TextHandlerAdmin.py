@@ -333,13 +333,27 @@ class TextHandlerAdmin:
             text = text.replace(i, root)
         self.roots_words = text.split()
 
-    def get_graph(self):
+    def change_labels(self, new_graph, type_word):
+        for node in new_graph.nodes():
+            new_label = node
+            if type_word == 1: # OBTIENE LA PRIMERA PALABRA
+                new_label = self.structure_stemming.get_first_word(node)
+            if type_word == 2: # OBTIENE LA PALABRA MÁS REPETIDA
+                new_label = self.structure_stemming.get_heaviest_word(node)
+            if type_word == 3: # OBTIENE LA PALABRA MÁS PEQUEÑA
+                new_label = self.structure_stemming.get_shortest_word(node)
+            new_graph = nx.relabel_nodes(new_graph, {node: new_label})
+
+        return new_graph
+
+    def get_graph(self, type_word):
         weights = nx.get_node_attributes(self.graph, 'weight')
         filtered_nodes = [node for node, weight in weights.items() if weight >= 0]
         new_graph = self.graph.subgraph(filtered_nodes)
+        new_graph = self.change_labels(new_graph,type_word)
         return new_graph
 
-    def get_graph_by_filters(self, node_weight, edge_weight, node_grade):
+    def get_graph_by_filters(self, node_weight, edge_weight, node_grade, type_word):
         new_graph = self.graph
 
         if node_weight == 0 and edge_weight == 0 and node_grade == 0:
@@ -351,6 +365,8 @@ class TextHandlerAdmin:
             new_graph = get_graph_by_edge_weight(new_graph, edge_weight)
         if node_grade > 0:
             new_graph = get_graph_by_node_grade(new_graph, node_grade)
+
+        new_graph = self.change_labels(new_graph, type_word)
 
         return new_graph
 
