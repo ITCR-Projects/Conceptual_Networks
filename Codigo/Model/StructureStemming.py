@@ -1,5 +1,5 @@
 class StructureStemming:
-    def __init__(self,):
+    def __init__(self, ):
         self.stem_words = {}
         self.count_words = 0
 
@@ -43,7 +43,6 @@ class StructureStemming:
                 self.merge(root_choice, root)
         return root_choice
 
-
     def getStemWords(self):
         '''Método que devuelve la structura donde se mantiene los datos.
             Entradas: self
@@ -62,6 +61,7 @@ class StructureStemming:
     def sortStrutureWeigth(self):
         '''Método que ordena segun el cantidad de palabras que tiene una raiz'''
         self.stem_words = dict(sorted(self.stem_words.items(), key=lambda item: (item[1][1]), reverse=True))
+
     def get_nodes_and_weights(self):
         nodes = list(self.stem_words.keys())
         # weights = list(map(lambda x: x[1] if len(x) >= 2 else None, self.stem_words.values()))
@@ -74,20 +74,26 @@ class StructureStemming:
             results[list(value[0].keys())[0]] = value[1]
         return results
 
+    def get_first_word(self, root):
+        words = self.stem_words[root]
+        word = list(words.keys())[0]
+        return word
 
+    def get_heaviest_word(self, root):
+        words = self.stem_words[root]
+        word = max(words, key=lambda key: words[key])
+        return word
 
+    def get_shortest_word(self, root):
+        words = self.stem_words[root]
+        word = sorted(words, key=lambda x: len(x))[0]
+        return word
 
-
-#x = StructureStemming()
-#x.add("educ","educativo")
-#x.add("educ","educa")
-#x.add("educ","educativo")
-#x.add("hol","hola")
-#x.add("hol","holi")
-#x.add("universi","universidad")
-#print(x.get_nodes_and_weights())
-
-
-
-
-
+# x = StructureStemming()
+# x.add("educ","educativo")
+# x.add("educ","educa")
+# x.add("educ","educativo")
+# x.add("hol","hola")
+# x.add("hol","holi")
+# x.add("universi","universidad")
+# print(x.get_nodes_and_weights())
