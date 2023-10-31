@@ -48,6 +48,7 @@ def get_graph_by_edge_weight(graph, amount=5):
 def get_graph_by_node_weight(graph, amount=5):
     weights = nx.get_node_attributes(graph, 'weight')
     filtered_nodes = [node for node, weight in weights.items() if weight >= amount]
+    print(filtered_nodes)
     new_graph = graph.subgraph(filtered_nodes)
     return new_graph
 
@@ -354,36 +355,55 @@ class TextHandlerAdmin:
         return new_graph
 
     def get_graph_by_filters(self, node_weight, edge_weight, node_grade, type_word):
-        new_graph = self.graph
+        #global new_graph
+        #new_graph = self.graph
 
         if node_weight == 0 and edge_weight == 0 and node_grade == 0:
-            return self.get_graph()
+            return self.get_graph(type_word)
 
         if node_weight > 0:
-            new_graph = get_graph_by_node_weight(new_graph, node_weight)
+            new_graph = get_graph_by_node_weight(self.graph, node_weight)
+
         if edge_weight > 0:
             new_graph = get_graph_by_edge_weight(new_graph, edge_weight)
         if node_grade > 0:
             new_graph = get_graph_by_node_grade(new_graph, node_grade)
 
-        new_graph = self.change_labels(new_graph, type_word)
 
+        #new_graph = self.change_labels(new_graph, type_word)
+        for node, data in new_graph.nodes(data=True):
+            print(f"{node}: Peso {data['weight']}")
+
+        for u, v, data in new_graph.edges(data=True):
+            print(f"{u} --> {v}: Peso {data['weight']}")
         return new_graph
 
     def get_weight_of_heaviest_node(self):
-        weights = nx.get_node_attributes(self.graph, 'weight')
-        max_weight = max(weights.values())
-        return max_weight
+        try:
+            weights = nx.get_node_attributes(self.graph, 'weight')
+            max_weight = max(weights.values())
+            return max_weight
+        except Exception as e:
+            print(e)
+            print("1")
 
     def get_weight_of_heaviest_edge(self):
-        weights = nx.get_edge_attributes(self.graph, 'weight')
-        max_weight = max(weights.values())
-        return max_weight
+        try:
+            weights = nx.get_edge_attributes(self.graph, 'weight')
+            max_weight = max(weights.values())
+            return max_weight
+        except Exception as e:
+            print(e)
+            print("2")
 
     def get_weight_of_heaviest_grade(self):
-        degree_dict = dict(self.graph.degree())
-        max_grade = max(degree_dict.values())
-        return max_grade
+        try:
+            degree_dict = dict(self.graph.degree())
+            max_grade = max(degree_dict.values())
+            return max_grade
+        except Exception as e:
+            print(e)
+            print("3")
 
     def print_network(self, show_lables):
         for node, data in self.graph.nodes(data=True):

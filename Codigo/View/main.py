@@ -146,7 +146,7 @@ class MainWindow(QMainWindow):
         doc_path = resource_path("Icons/documento.png")
         doc_icon = QIcon(doc_path)
         add_files_frame_btn = QPushButton("Añadir Archivo")
-        add_files_frame_btn.setToolTip("Abre un dialogo para seleccionar un archivo")
+        add_files_frame_btn.setToolTip("Abre un diálogo para seleccionar un archivo")
         add_files_frame_btn.setIcon(doc_icon)
         add_files_frame_btn.clicked.connect(self.add_files)
         add_files_frame_btn.setStyleSheet(button_style_add)
@@ -673,11 +673,34 @@ class MainWindow(QMainWindow):
         self.relation_combobox.addItem("5")
         self.relation_combobox.setStyleSheet(combobox_normal_style)
 
+        #self.relation_combobox.currentIndexChanged.connect(self.network_relations_checkbok_manage)
 
         conceptual_network_widget_horizontal_inside_relation_layout.addWidget(relation_layout_label)
         conceptual_network_widget_horizontal_inside_relation_layout.addWidget(self.relation_combobox)
 
-        self.relation_combobox.currentIndexChanged.connect(self.network_relations_checkbok_manage)
+
+        #Graph Distribution Layout
+
+
+        conceptual_network_widget_horizontal_inside_select_typeword_layout = QHBoxLayout()
+
+
+        typeword_label = QLabel("Selección de Palabras")
+        typeword_label.setStyleSheet(label_style_title)
+        self.typeword_combobox = QComboBox()
+        self.typeword_combobox.setToolTip("Selección del algoritmo de selección de palabras")
+        self.typeword_combobox.setStyleSheet(combobox_normal_style)
+        self.typeword_combobox.addItem("Primera en aparecer")
+        self.typeword_combobox.addItem("Con más apariciones")
+        self.typeword_combobox.addItem("Mas cortas")
+
+
+        conceptual_network_widget_horizontal_inside_select_typeword_layout.addWidget(typeword_label)
+        conceptual_network_widget_horizontal_inside_select_typeword_layout.addWidget(self.typeword_combobox)
+        #self.typeword_combobox.currentIndexChanged.connect(self.network_relations_checkbok_manage)
+
+
+
 
         # Distro Selection Layout
         conceptual_network_widget_horizontal_inside_distribution_layout = QHBoxLayout()
@@ -685,47 +708,30 @@ class MainWindow(QMainWindow):
         graph_layout_label = QLabel("Filtros:")
         graph_layout_label.setStyleSheet(label_style_title)
 
+        filter_network_graph_layout = QHBoxLayout()
+        filter_network_graph_label = QLabel("Sí")
+        self.filter_network_graph_Checkbox = QCheckBox()
+        filter_network_graph_layout.addWidget(filter_network_graph_label)
+        filter_network_graph_layout.addWidget(self.filter_network_graph_Checkbox)
+
+
         general_network_graph_layout = QHBoxLayout()
-        general_network_graph_Label = QLabel("General")
+        general_network_graph_Label = QLabel("No")
         self.general_network_graph_Checkbox = QCheckBox()
         general_network_graph_layout.addWidget(general_network_graph_Label)
         general_network_graph_layout.addWidget(self.general_network_graph_Checkbox)
 
-        weight_network_graph_layout = QHBoxLayout()
-        weight_network_graph_label = QLabel("Solo Nodos Con Frecuencia Mayor A Una Cantidad")
-        self.weight_network_graph_Checkbox = QCheckBox()
-        weight_network_graph_layout.addWidget(weight_network_graph_label)
-        weight_network_graph_layout.addWidget(self.weight_network_graph_Checkbox)
-
-        size_network_graph_layout = QHBoxLayout()
-        size_network_graph_label = QLabel("Por Cantidad de Relaciones")
-        self.size_network_graph_Checkbox = QCheckBox()
-        size_network_graph_layout.addWidget(size_network_graph_label)
-        size_network_graph_layout.addWidget(self.size_network_graph_Checkbox)
-
-        grade_network_graph_layout = QHBoxLayout()
-        grade_network_graph_label = QLabel("Por Grados del Nodo")
-        self.grade_network_graph_Checkbox = QCheckBox()
-        grade_network_graph_layout.addWidget(grade_network_graph_label)
-        grade_network_graph_layout.addWidget(self.grade_network_graph_Checkbox)
-
 
         self.general_network_graph_Checkbox.stateChanged.connect(self.network_checkbox_management)
-        self.weight_network_graph_Checkbox.stateChanged.connect(self.network_checkbox_management)
-        self.size_network_graph_Checkbox.stateChanged.connect(self.network_checkbox_management)
-        self.grade_network_graph_Checkbox.stateChanged.connect(self.network_checkbox_management)
+        self.filter_network_graph_Checkbox.stateChanged.connect(self.network_checkbox_management)
+
 
         conceptual_network_widget_horizontal_inside_distribution_layout.addWidget(graph_layout_label)
-
         conceptual_network_widget_horizontal_inside_distribution_vertical_layout.addLayout(general_network_graph_layout)
-        conceptual_network_widget_horizontal_inside_distribution_vertical_layout.addLayout(weight_network_graph_layout)
-        conceptual_network_widget_horizontal_inside_distribution_vertical_layout.addLayout(size_network_graph_layout)
-        conceptual_network_widget_horizontal_inside_distribution_vertical_layout.addLayout(grade_network_graph_layout)
+        conceptual_network_widget_horizontal_inside_distribution_vertical_layout.addLayout(filter_network_graph_layout)
 
 
-
-        conceptual_network_widget_horizontal_inside_distribution_layout.addLayout(
-        conceptual_network_widget_horizontal_inside_distribution_vertical_layout)
+        conceptual_network_widget_horizontal_inside_distribution_layout.addLayout(conceptual_network_widget_horizontal_inside_distribution_vertical_layout)
 
 
 
@@ -734,20 +740,30 @@ class MainWindow(QMainWindow):
         node_size_label = QLabel("Nodos De Aparición Mayor A")
         node_size_label.setStyleSheet(label_style_title)
 
-        self.node_size_slider = QSlider(Qt.Orientation.Horizontal, self)
-        self.node_size_slider.setGeometry(50, 50, 200, 50)
-        self.node_size_slider.setMinimum(1)
+        # Text box to get the node size
+        self.NodeSize_txb = QLineEdit()
+        self.NodeSize_txb.setStyleSheet(input_txt_style)
 
-        self.node_size_slider.setMaximum(10)
-        self.node_size_slider.setTickPosition(QSlider.TickPosition.TicksBelow)
-        self.node_size_slider.setTickInterval(3)
-        # Crear un QLabel para mostrar el valor del slider
-        self.node_size_value_label = QLabel("Valor: 0")
+        #Slider to get the node size info
+        #self.node_size_slider = QSlider(Qt.Orientation.Horizontal, self)
+        #self.node_size_slider.setGeometry(50, 50, 200, 50)
+
+        #self.node_size_slider.setTickPosition(QSlider.TickPosition.NoTicks)
+        #self.node_size_slider.setMinimum(1)
+
+        #self.node_size_slider.setMaximum(10)
+        #self.node_size_slider.setTickPosition(QSlider.TickPosition.TicksBelow)
+        #self.node_size_slider.setTickInterval(3)
+
+
+        #QLabel to show current slider size selection
+        self.node_size_value_label = QLabel("Valor Máximo Posible: 0")
 
         conceptual_network_widget_horizontal_inside_size_layout.addWidget(node_size_label)
         conceptual_network_widget_horizontal_inside_size_layout.setAlignment(Qt.AlignmentFlag.AlignHCenter)
-        conceptual_network_widget_horizontal_inside_size_layout.addWidget(self.node_size_slider)
+        conceptual_network_widget_horizontal_inside_size_layout.addWidget(self.NodeSize_txb)
         conceptual_network_widget_horizontal_inside_size_layout.addWidget(self.node_size_value_label)
+
 
         #Node grade Selection Layout
 
@@ -755,47 +771,61 @@ class MainWindow(QMainWindow):
         node_grade_label = QLabel("Nodos con Grado Mayor A:")
         node_grade_label.setStyleSheet(label_style_title)
 
+        # Text box to get the node grade
+        self.NodeGrade_txb = QLineEdit()
+        self.NodeGrade_txb.setStyleSheet(input_txt_style)
 
-        self.node_grade_slider = QSlider(Qt.Orientation.Horizontal, self)
-        self.node_grade_slider.setGeometry(50, 50, 200, 50)
-        self.node_grade_slider.setMinimum(1)
 
-        self.node_grade_slider.setMaximum(10)
-        self.node_grade_slider.setTickPosition(QSlider.TickPosition.TicksBelow)
-        self.node_grade_slider.setTickInterval(3)
+        # self.node_grade_slider = QSlider(Qt.Orientation.Horizontal, self)
+        # self.node_grade_slider.setGeometry(50, 50, 200, 50)
+        # self.node_grade_slider.setTickPosition(QSlider.TickPosition.NoTicks)
+        # self.node_grade_slider.setMinimum(1)
+        #
+        # self.node_grade_slider.setMaximum(10)
+        # self.node_grade_slider.setTickPosition(QSlider.TickPosition.TicksBelow)
+        # self.node_grade_slider.setTickInterval(3)
 
-        self.node_grade_value_label = QLabel("Valor: 0")
+        self.node_grade_value_label = QLabel("Valor Máximo Posible: 0")
 
         conceptual_network_widget_horizontal_inside_grade_layout.addWidget(node_grade_label)
         conceptual_network_widget_horizontal_inside_grade_layout.setAlignment(Qt.AlignmentFlag.AlignHCenter)
-        conceptual_network_widget_horizontal_inside_grade_layout.addWidget(self.node_grade_slider)
+        conceptual_network_widget_horizontal_inside_grade_layout.addWidget(self.NodeGrade_txb)
         conceptual_network_widget_horizontal_inside_grade_layout.addWidget(self.node_grade_value_label)
 
-        # Node Size Selection Layout
+
+        # Node Relation Selection Layout
         conceptual_network_widget_horizontal_inside_edge_weight_layout = QHBoxLayout()
         edge_weight_label = QLabel("Nodos Con Relaciones Mayores A:")
         edge_weight_label.setStyleSheet(label_style_title)
 
-        self.edge_weight_slider = QSlider(Qt.Orientation.Horizontal, self)
-        self.edge_weight_slider.setGeometry(50, 50, 200, 50)
-        self.edge_weight_slider.setMinimum(1)
-        self.edge_weight_slider.setMaximum(10)
-        self.edge_weight_slider.setTickPosition(QSlider.TickPosition.TicksBelow)
-        self.edge_weight_slider.setTickInterval(3)
+        # Text box to get the node grade
+        self.EdgeWeight_txb = QLineEdit()
+        self.EdgeWeight_txb.setStyleSheet(input_txt_style)
+
+        # self.edge_weight_slider = QSlider(Qt.Orientation.Horizontal, self)
+        # self.edge_weight_slider.setGeometry(50, 50, 200, 50)
+        # self.edge_weight_slider.setTickPosition(QSlider.TickPosition.NoTicks)
+        #
+        # self.edge_weight_slider.setMinimum(1)
+        # self.edge_weight_slider.setMaximum(10)
+        # self.edge_weight_slider.setTickPosition(QSlider.TickPosition.TicksBelow)
+        # self.edge_weight_slider.setTickInterval(3)
+
+
         # Crear un QLabel para mostrar el valor del slider
-        self.edge_weight_label = QLabel("Valor: 0")
+        self.edge_weight_label = QLabel("Valor Máximo Posible: 0")
 
 
 
         conceptual_network_widget_horizontal_inside_edge_weight_layout.addWidget(edge_weight_label)
         conceptual_network_widget_horizontal_inside_edge_weight_layout.setAlignment(Qt.AlignmentFlag.AlignHCenter)
-        conceptual_network_widget_horizontal_inside_edge_weight_layout.addWidget(self.edge_weight_slider)
+        conceptual_network_widget_horizontal_inside_edge_weight_layout.addWidget(self.EdgeWeight_txb)
         conceptual_network_widget_horizontal_inside_edge_weight_layout.addWidget(self.edge_weight_label)
 
 
-        self.node_size_slider.valueChanged.connect(self.displaySlidervalueNodeSize)
-        self.edge_weight_slider.valueChanged.connect(self.displaySlidervalueEdgeWeight)
-        self.node_grade_slider.valueChanged.connect(self.displaySlidervalueNodeGrade)
+        # self.node_size_slider.valueChanged.connect(self.displaySlidervalueNodeSize)
+        # self.edge_weight_slider.valueChanged.connect(self.displaySlidervalueEdgeWeight)
+        # self.node_grade_slider.valueChanged.connect(self.displaySlidervalueNodeGrade)
 
 
 
@@ -811,6 +841,7 @@ class MainWindow(QMainWindow):
 
 
         conceptual_network_widget_vertical_layout.addLayout(conceptual_network_widget_horizontal_inside_relation_layout)
+        conceptual_network_widget_vertical_layout.addLayout(conceptual_network_widget_horizontal_inside_select_typeword_layout)
         conceptual_network_widget_vertical_layout.addLayout(conceptual_network_widget_horizontal_inside_distribution_layout)
         conceptual_network_widget_vertical_layout.addLayout(conceptual_network_widget_horizontal_inside_size_layout)
         conceptual_network_widget_vertical_layout.addLayout(conceptual_network_widget_horizontal_inside_edge_weight_layout)
@@ -829,9 +860,9 @@ class MainWindow(QMainWindow):
         self.conceptual_network_widget.setLayout(conceptual_network_widget_layout)
         #create_conceptual_network_button.clicked.connect(self.conceptual_network)
 
-        self.node_size_slider.setEnabled(False)
-        self.edge_weight_slider.setEnabled(False)
-        self.node_grade_slider.setEnabled(False)
+        self.NodeGrade_txb.setEnabled(False)
+        self.EdgeWeight_txb.setEnabled(False)
+        self.NodeSize_txb.setEnabled(False)
 
         self.create_conceptual_network_button.clicked.connect(self.drawGraph)
 
@@ -1207,7 +1238,7 @@ class MainWindow(QMainWindow):
         self.populate_table()
 
     # Conceptual network manage
-    def conceptual_network(self, show_lables=1, type_graph=1, nodeSize=50, edgeWeight=550, nodeGrade = 1, relation=1):
+    def conceptual_network(self, show_lables=1, type_graph=1, nodeSize=50, edgeWeight=550, nodeGrade = 1, relation=1, type_word = 1):
         '''print(
             "par1 : " + str(show_lables) +
             " par2 : " + str(type_graph) +
@@ -1216,12 +1247,15 @@ class MainWindow(QMainWindow):
             " par5 : " + str(nodeGrade) +
             " par6 : " + str(relation)
         )'''
+        try:
+            plt.close(plt.figure(2))
+            plt.figure(2)
+            self.network_thread = NetworkThread(self.mainController, show_lables, type_graph, nodeSize, edgeWeight, nodeGrade, relation, type_word)
+            self.network_thread.finished.connect(self.network_thread_finish)
+            self.network_thread.start()
+        except Exception as e:
+            print(e)
 
-        plt.close(plt.figure(2))
-        plt.figure(2)
-        self.network_thread = NetworkThread(self.mainController, show_lables, type_graph, nodeSize, edgeWeight,nodeGrade, relation)
-        self.network_thread.finished.connect(self.network_thread_finish)
-        self.network_thread.start()
 
     def network_thread_finish(self):
         alert = QMessageBox()
@@ -1305,127 +1339,92 @@ class MainWindow(QMainWindow):
             self.mainController.create_relation(relation_selection)
 
             if self.general_network_graph_Checkbox.isChecked():  # General Seleccionado
-                self.weight_network_graph_Checkbox.setEnabled(False)
-                self.size_network_graph_Checkbox.setEnabled(False)
-                self.grade_network_graph_Checkbox.setEnabled(False)
+                self.filter_network_graph_Checkbox.setEnabled(False)
 
-                self.node_size_slider.setEnabled(False)
-                self.edge_weight_slider.setEnabled(False)
-                self.node_grade_slider.setEnabled(False)
+                self.NodeSize_txb.setText("")
+                self.NodeGrade_txb.setText("")
+                self.EdgeWeight_txb.setText("")
 
-
-            elif self.weight_network_graph_Checkbox.isChecked():  # PTamaño de Nodo Seleccionado
-                self.general_network_graph_Checkbox.setEnabled(False)
-                self.size_network_graph_Checkbox.setEnabled(False)
-                self.grade_network_graph_Checkbox.setEnabled(False)
-
-
-                self.node_size_slider.setMaximum(self.mainController.get_weight_of_heaviest_node())
-
-                self.mainController.delete_graph()
-
-                self.node_size_slider.setEnabled(True)
-                self.edge_weight_slider.setEnabled(False)
-                self.node_grade_slider.setEnabled(False)
+                self.NodeSize_txb.setEnabled(False)
+                self.NodeGrade_txb.setEnabled(False)
+                self.EdgeWeight_txb.setEnabled(False)
 
 
 
-            elif self.size_network_graph_Checkbox.isChecked():  # Peso de Arista Seleccionado
-                self.general_network_graph_Checkbox.setEnabled(False)
-                self.weight_network_graph_Checkbox.setEnabled(False)
-                self.grade_network_graph_Checkbox.setEnabled(False)
+                #self.node_size_slider.setEnabled(False)
+                #self.edge_weight_slider.setEnabled(False)
+                #self.node_grade_slider.setEnabled(False)
 
+                #self.size_network_graph_Checkbox.setEnabled(True)
+                #self.grade_network_graph_Checkbox.setEnabled(True)
 
-                self.edge_weight_slider.setMaximum(int(self.mainController.get_weight_of_heaviest_edge()))
+            elif self.filter_network_graph_Checkbox.isChecked():  # Filtro
+                try:
+                    self.general_network_graph_Checkbox.setEnabled(False)
 
-                self.mainController.delete_graph()
+                    self.node_size_value_label.setText("Valor Máximo Posible: " + str(int(self.mainController.get_weight_of_heaviest_node())))
+                    self.NodeSize_txb.setEnabled(True)
 
-                self.node_size_slider.setEnabled(False)
-                self.edge_weight_slider.setEnabled(True)
-                self.node_grade_slider.setEnabled(False)
+                    self.edge_weight_label.setText("Valor Máximo Posible: " + str(int(self.mainController.get_weight_of_heaviest_edge())))
+                    self.EdgeWeight_txb.setEnabled(True)
 
+                    self.node_grade_value_label.setText("Valor Máximo Posible: " + str(int(self.mainController.get_weight_of_heaviest_grade())))
 
+                    self.NodeGrade_txb.setEnabled(True)
 
-            elif self.grade_network_graph_Checkbox.isChecked():  #Grado de Nodo Seleccionado
+                    self.mainController.delete_graph()
 
-                self.general_network_graph_Checkbox.setEnabled(False)
-                self.weight_network_graph_Checkbox.setEnabled(False)
-                self.size_network_graph_Checkbox.setEnabled(False)
-
-
-                self.node_grade_slider.setMaximum(self.mainController.get_weight_of_heaviest_grade())
-
-                self.mainController.delete_graph()
-
-                self.node_size_slider.setEnabled(False)
-                self.edge_weight_slider.setEnabled(False)
-                self.node_grade_slider.setEnabled(True)
-
+                    #self.node_size_slider.setEnabled(True)
+                    #self.edge_weight_slider.setEnabled(False)
+                    #self.node_grade_slider.setEnabled(False)
+                except Exception as e:
+                        print(e)
 
         else:  # Si se desmarca un QCheckBox
             self.general_network_graph_Checkbox.setEnabled(True)
-            self.weight_network_graph_Checkbox.setEnabled(True)
-            self.size_network_graph_Checkbox.setEnabled(True)
-            self.grade_network_graph_Checkbox.setEnabled(True)
+            self.filter_network_graph_Checkbox.setEnabled(True)
 
             try:
                 self.mainController.delete_graph()
             except Exception as e:
                 print(e)
 
-            self.node_size_slider.setEnabled(False)
-            self.edge_weight_slider.setEnabled(False)
-            self.node_grade_slider.setEnabled(False)
+
 
     def drawGraph(self):
         self.create_conceptual_network_button.setEnabled(False)
         relation_selection = self.relation_combobox.currentText()
+        type_word_selection = (self.typeword_combobox.currentIndex()) + 1
+
 
         no_words_flag = "null"
         #distribution_selection = "null"
-        node_size_slider_selection = "null"
-        edge_weight_slider_selection = "null"
+        node_size_selection = 50
+        edge_weight_selection = 550
+        node_grade_selection = 1
 
         if self.no_words_network_graph_Checkbox.isChecked():
             no_words_flag = 1
         else:
             no_words_flag = 0
+
         if self.general_network_graph_Checkbox.isChecked():  # General Seleccionado
             #distribution_selection = 1
             try:
                 self.mainController.delete_graph()
-                self.conceptual_network(int(no_words_flag), 1, 50, 550,1, int(relation_selection))
+                self.conceptual_network(int(no_words_flag), 1, 0, 0, 0,int(relation_selection), type_word_selection)
             except Exception as e:
                 print(e)
-
-        elif self.weight_network_graph_Checkbox.isChecked():  # PTamaño de Nodo Seleccionado
-            #distribution_selection = 2
-            node_size_slider_selection = int(self.node_size_slider.value())
-
+        elif self.filter_network_graph_Checkbox.isChecked():  # Filtro Seleccionado
             try:
+                print("GOKUUUU")
+                # distribution_selection = 2
+                node_size_selection = int(self.NodeSize_txb.text())
+                edge_weight_slider_selection = int(self.EdgeWeight_txb.text())
+                node_grade_selection = int(self.NodeGrade_txb.text())
+                print("GOKUUUU2")
                 self.mainController.delete_graph()
-                self.conceptual_network(int(no_words_flag), 2, node_size_slider_selection, 1,1, int(relation_selection))
-            except Exception as e:
-                print(e)
-
-        elif self.size_network_graph_Checkbox.isChecked():  # Peso de Arista Seleccionado'''
-            #distribution_selection = 3
-            edge_weight_slider_selection = int(self.edge_weight_slider.value())
-
-            try:
-                self.mainController.delete_graph()
-                self.conceptual_network(int(no_words_flag), 3, 50, edge_weight_slider_selection,1, int(relation_selection))
-            except Exception as e:
-                print(e)
-
-        elif self.grade_network_graph_Checkbox.isChecked():  # Grado de Nodo Seleccionado'''
-            #distribution_selection = 4
-            node_grade_slider_selection = int(self.node_grade_slider.value())
-
-
-            try:
-                self.mainController.delete_graph()
-                self.conceptual_network(int(no_words_flag), 4, 50, 550,node_grade_slider_selection, int(relation_selection))
+                self.conceptual_network(int(no_words_flag), 1, node_size_selection, edge_weight_selection, node_grade_selection, int(relation_selection), type_word_selection)
             except Exception as e:
                 print(e)
 

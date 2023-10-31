@@ -46,8 +46,8 @@ class MainController:
     def get_graph(self):
         return self.textHandlerAdmin.get_graph()
 
-    def get_graph_by_filters(self, node_weight, edge_weight, node_grade):
-        return self.textHandlerAdmin.get_graph_by_filters(node_weight, edge_weight, node_grade)
+    def get_graph_by_filters(self, node_weight, edge_weight, node_grade, type_word):
+        return self.textHandlerAdmin.get_graph_by_filters(node_weight, edge_weight, node_grade, type_word)
 
     def create_network(self):
         self.textHandlerAdmin.create_network()

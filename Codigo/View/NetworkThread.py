@@ -8,7 +8,7 @@ from matplotlib import pyplot as plt
 class NetworkThread(QThread):
 
     finished = pyqtSignal()
-    def __init__(self, main_controller, show_lables, type_graph, nodeSize, edgeWeight, nodeGrade,  relation):
+    def __init__(self, main_controller, show_lables, type_graph, nodeSize, edgeWeight, nodeGrade,  relation, type_word):
         super().__init__()
         self.main_controller = main_controller
         self.show_lables = show_lables
@@ -17,6 +17,7 @@ class NetworkThread(QThread):
         self.edgeWeight = edgeWeight
         self.nodeGrade = nodeGrade
         self.relation = relation
+        self.type_word = type_word
 
     def run(self):
         self.main_controller.create_network()
@@ -25,7 +26,8 @@ class NetworkThread(QThread):
         graph= nx.Graph()
         #print("Aquí voyyyyyyyyy <<<<<<<<<<<<<<")
         try:
-            graph = self.main_controller.get_graph_by_filters(self.nodeSize,self.edgeWeight,self.nodeGrade)
+            print("CACA")
+            graph = self.main_controller.get_graph_by_filters(self.nodeSize,self.edgeWeight,self.nodeGrade, self.type_word)
             # if self.type_graph == 1:
             #     graph = self.main_controller.get_graph_by_node_weight(0)# all in general
             #    #graph = self.main_controller.get_graph()  # all in general
@@ -38,11 +40,16 @@ class NetworkThread(QThread):
             #
             # elif self.type_graph == 4:
             #     graph = self.main_controller.get_graph_by_node_grade(self.nodeGrade)  # por tamaño de la arista
-
-            weights = nx.get_node_attributes(graph, 'weight')
-            max_node_weight = max(weights.values())
-
+            print("CACA1.1")
             try:
+                weights = nx.get_node_attributes(graph, 'weight')
+                max_node_weight = max(weights.values())
+                print("CACA1.2")
+            except Exception as e:
+                max_node_weight = 1
+                print(e)
+            try:
+                print("CACA2")
                 edge_weights = [data['weight'] for u, v, data in graph.edges(data=True)]
                 max_edge_weight = max(edge_weights)
             except Exception as e:
@@ -58,7 +65,7 @@ class NetworkThread(QThread):
             node_sizes = [(weight / max_node_weight) * 400 for node, weight in weights.items()]
 
             nx.draw_networkx_nodes(graph, circular_pos, node_size=node_sizes)
-
+            print("CACA3")
             # Dibujar las aristas con un grosor proporcional al peso y el mismo color que los nodos
             for edge in graph.edges(data=True):
 
@@ -81,7 +88,7 @@ class NetworkThread(QThread):
 
             plt.subplots_adjust(left=0, right=1, top=1, bottom=0) #posible solucion tengo mis dudas
 
-
+            print("CACA4")
             #plt.show()
             #plt.savefig("network.png", bbox_inches='tight', pad_inches=0, transparent=True)
         except Exception as e:

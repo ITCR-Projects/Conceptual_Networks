@@ -19,11 +19,13 @@ class CloudThread(QThread):
         cloud = self.main_controller.get_cloud_words(self.num_func_words)
         try:
             wordcloud = WordCloud(**self.cloud_parameters).generate_from_frequencies(cloud)
+
+            plt.imshow(wordcloud, interpolation='bilinear')
+            plt.axis("off")
+            # Save temporality the cloud in a png then is show it
+            path = os.path.expanduser(os.path.join('~', 'Documents', 'ConceptualNetworks'))
+            plt.savefig(path + "/wordcloud.png", bbox_inches='tight', pad_inches=0, transparent=True)
+            self.finished.emit()
+
         except Exception as e:
             print(e)
-        plt.imshow(wordcloud, interpolation='bilinear')
-        plt.axis("off")
-        # Save temporality the cloud in a png then is show it
-        path = os.path.expanduser(os.path.join('~', 'Documents', 'ConceptualNetworks'))
-        plt.savefig(path + "/wordcloud.png", bbox_inches='tight', pad_inches=0, transparent=True)
-        self.finished.emit()

@@ -80,15 +80,6 @@ class StructureStemming:
             dicc = value[0]
             results[max(dicc, key=lambda key: dicc[key])] = value[1]
         return results
-    def get_first_word(self, root):
-        words = self.stem_words[root]
-        word = list(words.keys())[0]
-        return word
-
-    def get_heaviest_word(self, root):
-        words = self.stem_words[root]
-        word = max(words, key=lambda key: words[key])
-        return word
 
     def get_short_word_and_weights(self):
         results = {}
@@ -96,9 +87,25 @@ class StructureStemming:
             dicc = value[0]
             results[sorted(dicc, key=lambda x: len(x))[0]] = value[1]
         return results
-    def get_shortest_word(self, root):
+
+    def get_first_word(self, root):
         words = self.stem_words[root]
-        word = sorted(words, key=lambda x: len(x))[0]
+        print(words)
+        word = list(words[0].keys())[0]
+        print(word)
+        return word
+
+    def get_heaviest_word(self, root):
+        print("AYUDAAAAA2")
+        words = self.stem_words[root]
+        word = max(words[0], key=lambda key: words[0][key])
+        return word
+
+
+    def get_shortest_word(self, root):
+        print("AYUDAAAAA3")
+        words = self.stem_words[root]
+        word = sorted(words[0], key=lambda x: len(x))[0]
         return word
 
 # x = StructureStemming()
