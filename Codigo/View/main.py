@@ -1399,9 +1399,9 @@ class MainWindow(QMainWindow):
 
         no_words_flag = "null"
         #distribution_selection = "null"
-        node_size_selection = 50
-        edge_weight_selection = 550
-        node_grade_selection = 1
+        node_size_selection = 0
+        edge_weight_selection = 0
+        node_grade_selection = 0
 
         if self.no_words_network_graph_Checkbox.isChecked():
             no_words_flag = 1
@@ -1417,12 +1417,11 @@ class MainWindow(QMainWindow):
                 print(e)
         elif self.filter_network_graph_Checkbox.isChecked():  # Filtro Seleccionado
             try:
-                print("GOKUUUU")
                 # distribution_selection = 2
                 node_size_selection = int(self.NodeSize_txb.text())
-                edge_weight_slider_selection = int(self.EdgeWeight_txb.text())
+                edge_weight_selection = int(self.EdgeWeight_txb.text())
                 node_grade_selection = int(self.NodeGrade_txb.text())
-                print("GOKUUUU2")
+
                 self.mainController.delete_graph()
                 self.conceptual_network(int(no_words_flag), 1, node_size_selection, edge_weight_selection, node_grade_selection, int(relation_selection), type_word_selection)
             except Exception as e:

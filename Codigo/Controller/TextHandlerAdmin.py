@@ -355,14 +355,13 @@ class TextHandlerAdmin:
         return new_graph
 
     def get_graph_by_filters(self, node_weight, edge_weight, node_grade, type_word):
-        #global new_graph
-        #new_graph = self.graph
+        new_graph = self.graph.copy()
 
         if node_weight == 0 and edge_weight == 0 and node_grade == 0:
             return self.get_graph(type_word)
 
         if node_weight > 0:
-            new_graph = get_graph_by_node_weight(self.graph, node_weight)
+            new_graph = get_graph_by_node_weight(new_graph, node_weight)
 
         if edge_weight > 0:
             new_graph = get_graph_by_edge_weight(new_graph, edge_weight)
@@ -370,12 +369,8 @@ class TextHandlerAdmin:
             new_graph = get_graph_by_node_grade(new_graph, node_grade)
 
 
-        #new_graph = self.change_labels(new_graph, type_word)
-        for node, data in new_graph.nodes(data=True):
-            print(f"{node}: Peso {data['weight']}")
+        new_graph = self.change_labels(new_graph, type_word)
 
-        for u, v, data in new_graph.edges(data=True):
-            print(f"{u} --> {v}: Peso {data['weight']}")
         return new_graph
 
     def get_weight_of_heaviest_node(self):
