@@ -1,11 +1,13 @@
 from Codigo.Controller.TextHandlerAdmin import TextHandlerAdmin
+from Codigo.Controller.NetworkAdmin import NetworkAdmin
 
 
-#HOLAMUNDO PRUEBA 5
+# HOLAMUNDO PRUEBA 5
 
 class MainController:
     def __init__(self):
         self.textHandlerAdmin = TextHandlerAdmin()
+        self.networkAdmin = NetworkAdmin()
 
     def addFiles(self, filepath):
         if filepath == "":
@@ -43,34 +45,31 @@ class MainController:
     def weigthSort(self):
         self.textHandlerAdmin.weigthSort()
 
-    def get_graph(self):
-        return self.textHandlerAdmin.get_graph()
+    # METODOS DEL NETWORK ADMIN
 
-    def get_graph_by_filters(self, node_weight, edge_weight, node_grade, type_word):
-        return self.textHandlerAdmin.get_graph_by_filters(node_weight, edge_weight, node_grade, type_word)
+    def set_network_data(self):
+        self.networkAdmin.set_data(self.textHandlerAdmin.roots_words, self.textHandlerAdmin.structure_stemming)
 
     def create_network(self):
-        self.textHandlerAdmin.create_network()
+        self.networkAdmin.create_network()
 
-    def create_relation(self,step=1):
-        self.textHandlerAdmin.create_relation(step)
+    def create_relation(self, step=1):
+        self.networkAdmin.create_relation(step)
 
-    #por tamaño de nodo !
-    def get_graph_by_node_weight(self,amount=0):
-        return self.textHandlerAdmin.get_graph_by_node_weight(amount)
+    def get_graph(self):
+        return self.networkAdmin.get_graph(1)
+
+    def get_graph_by_filters(self, node_weight, edge_weight, node_grade, type_word):
+        return self.networkAdmin.get_graph_by_filters(node_weight, edge_weight, node_grade, type_word)
+
     def get_weight_of_heaviest_node(self):
-        return self.textHandlerAdmin.get_weight_of_heaviest_node()
-    #por tamaño de arsita
-    def get_graph_by_edge_weight(self, amount=5):
-        return self.textHandlerAdmin.get_graph_by_edge_weight(amount)
+        return self.networkAdmin.get_weight_of_heaviest_node()
+
     def get_weight_of_heaviest_edge(self):
-        return self.textHandlerAdmin.get_weight_of_heaviest_edge()
+        return self.networkAdmin.get_weight_of_heaviest_edge()
 
-    #por grado del nodo
-    def get_graph_by_node_grade(self, amount):
-        return self.textHandlerAdmin.get_graph_by_node_grade(amount)
     def get_weight_of_heaviest_grade(self):
-        return self.textHandlerAdmin.get_weight_of_heaviest_grade()
-    def delete_graph(self):
-        self.textHandlerAdmin.delete_graph()
+        return self.networkAdmin.get_weight_of_heaviest_grade()
 
+    def delete_graph(self):
+        self.networkAdmin.delete_graph()

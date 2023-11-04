@@ -20,6 +20,7 @@ class NetworkThread(QThread):
         self.type_word = type_word
 
     def run(self):
+        self.main_controller.set_network_data()
         self.main_controller.create_network()
         self.main_controller.create_relation(self.relation)
 
