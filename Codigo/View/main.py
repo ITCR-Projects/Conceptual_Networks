@@ -4,8 +4,9 @@ import csv
 from PyQt6.QtCore import Qt, QTimer
 from PyQt6.QtWidgets import QApplication, QColorDialog, QTableWidget, QSpinBox, QTableWidgetItem, QTabWidget, QDialog, \
     QMessageBox, QMainWindow, QGridLayout, QHBoxLayout, QVBoxLayout, QListWidget, QFileDialog, QPushButton, QLineEdit, \
-    QWidget, QLabel, QProgressBar, QComboBox, QCheckBox, QGraphicsScene, QGraphicsView, QGraphicsPixmapItem, QSlider
-from PyQt6.QtGui import QIcon, QPalette, QPixmap
+    QWidget, QLabel, QProgressBar, QComboBox, QCheckBox, QGraphicsScene, QGraphicsView, QGraphicsPixmapItem, QSlider, \
+    QTextBrowser
+from PyQt6.QtGui import QIcon, QPalette, QPixmap, QTextCursor, QTextCharFormat
 
 import matplotlib.pyplot as plt
 import matplotlib.font_manager
@@ -234,12 +235,14 @@ class MainWindow(QMainWindow):
         # Tab widgets
         self.files_widget = QWidget()
         self.table_widget = QWidget()
+        self.text_visualizer_widget = QWidget()
         self.conceptual_cloud_widget = QWidget()
         self.conceptual_network_widget = QWidget()
 
         # Set the widgets to the window
         self.tab_widget.addTab(self.files_widget, "Archivos")
         self.tab_widget.addTab(self.table_widget, "Estadísticas")
+        self.tab_widget.addTab(self.text_visualizer_widget, "Citas")
         self.tab_widget.addTab(self.conceptual_cloud_widget, "Nube de Conceptos")
         self.tab_widget.addTab(self.conceptual_network_widget, "Red de Conceptos")
 
@@ -379,6 +382,38 @@ class MainWindow(QMainWindow):
         self.table_widget.setLayout(statistics_layout)
         self.tab_widget.setTabEnabled(1, False)
 
+        # -------------------------------------Cites-------------------------------------
+        text_visualizer_widget_layout = QVBoxLayout()
+        self.text_visualizer_widget.setLayout(text_visualizer_widget_layout)
+
+        # Crear el visor de texto
+        self.text_browser = QTextBrowser()
+
+        # Crear el widget de búsqueda
+        search_widget = QWidget()
+        search_layout = QVBoxLayout()
+
+        # Crear un botón de búsqueda
+        search_file_button = QPushButton("Abrir Archivo")
+        search_file_button.clicked.connect(self.open_text_file)
+        search_layout.addWidget(search_file_button)
+
+        # Crear un campo de entrada para la palabra clave
+        self.search_input = QLineEdit()
+        search_layout.addWidget(self.search_input)
+
+        # Crear un botón de búsqueda
+        search_button = QPushButton("Buscar")
+        search_button.clicked.connect(self.search_text)
+        search_layout.addWidget(search_button)
+
+        search_widget.setLayout(search_layout)
+
+        text_visualizer_widget_layout.addWidget(search_widget)
+
+        text_visualizer_widget_layout.addWidget(self.text_browser)
+
+        # -------------------------------------Cites-------------------------------------
         # -------------------------------------Conceptual Cloud-------------------------------------
         # Here is the configuration of the conceptual cloud tab
         conceptual_cloud_widget_layout = QGridLayout()
@@ -946,6 +981,7 @@ class MainWindow(QMainWindow):
 
         self.tab_widget.setTabEnabled(2, False)
         self.tab_widget.setTabEnabled(3, False)
+        self.tab_widget.setTabEnabled(4, False)
 
         self.setCentralWidget(self.central_widget)
 
@@ -1016,6 +1052,7 @@ class MainWindow(QMainWindow):
         self.tab_widget.setTabEnabled(1, True)
         self.tab_widget.setTabEnabled(2, True)
         self.tab_widget.setTabEnabled(3, True)
+        self.tab_widget.setTabEnabled(4, True)
         alert = QMessageBox()
         alert.setWindowTitle("Proceso Terminado")
         alert.setText("¡Proceso Terminado!")
@@ -1519,6 +1556,43 @@ class MainWindow(QMainWindow):
                     self.conceptual_network(int(no_words_flag), 1, node_size_selection, edge_weight_selection, node_grade_selection, int(relation_selection), type_word_selection)
             except Exception as e:
                 print(e)
+
+    def open_text_file(self):
+        file_dialog = QFileDialog()
+        file_dialog.setFileMode(QFileDialog.FileMode.ExistingFiles)
+        file_dialog.setNameFilter("Archivos de Texto (*.txt)")
+
+        if file_dialog.exec() == QFileDialog.DialogCode.Accepted:
+            selected_file = file_dialog.selectedFiles()[0]
+            try:
+                with open(selected_file, "r", encoding="utf-8") as file:
+                    text = file.read()
+                    self.text_browser.setPlainText(text)
+            except Exception as e:
+                self.text_browser.setPlainText("Error al abrir el archivo:\n" + str(e))
+
+    def search_text(self):
+        keyword = self.search_input.text()
+        if keyword:
+            # Obtener el documento del QTextBrowser
+            doc = self.text_browser.document()
+
+            # Crear un QTextCursor para el documento completo
+            cursor = QTextCursor(doc)
+
+            # Establecer el formato de selección vacía para eliminar cualquier resaltado anterior
+            format = QTextCharFormat()
+            format.setBackground(Qt.GlobalColor.white)  # Fondo blanco para desmarcar
+            cursor.select(QTextCursor.SelectionType.Document)
+            cursor.setCharFormat(format)
+
+            # Luego, realizar la nueva búsqueda
+            cursor = doc.find(keyword)
+            while not cursor.isNull():
+                format = QTextCharFormat()
+                format.setBackground(Qt.GlobalColor.yellow)  # Fondo amarillo para resaltar
+                cursor.mergeCharFormat(format)
+                cursor = doc.find(keyword, cursor)
 
 
 
