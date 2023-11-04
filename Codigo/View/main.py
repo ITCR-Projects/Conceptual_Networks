@@ -715,8 +715,24 @@ class MainWindow(QMainWindow):
 
 
         #Graph Distribution Layout
+        conceptual_network_widget_horizontal_graph_distro_layout = QHBoxLayout()
+
+        graph_distro_label = QLabel("Distribución de Grafo")
+        graph_distro_label.setStyleSheet(label_style_title)
+        self.graph_distro_combobox = QComboBox()
+        self.graph_distro_combobox.setToolTip("Selección Distribución de Grafo")
+        self.graph_distro_combobox.setStyleSheet(combobox_normal_style)
+        self.graph_distro_combobox.addItem("Tipo 1")
+        self.graph_distro_combobox.addItem("Tipo 2")
+        self.graph_distro_combobox.addItem("Tipo 3")
+        self.graph_distro_combobox.addItem("Tipo 4")
 
 
+        conceptual_network_widget_horizontal_graph_distro_layout.addWidget(graph_distro_label)
+        conceptual_network_widget_horizontal_graph_distro_layout.addWidget(self.graph_distro_combobox)
+        # self.typeword_combobox.currentIndexChanged.connect(self.network_relations_checkbok_manage)
+
+        #Word Order Selection
         conceptual_network_widget_horizontal_inside_select_typeword_layout = QHBoxLayout()
 
 
@@ -737,32 +753,25 @@ class MainWindow(QMainWindow):
 
 
 
-        # Distro Selection Layout
+        # Filter Selection Layout
         conceptual_network_widget_horizontal_inside_distribution_layout = QHBoxLayout()
         conceptual_network_widget_horizontal_inside_distribution_vertical_layout = QVBoxLayout()
         graph_layout_label = QLabel("Filtros:")
         graph_layout_label.setStyleSheet(label_style_title)
 
         filter_network_graph_layout = QHBoxLayout()
-        filter_network_graph_label = QLabel("Sí")
+        #filter_network_graph_label = QLabel("Sí")
         self.filter_network_graph_Checkbox = QCheckBox()
-        filter_network_graph_layout.addWidget(filter_network_graph_label)
+        self.filter_network_graph_Checkbox.setStyleSheet(checkbox_style)
+
+        #filter_network_graph_layout.addWidget(filter_network_graph_label)
         filter_network_graph_layout.addWidget(self.filter_network_graph_Checkbox)
 
-
-        general_network_graph_layout = QHBoxLayout()
-        general_network_graph_Label = QLabel("No")
-        self.general_network_graph_Checkbox = QCheckBox()
-        general_network_graph_layout.addWidget(general_network_graph_Label)
-        general_network_graph_layout.addWidget(self.general_network_graph_Checkbox)
-
-
-        self.general_network_graph_Checkbox.stateChanged.connect(self.network_checkbox_management)
         self.filter_network_graph_Checkbox.stateChanged.connect(self.network_checkbox_management)
 
 
         conceptual_network_widget_horizontal_inside_distribution_layout.addWidget(graph_layout_label)
-        conceptual_network_widget_horizontal_inside_distribution_vertical_layout.addLayout(general_network_graph_layout)
+        #conceptual_network_widget_horizontal_inside_distribution_vertical_layout.addLayout(general_network_graph_layout)
         conceptual_network_widget_horizontal_inside_distribution_vertical_layout.addLayout(filter_network_graph_layout)
 
 
@@ -864,24 +873,91 @@ class MainWindow(QMainWindow):
 
 
 
-        # Add Tools Layout to Vertical Layout
+        #No Words Config
 
         conceptual_network_widget_horizontal_inside_no_words_layout = QHBoxLayout()
         no_words_network_graph_Label = QLabel("No Mostrar Palabras")
         no_words_network_graph_Label.setStyleSheet(label_style_title)
         self.no_words_network_graph_Checkbox = QCheckBox()
+        self.no_words_network_graph_Checkbox.setStyleSheet(checkbox_style)
         conceptual_network_widget_horizontal_inside_no_words_layout.addWidget(no_words_network_graph_Label)
         conceptual_network_widget_horizontal_inside_no_words_layout.addWidget(self.no_words_network_graph_Checkbox)
 
 
 
+        #Color Edges For Graph
+
+
+        graph_color_frame_widget = QWidget()
+        conceptual_network_widget_horizontal_inside_graph_color_layout = QHBoxLayout()
+        conceptual_network_widget_horizontal_inside_graph_color_layout.addWidget(graph_color_frame_widget)
+
+        color_graph_Label = QLabel("Color")
+        color_graph_Label.setStyleSheet(label_style_title)
+        self.graph_color_frame = QWidget()
+        self.graph_color_frame.setMinimumSize(30, 30)
+        self.graph_color_frame.setMaximumSize(30, 30)
+        self.graph_color_frame.setStyleSheet(frame_borders_style)
+        self.graph_color_frame.setContentsMargins(0, 0, 0, 0)
+        conceptual_network_widget_horizontal_inside_graph_color_layout.addWidget(color_graph_Label)
+        conceptual_network_widget_horizontal_inside_graph_color_layout.addWidget(self.graph_color_frame)
+
+        graph_color_selector_button = QPushButton("")
+        graph_color_selector_button.setToolTip("Color del grafo")
+        graph_color_selector_button.setIcon(QIcon(resource_path("Icons/angulo-pequeno-hacia-abajo.png")))
+        graph_color_selector_button.setStyleSheet(button_style_selection)
+        graph_color_selector_button.setMaximumSize(50, 30)
+        graph_color_selector_button.setContentsMargins(0, 0, 0, 0)
+        graph_color_selector_button.clicked.connect(self.changeGraphPalette)
+        conceptual_network_widget_horizontal_inside_graph_color_layout.addWidget(graph_color_selector_button)
+        #color_selecctor_layout.addWidget(color_frame2_widget)
+
+        # Color Nodes For Graph
+
+        graph_nodes_color_frame_widget = QWidget()
+        conceptual_network_widget_horizontal_inside_graph_node_color_layout = QHBoxLayout()
+        conceptual_network_widget_horizontal_inside_graph_node_color_layout.addWidget(graph_nodes_color_frame_widget)
+
+        color_graph_node_Label = QLabel("Color de Nodos")
+        color_graph_node_Label.setStyleSheet(label_style_title)
+        self.graph_color_node_frame = QWidget()
+        self.graph_color_node_frame.setMinimumSize(30, 30)
+        self.graph_color_node_frame.setMaximumSize(30, 30)
+        self.graph_color_node_frame.setStyleSheet(frame_borders_style)
+        self.graph_color_node_frame.setContentsMargins(0, 0, 0, 0)
+        conceptual_network_widget_horizontal_inside_graph_node_color_layout.addWidget(color_graph_node_Label)
+        conceptual_network_widget_horizontal_inside_graph_node_color_layout.addWidget(self.graph_color_node_frame)
+
+        graph_color_node_selector_button = QPushButton("")
+        graph_color_node_selector_button.setToolTip("Color del grafo")
+        graph_color_node_selector_button.setIcon(QIcon(resource_path("Icons/angulo-pequeno-hacia-abajo.png")))
+        graph_color_node_selector_button.setStyleSheet(button_style_selection)
+        graph_color_node_selector_button.setMaximumSize(50, 30)
+        graph_color_node_selector_button.setContentsMargins(0, 0, 0, 0)
+        graph_color_node_selector_button.clicked.connect(self.changeGraphPalette)
+        conceptual_network_widget_horizontal_inside_graph_node_color_layout.addWidget(graph_color_node_selector_button)
+        # color_selecctor_layout.addWidget(color_frame2_widget)
+
+
+
+        # Add Tools Layout to Vertical Layout
         conceptual_network_widget_vertical_layout.addLayout(conceptual_network_widget_horizontal_inside_relation_layout)
         conceptual_network_widget_vertical_layout.addLayout(conceptual_network_widget_horizontal_inside_select_typeword_layout)
-        conceptual_network_widget_vertical_layout.addLayout(conceptual_network_widget_horizontal_inside_distribution_layout)
+        conceptual_network_widget_vertical_layout.addLayout(conceptual_network_widget_horizontal_graph_distro_layout)
+        conceptual_network_widget_vertical_layout.addLayout(conceptual_network_widget_horizontal_inside_distribution_layout) #FILTROS!!! Cambiar luego
+
         conceptual_network_widget_vertical_layout.addLayout(conceptual_network_widget_horizontal_inside_size_layout)
         conceptual_network_widget_vertical_layout.addLayout(conceptual_network_widget_horizontal_inside_edge_weight_layout)
         conceptual_network_widget_vertical_layout.addLayout(conceptual_network_widget_horizontal_inside_grade_layout)
         conceptual_network_widget_vertical_layout.addLayout(conceptual_network_widget_horizontal_inside_no_words_layout)
+        conceptual_network_widget_vertical_layout.addLayout(conceptual_network_widget_horizontal_inside_graph_color_layout)
+        conceptual_network_widget_vertical_layout.addLayout(conceptual_network_widget_horizontal_inside_graph_node_color_layout)
+
+
+
+
+
+
 
         self.create_conceptual_network_button = QPushButton("Crear Red")
         self.create_conceptual_network_button.setStyleSheet(button_style_normal)
@@ -1177,6 +1253,19 @@ class MainWindow(QMainWindow):
             selected_color = color_dialog.selectedColor()
             self.update_BGcolor(selected_color)
 
+    ##########################################################################################################
+    def changeGraphPalette(self):
+        color_dialog = QColorDialog()
+        color_dialog.setWindowTitle("Colores de Grafo")
+        current_color = self.color_frame2.palette().color(QPalette.ColorRole.Window)
+        color_dialog.setCurrentColor(current_color)
+
+        if color_dialog.exec():
+            selected_color = color_dialog.selectedColor()
+            self.update_BGcolor(selected_color)
+
+    ##########################################################################################################
+
     def update_BGcolor(self, color):
         palette = self.color_frame2.palette()
         palette.setColor(QPalette.ColorRole.Window, color)
@@ -1375,7 +1464,7 @@ class MainWindow(QMainWindow):
             relation_selection = int(self.relation_combobox.currentText())
             self.mainController.create_relation(relation_selection)
 
-            if self.general_network_graph_Checkbox.isChecked():  # General Seleccionado
+            if not self.filter_network_graph_Checkbox.isChecked():  # General Seleccionado
                 self.filter_network_graph_Checkbox.setEnabled(False)
 
                 self.NodeSize_txb.setText("")
@@ -1397,7 +1486,7 @@ class MainWindow(QMainWindow):
 
             elif self.filter_network_graph_Checkbox.isChecked():  # Filtro
                 try:
-                    self.general_network_graph_Checkbox.setEnabled(False)
+                    #self.general_network_graph_Checkbox.setEnabled(False)
 
                     self.node_size_value_label.setText("Valor Máximo Posible: " + str(int(self.mainController.get_weight_of_heaviest_node())))
                     self.NodeSize_txb.setEnabled(True)
@@ -1414,11 +1503,12 @@ class MainWindow(QMainWindow):
                     #self.node_size_slider.setEnabled(True)
                     #self.edge_weight_slider.setEnabled(False)
                     #self.node_grade_slider.setEnabled(False)
+
                 except Exception as e:
                         print(e)
 
         else:  # Si se desmarca un QCheckBox
-            self.general_network_graph_Checkbox.setEnabled(True)
+            #self.general_network_graph_Checkbox.setEnabled(True)
             self.filter_network_graph_Checkbox.setEnabled(True)
 
             try:
@@ -1445,7 +1535,7 @@ class MainWindow(QMainWindow):
         else:
             no_words_flag = 0
 
-        if self.general_network_graph_Checkbox.isChecked():  # General Seleccionado
+        if not self.filter_network_graph_Checkbox.isChecked():  # General Seleccionado
             #distribution_selection = 1
             try:
                 self.mainController.delete_graph()
@@ -1459,8 +1549,11 @@ class MainWindow(QMainWindow):
                 edge_weight_selection = int(self.EdgeWeight_txb.text())
                 node_grade_selection = int(self.NodeGrade_txb.text())
 
-                self.mainController.delete_graph()
-                self.conceptual_network(int(no_words_flag), 1, node_size_selection, edge_weight_selection, node_grade_selection, int(relation_selection), type_word_selection)
+                if node_size_selection < 0 or edge_weight_selection < 0 or node_grade_selection < 0:
+                    self.error_report("Parámetros no pueden ser menores a 0.")
+                else:
+                    self.mainController.delete_graph()
+                    self.conceptual_network(int(no_words_flag), 1, node_size_selection, edge_weight_selection, node_grade_selection, int(relation_selection), type_word_selection)
             except Exception as e:
                 print(e)
 
