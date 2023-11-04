@@ -80,7 +80,7 @@ class NetworkAdmin:
         new_graph = self.graph
 
         if node_weight == 0 and edge_weight == 0 and node_grade == 0:
-            return self.get_graph()
+            return self.get_graph(type_word)
 
         if node_weight > 0:
             new_graph = get_graph_by_node_weight(new_graph, node_weight)

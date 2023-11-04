@@ -90,29 +90,16 @@ class StructureStemming:
 
     def get_first_word(self, root):
         words = self.stem_words[root]
-        print(words)
         word = list(words[0].keys())[0]
-        print(word)
         return word
 
     def get_heaviest_word(self, root):
-        print("AYUDAAAAA2")
         words = self.stem_words[root]
         word = max(words[0], key=lambda key: words[0][key])
         return word
 
 
     def get_shortest_word(self, root):
-        print("AYUDAAAAA3")
         words = self.stem_words[root]
         word = sorted(words[0], key=lambda x: len(x))[0]
         return word
-
-# x = StructureStemming()
-# x.add("educ","educativo")
-# x.add("educ","educa")
-# x.add("educ","educativo")
-# x.add("hol","hola")
-# x.add("hol","holi")
-# x.add("universi","universidad")
-# print(x.get_nodes_and_weights())

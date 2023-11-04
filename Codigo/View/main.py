@@ -1459,7 +1459,7 @@ class MainWindow(QMainWindow):
 
     def network_checkbox_management(self, state):
         if state == 2:  # Si se marca un QCheckBox
-
+            self.mainController.set_network_data()
             self.mainController.create_network()
             relation_selection = int(self.relation_combobox.currentText())
             self.mainController.create_relation(relation_selection)
@@ -1529,7 +1529,7 @@ class MainWindow(QMainWindow):
         node_size_selection = 0
         edge_weight_selection = 0
         node_grade_selection = 0
-
+        print("111")
         if self.no_words_network_graph_Checkbox.isChecked():
             no_words_flag = 1
         else:
@@ -1543,6 +1543,7 @@ class MainWindow(QMainWindow):
             except Exception as e:
                 print(e)
         elif self.filter_network_graph_Checkbox.isChecked():  # Filtro Seleccionado
+            print("222")
             try:
                 # distribution_selection = 2
                 node_size_selection = int(self.NodeSize_txb.text())
