@@ -60,11 +60,25 @@ class NetworkThread(QThread):
 
             #print(str(max_node_weight))
             #print(str(max_edge_weight))
-            plt.figure(num=2,figsize=(16, 9))
-            circular_pos = nx.spring_layout(graph, k=0.30)  # Utiliza un diseño circular
+
+            #x = nx.spring_layout(graph, k=0.30)
+            #x = nx.kamada_kawai_layout(graph)
+            #x = nx.random_layout(graph)
+            #x = nx.shell_layout(graph)
+            #x = nx.spectral_layout(graph)
+            #x = nx.planar_layout(graph)
+            #x = nx.fruchterman_reingold_layout(graph, k=0.30)
+            #x = nx.spiral_layout(graph)
+
+            x = nx.arf_layout(graph)
+
+
+
+
+            circular_pos = x # Utiliza un diseño circular
             node_sizes = [(weight / max_node_weight) * 400 for node, weight in weights.items()]
 
-            nx.draw_networkx_nodes(graph, circular_pos, node_size=node_sizes)
+            nx.draw_networkx_nodes(graph, circular_pos, node_size=node_sizes, node_color='green')
             # Dibujar las aristas con un grosor proporcional al peso y el mismo color que los nodos
             for edge in graph.edges(data=True):
 
