@@ -387,7 +387,7 @@ class MainWindow(QMainWindow):
         self.tab_widget.setTabEnabled(1, False)
 
         # -------------------------------------Cites-------------------------------------
-        text_visualizer_widget_layout = QVBoxLayout()
+        text_visualizer_widget_layout = QHBoxLayout()
         self.text_visualizer_widget.setLayout(text_visualizer_widget_layout)
 
         # Crear el visor de texto
@@ -397,25 +397,44 @@ class MainWindow(QMainWindow):
         search_widget = QWidget()
         search_layout = QVBoxLayout()
 
-        # Crear un botón de búsqueda
-        search_file_button = QPushButton("Abrir Archivo")
-        search_file_button.clicked.connect(self.open_text_file)
-        search_layout.addWidget(search_file_button)
-
         # Crear un campo de entrada para la palabra clave
         self.search_input = QLineEdit()
+        self.search_input.setStyleSheet(input_txt_style)
         search_layout.addWidget(self.search_input)
 
         # Crear un botón de búsqueda
         search_button = QPushButton("Buscar")
         search_button.clicked.connect(self.search_text)
+        search_button.setStyleSheet(button_style_add)
         search_layout.addWidget(search_button)
 
         search_widget.setLayout(search_layout)
 
-        text_visualizer_widget_layout.addWidget(search_widget)
+        self.cites_text_widget = QWidget()
+        cites_text_widget_layout = QVBoxLayout()
+        self.cites_text_widget.setLayout(cites_text_widget_layout)
 
-        text_visualizer_widget_layout.addWidget(self.text_browser)
+        cites_text_widget_layout.addWidget(search_widget)
+
+        cites_text_widget_layout.addWidget(self.text_browser)
+
+        text_visualizer_widget_layout.addWidget(self.cites_text_widget)
+
+        self.cites_list_widget = QWidget()
+        cites_list_widget_layout = QVBoxLayout()
+        self.cites_list_widget.setLayout(cites_list_widget_layout)
+
+        cites_title_lable = QLabel("Citas")
+        cites_title_lable.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+        cites_title_lable.setStyleSheet(label_style_title)
+        cites_list_widget_layout.addWidget(cites_title_lable)
+
+        self.cites_qlist = QListWidget()
+        self.cites_qlist.setStyleSheet(list_style)
+        self.cites_qlist.itemDoubleClicked.connect(self.on_double_click_cites_list_item)
+        cites_list_widget_layout.addWidget(self.cites_qlist)
+
+        text_visualizer_widget_layout.addWidget(self.cites_list_widget)
 
         # -------------------------------------Cites-------------------------------------
 
@@ -696,7 +715,7 @@ class MainWindow(QMainWindow):
 
         self.image_progress_bar2 = QWidget()
         image_progress_bar2_layout = QHBoxLayout()
-        self.image_progress_bar2.setLayout(image_progress_bar_layout)
+        self.image_progress_bar2.setLayout(image_progress_bar2_layout)
 
         img_pgrsb2_label = QLabel("Procesando")
         image_progress_bar2_layout.addWidget(img_pgrsb2_label)
@@ -716,11 +735,6 @@ class MainWindow(QMainWindow):
 
         conceptual_network_widget_vertical_layout.addWidget(self.image_progress_bar2)
         conceptual_network_widget_layout.addWidget(self.conceptual_network_widget_vertical_widget)
-
-
-
-
-
 
         # onceptual_network_widget_layout.addWidget(network_config_label)
 
@@ -793,9 +807,6 @@ class MainWindow(QMainWindow):
         conceptual_network_widget_horizontal_inside_select_typeword_layout.addWidget(self.typeword_combobox)
         #self.typeword_combobox.currentIndexChanged.connect(self.network_relations_checkbok_manage)
 
-
-
-
         # Filter Selection Layout
         conceptual_network_widget_horizontal_inside_distribution_layout = QHBoxLayout()
         conceptual_network_widget_horizontal_inside_distribution_vertical_layout = QVBoxLayout()
@@ -812,14 +823,11 @@ class MainWindow(QMainWindow):
 
         self.filter_network_graph_Checkbox.stateChanged.connect(self.network_checkbox_management)
 
-
         conceptual_network_widget_horizontal_inside_distribution_layout.addWidget(graph_layout_label)
         #conceptual_network_widget_horizontal_inside_distribution_vertical_layout.addLayout(general_network_graph_layout)
         conceptual_network_widget_horizontal_inside_distribution_vertical_layout.addLayout(filter_network_graph_layout)
 
-
         conceptual_network_widget_horizontal_inside_distribution_layout.addLayout(conceptual_network_widget_horizontal_inside_distribution_vertical_layout)
-
 
 
         # Node Size Selection Layout
@@ -862,7 +870,6 @@ class MainWindow(QMainWindow):
         self.NodeGrade_txb = QLineEdit()
         self.NodeGrade_txb.setStyleSheet(input_txt_style)
 
-
         # self.node_grade_slider = QSlider(Qt.Orientation.Horizontal, self)
         # self.node_grade_slider.setGeometry(50, 50, 200, 50)
         # self.node_grade_slider.setTickPosition(QSlider.TickPosition.NoTicks)
@@ -878,7 +885,6 @@ class MainWindow(QMainWindow):
         conceptual_network_widget_horizontal_inside_grade_layout.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         conceptual_network_widget_horizontal_inside_grade_layout.addWidget(self.NodeGrade_txb)
         conceptual_network_widget_horizontal_inside_grade_layout.addWidget(self.node_grade_value_label)
-
 
         # Node Relation Selection Layout
         conceptual_network_widget_horizontal_inside_edge_weight_layout = QHBoxLayout()
@@ -898,23 +904,17 @@ class MainWindow(QMainWindow):
         # self.edge_weight_slider.setTickPosition(QSlider.TickPosition.TicksBelow)
         # self.edge_weight_slider.setTickInterval(3)
 
-
         # Crear un QLabel para mostrar el valor del slider
         self.edge_weight_label = QLabel("Valor Máximo Posible: 0")
-
-
 
         conceptual_network_widget_horizontal_inside_edge_weight_layout.addWidget(edge_weight_label)
         conceptual_network_widget_horizontal_inside_edge_weight_layout.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         conceptual_network_widget_horizontal_inside_edge_weight_layout.addWidget(self.EdgeWeight_txb)
         conceptual_network_widget_horizontal_inside_edge_weight_layout.addWidget(self.edge_weight_label)
 
-
         # self.node_size_slider.valueChanged.connect(self.displaySlidervalueNodeSize)
         # self.edge_weight_slider.valueChanged.connect(self.displaySlidervalueEdgeWeight)
         # self.node_grade_slider.valueChanged.connect(self.displaySlidervalueNodeGrade)
-
-
 
         #No Words Config
 
@@ -926,10 +926,7 @@ class MainWindow(QMainWindow):
         conceptual_network_widget_horizontal_inside_no_words_layout.addWidget(no_words_network_graph_Label)
         conceptual_network_widget_horizontal_inside_no_words_layout.addWidget(self.no_words_network_graph_Checkbox)
 
-
-
         #Color Edges For Graph
-
 
         graph_color_frame_widget = QWidget()
         conceptual_network_widget_horizontal_inside_graph_color_layout = QHBoxLayout()
@@ -981,8 +978,6 @@ class MainWindow(QMainWindow):
         conceptual_network_widget_horizontal_inside_graph_node_color_layout.addWidget(graph_color_node_selector_button)
         # color_selecctor_layout.addWidget(color_frame2_widget)
 
-
-
         # Add Tools Layout to Vertical Layout
         conceptual_network_widget_vertical_layout.addLayout(conceptual_network_widget_horizontal_inside_relation_layout)
         conceptual_network_widget_vertical_layout.addLayout(conceptual_network_widget_horizontal_inside_select_typeword_layout)
@@ -995,12 +990,6 @@ class MainWindow(QMainWindow):
         conceptual_network_widget_vertical_layout.addLayout(conceptual_network_widget_horizontal_inside_no_words_layout)
         conceptual_network_widget_vertical_layout.addLayout(conceptual_network_widget_horizontal_inside_graph_color_layout)
         conceptual_network_widget_vertical_layout.addLayout(conceptual_network_widget_horizontal_inside_graph_node_color_layout)
-
-
-
-
-
-
 
         self.create_conceptual_network_button = QPushButton("Crear Red")
         self.create_conceptual_network_button.setStyleSheet(button_style_normal)
@@ -1097,7 +1086,9 @@ class MainWindow(QMainWindow):
     # Action when the thread finishes its job
     def graph_thread_finished(self):
         self.word_freq_dict = self.mainController.getStatistics()
+        self.open_text_file()
         self.populate_table()
+        self.fill_cites_list()
         # self.plot_bar_chart(word_freq_dict)
         self.tab_widget.setTabEnabled(1, True)
         self.tab_widget.setTabEnabled(2, True)
@@ -1302,7 +1293,6 @@ class MainWindow(QMainWindow):
         if color_dialog.exec():
             selected_color = color_dialog.selectedColor()
             self.update_BGcolor(selected_color)
-
 
 
     def update_BGcolor(self, color):
@@ -1648,18 +1638,10 @@ class MainWindow(QMainWindow):
     ##########################################################################################################
 
     def open_text_file(self):
-        file_dialog = QFileDialog()
-        file_dialog.setFileMode(QFileDialog.FileMode.ExistingFiles)
-        file_dialog.setNameFilter("Archivos de Texto (*.txt)")
-
-        if file_dialog.exec() == QFileDialog.DialogCode.Accepted:
-            selected_file = file_dialog.selectedFiles()[0]
-            try:
-                with open(selected_file, "r", encoding="utf-8") as file:
-                    text = file.read()
-                    self.text_browser.setPlainText(text)
-            except Exception as e:
-                self.text_browser.setPlainText("Error al abrir el archivo:\n" + str(e))
+        try:
+            self.text_browser.setPlainText(self.mainController.get_text2())
+        except Exception as e:
+            self.text_browser.setPlainText("Error al abrir el archivo:\n" + str(e))
 
     def search_text(self):
         keyword = self.search_input.text()
@@ -1683,6 +1665,41 @@ class MainWindow(QMainWindow):
                 format.setBackground(Qt.GlobalColor.yellow)  # Fondo amarillo para resaltar
                 cursor.mergeCharFormat(format)
                 cursor = doc.find(keyword, cursor)
+
+    def on_double_click_cites_list_item(self, item):
+        keyword = item.text()
+        if keyword:
+            # Obtener el documento del QTextBrowser
+            doc = self.text_browser.document()
+
+            # Crear un QTextCursor para el documento completo
+            cursor = QTextCursor(doc)
+
+            # Establecer el formato de selección vacía para eliminar cualquier resaltado anterior
+            format = QTextCharFormat()
+            format.setBackground(Qt.GlobalColor.white)  # Fondo blanco para desmarcar
+            cursor.select(QTextCursor.SelectionType.Document)
+            cursor.setCharFormat(format)
+
+            # Luego, realizar la nueva búsqueda
+            cursor = doc.find(keyword)
+            if not cursor.isNull():
+                format = QTextCharFormat()
+                format.setBackground(Qt.GlobalColor.yellow)  # Fondo amarillo para resaltar
+                cursor.mergeCharFormat(format)
+                self.text_browser.setTextCursor(cursor)
+
+                # Asegurarse de que el texto encontrado sea visible en la vista
+                self.text_browser.ensureCursorVisible()
+
+
+    def fill_cites_list(self):
+        self.cites_qlist.clear()
+        cites = self.mainController.get_phrases()
+        webs = self.mainController.get_web_pages()
+        cites.extend(webs)
+        for i in cites:
+            self.cites_qlist.addItem(i)
 
 
 

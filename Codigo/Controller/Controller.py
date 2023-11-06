@@ -73,3 +73,12 @@ class MainController:
 
     def delete_graph(self):
         self.networkAdmin.delete_graph()
+
+    def get_text2(self):
+        return self.textHandlerAdmin.get_text2()
+
+    def get_phrases(self):
+        return self.textHandlerAdmin.getPhrases()
+
+    def get_web_pages(self):
+        return self.textHandlerAdmin.getUrls()

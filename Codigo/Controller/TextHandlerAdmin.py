@@ -65,7 +65,7 @@ class TextHandlerAdmin:
         Salidas: Colección de Citas de un Texto.
         Restricciones: N/A'''
 
-        phrases = re.findall(r'"(.*?)"', self.text)
+        phrases = re.findall(r'"(.*?)"', self.text2)
         return phrases
 
     def getUrls(self):
@@ -183,7 +183,7 @@ class TextHandlerAdmin:
             if response['response']:
                 return response
 
-            self.text = self.text + response['message']
+            self.text = self.text + response['message'] + "\n\n"
             return response
 
         elif extension == ".txt":
@@ -193,7 +193,7 @@ class TextHandlerAdmin:
             if response['response']:
                 return response
 
-            self.text = self.text + response['message']
+            self.text = self.text + response['message'] + "\n\n"
             return response
 
         elif extension == ".pdf":
@@ -203,7 +203,7 @@ class TextHandlerAdmin:
             if response['response']:
                 return response
 
-            self.text = self.text + response['message']
+            self.text = self.text + response['message'] + "\n\n"
             return response
 
         else:
@@ -213,7 +213,7 @@ class TextHandlerAdmin:
             if response['response']:
                 return response
 
-            self.text = self.text + response['message']
+            self.text = self.text + response['message'] + "\n\n"
             return response
 
     def countWords(self):
@@ -330,3 +330,6 @@ class TextHandlerAdmin:
 
     def weigthSort(self):
         self.structure_stemming.sortStrutureWeigth()
+
+    def get_text2(self):
+        return self.text2
