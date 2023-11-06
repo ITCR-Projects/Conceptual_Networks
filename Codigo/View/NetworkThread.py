@@ -8,7 +8,7 @@ from matplotlib import pyplot as plt
 class NetworkThread(QThread):
 
     finished = pyqtSignal()
-    def __init__(self, main_controller, show_lables, type_graph, nodeSize, edgeWeight, nodeGrade,  relation, type_word):
+    def __init__(self, main_controller, show_lables, type_graph, nodeSize, edgeWeight, nodeGrade,  relation, type_word, node_color, edge_color,):
         super().__init__()
         self.main_controller = main_controller
         self.show_lables = show_lables
@@ -18,6 +18,8 @@ class NetworkThread(QThread):
         self.nodeGrade = nodeGrade
         self.relation = relation
         self.type_word = type_word
+        self.edge_color = edge_color
+        self.node_color = node_color
 
     def run(self):
         self.main_controller.set_network_data()
@@ -28,7 +30,7 @@ class NetworkThread(QThread):
         #print("Aquí voyyyyyyyyy <<<<<<<<<<<<<<")
         try:
 
-            graph = self.main_controller.get_graph_by_filters(self.nodeSize,self.edgeWeight,self.nodeGrade, self.type_word)
+            graph = self.main_controller.get_graph_by_filters(self.nodeSize,self.edgeWeight, self.nodeGrade, self.type_word)
             # if self.type_graph == 1:
             #     graph = self.main_controller.get_graph_by_node_weight(0)# all in general
             #    #graph = self.main_controller.get_graph()  # all in general
@@ -61,24 +63,32 @@ class NetworkThread(QThread):
             #print(str(max_node_weight))
             #print(str(max_edge_weight))
 
-            #x = nx.spring_layout(graph, k=0.30)
-            #x = nx.kamada_kawai_layout(graph)
-            #x = nx.random_layout(graph)
-            #x = nx.shell_layout(graph)
-            #x = nx.spectral_layout(graph)
-            #x = nx.planar_layout(graph)
-            #x = nx.fruchterman_reingold_layout(graph, k=0.30)
-            #x = nx.spiral_layout(graph)
+            distro = nx.arf_layout(graph)
 
-            x = nx.arf_layout(graph)
+            if self.type_graph == 0:
+                distro = nx.spring_layout(graph, k=0.30)
+            elif self.type_graph == 1:
+                distro = nx.kamada_kawai_layout(graph)
+            elif self.type_graph == 2:
+                distro = nx.random_layout(graph)
+            elif self.type_graph == 3:
+                distro = nx.shell_layout(graph)
+            elif self.type_graph == 4:
+                distro = nx.spectral_layout(graph)
+            #elif self.type_graph == 4:
+                #distro = nx.planar_layout(graph)
+            elif self.type_graph == 5:
+                distro = nx.fruchterman_reingold_layout(graph, k=0.30)
+            elif self.type_graph == 6:
+                distro = nx.spiral_layout(graph)
+            elif self.type_graph == 7:
+                distro = nx.arf_layout(graph)
 
 
-
-
-            circular_pos = x # Utiliza un diseño circular
+            circular_pos = distro # Utiliza un diseño circular
             node_sizes = [(weight / max_node_weight) * 400 for node, weight in weights.items()]
 
-            nx.draw_networkx_nodes(graph, circular_pos, node_size=node_sizes, node_color='green')
+            nx.draw_networkx_nodes(graph, circular_pos, node_size=node_sizes, node_color= str(self.node_color))
             # Dibujar las aristas con un grosor proporcional al peso y el mismo color que los nodos
             for edge in graph.edges(data=True):
 
@@ -86,7 +96,7 @@ class NetworkThread(QThread):
                 normalized_weight = (num_relations / max_edge_weight) * 20
 
                 nx.draw_networkx_edges(graph, circular_pos, edgelist=[(edge[0], edge[1])],
-                                       width=normalized_weight, arrows=False, edge_color='lightblue')
+                                       width=normalized_weight, arrows=False, edge_color= str(self.edge_color))
 
             # Dibujar las etiquetas de los nodos con un tamaño proporcional a sus pesos y color negro
             if self.show_lables == 0:
@@ -103,6 +113,7 @@ class NetworkThread(QThread):
 
             #plt.show()
             #plt.savefig("network.png", bbox_inches='tight', pad_inches=0, transparent=True)
+
         except Exception as e:
             print(e)
         self.finished.emit()

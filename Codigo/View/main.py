@@ -91,6 +91,10 @@ class MainWindow(QMainWindow):
         self.mwlayout = QGridLayout()
         self.mwlayout.setSpacing(10)
 
+        #Graph Default Colors
+        self.nodeColor = 'lightblue'
+        self.graphcolor = '#00aae4'
+
         url_layout = QHBoxLayout()
         files_layout = QVBoxLayout()
 
@@ -722,10 +726,15 @@ class MainWindow(QMainWindow):
         self.graph_distro_combobox = QComboBox()
         self.graph_distro_combobox.setToolTip("Selección Distribución de Grafo")
         self.graph_distro_combobox.setStyleSheet(combobox_normal_style)
-        self.graph_distro_combobox.addItem("Tipo 1")
-        self.graph_distro_combobox.addItem("Tipo 2")
-        self.graph_distro_combobox.addItem("Tipo 3")
-        self.graph_distro_combobox.addItem("Tipo 4")
+        self.graph_distro_combobox.addItem("Default - Spring")                          #nx.spring_layout(graph, k=0.30)
+        self.graph_distro_combobox.addItem("Kamada Kawaii")                             #nx.kamada_kawai_layout(graph)
+        self.graph_distro_combobox.addItem("Random")                                    #nx.random_layout(graph)
+        self.graph_distro_combobox.addItem("Shell")                                     #nx.shell_layout(graph)
+        self.graph_distro_combobox.addItem("Spectral")                                  #nx.spectral_layout(graph)
+        #self.graph_distro_combobox.addItem("Planar")                                   #nx.planar_layout(graph)
+        self.graph_distro_combobox.addItem("Fruchterman Reingold")                      #nx.fruchterman_reingold_layout(graph, k=0.30)
+        self.graph_distro_combobox.addItem("Spiral")                                    #nx.spiral_layout(graph)
+        self.graph_distro_combobox.addItem("Arf")                                       #nx.arf_layout(graph)
 
 
         conceptual_network_widget_horizontal_graph_distro_layout.addWidget(graph_distro_label)
@@ -892,7 +901,7 @@ class MainWindow(QMainWindow):
         conceptual_network_widget_horizontal_inside_graph_color_layout = QHBoxLayout()
         conceptual_network_widget_horizontal_inside_graph_color_layout.addWidget(graph_color_frame_widget)
 
-        color_graph_Label = QLabel("Color")
+        color_graph_Label = QLabel("Color de Nodos")
         color_graph_Label.setStyleSheet(label_style_title)
         self.graph_color_frame = QWidget()
         self.graph_color_frame.setMinimumSize(30, 30)
@@ -903,12 +912,12 @@ class MainWindow(QMainWindow):
         conceptual_network_widget_horizontal_inside_graph_color_layout.addWidget(self.graph_color_frame)
 
         graph_color_selector_button = QPushButton("")
-        graph_color_selector_button.setToolTip("Color del grafo")
+        graph_color_selector_button.setToolTip("Color de Nodo")
         graph_color_selector_button.setIcon(QIcon(resource_path("Icons/angulo-pequeno-hacia-abajo.png")))
         graph_color_selector_button.setStyleSheet(button_style_selection)
         graph_color_selector_button.setMaximumSize(50, 30)
         graph_color_selector_button.setContentsMargins(0, 0, 0, 0)
-        graph_color_selector_button.clicked.connect(self.changeGraphPalette)
+        graph_color_selector_button.clicked.connect(self.changeNodePalette)
         conceptual_network_widget_horizontal_inside_graph_color_layout.addWidget(graph_color_selector_button)
         #color_selecctor_layout.addWidget(color_frame2_widget)
 
@@ -918,7 +927,7 @@ class MainWindow(QMainWindow):
         conceptual_network_widget_horizontal_inside_graph_node_color_layout = QHBoxLayout()
         conceptual_network_widget_horizontal_inside_graph_node_color_layout.addWidget(graph_nodes_color_frame_widget)
 
-        color_graph_node_Label = QLabel("Color de Nodos")
+        color_graph_node_Label = QLabel("Color de Aristas")
         color_graph_node_Label.setStyleSheet(label_style_title)
         self.graph_color_node_frame = QWidget()
         self.graph_color_node_frame.setMinimumSize(30, 30)
@@ -929,12 +938,12 @@ class MainWindow(QMainWindow):
         conceptual_network_widget_horizontal_inside_graph_node_color_layout.addWidget(self.graph_color_node_frame)
 
         graph_color_node_selector_button = QPushButton("")
-        graph_color_node_selector_button.setToolTip("Color del grafo")
+        graph_color_node_selector_button.setToolTip("Color de Aristas")
         graph_color_node_selector_button.setIcon(QIcon(resource_path("Icons/angulo-pequeno-hacia-abajo.png")))
         graph_color_node_selector_button.setStyleSheet(button_style_selection)
         graph_color_node_selector_button.setMaximumSize(50, 30)
         graph_color_node_selector_button.setContentsMargins(0, 0, 0, 0)
-        graph_color_node_selector_button.clicked.connect(self.changeGraphPalette)
+        graph_color_node_selector_button.clicked.connect(self.changeEdgePalette)
         conceptual_network_widget_horizontal_inside_graph_node_color_layout.addWidget(graph_color_node_selector_button)
         # color_selecctor_layout.addWidget(color_frame2_widget)
 
@@ -1253,18 +1262,7 @@ class MainWindow(QMainWindow):
             selected_color = color_dialog.selectedColor()
             self.update_BGcolor(selected_color)
 
-    ##########################################################################################################
-    def changeGraphPalette(self):
-        color_dialog = QColorDialog()
-        color_dialog.setWindowTitle("Colores de Grafo")
-        current_color = self.color_frame2.palette().color(QPalette.ColorRole.Window)
-        color_dialog.setCurrentColor(current_color)
 
-        if color_dialog.exec():
-            selected_color = color_dialog.selectedColor()
-            self.update_BGcolor(selected_color)
-
-    ##########################################################################################################
 
     def update_BGcolor(self, color):
         palette = self.color_frame2.palette()
@@ -1289,6 +1287,9 @@ class MainWindow(QMainWindow):
 
         else:
             return self.cloudParameters['background_color']
+
+
+
 
     # Generate a concept cloud
     def generate_word_cloud(self):
@@ -1364,7 +1365,7 @@ class MainWindow(QMainWindow):
         self.populate_table()
 
     # Conceptual network manage
-    def conceptual_network(self, show_lables=1, type_graph=1, nodeSize=50, edgeWeight=550, nodeGrade = 1, relation=1, type_word = 1):
+    def conceptual_network(self, show_lables=1, type_graph=1, nodeSize=50, edgeWeight=550, nodeGrade = 1, relation=1, type_word = 1, node_color = 0, edge_color = 0):
         '''print(
             "par1 : " + str(show_lables) +
             " par2 : " + str(type_graph) +
@@ -1376,7 +1377,7 @@ class MainWindow(QMainWindow):
         try:
             plt.close(plt.figure(2))
             plt.figure(2)
-            self.network_thread = NetworkThread(self.mainController, show_lables, type_graph, nodeSize, edgeWeight, nodeGrade, relation, type_word)
+            self.network_thread = NetworkThread(self.mainController, show_lables, type_graph, nodeSize, edgeWeight, nodeGrade, relation, type_word, node_color, edge_color)
             self.network_thread.finished.connect(self.network_thread_finish)
             self.network_thread.start()
         except Exception as e:
@@ -1522,24 +1523,25 @@ class MainWindow(QMainWindow):
         self.create_conceptual_network_button.setEnabled(False)
         relation_selection = self.relation_combobox.currentText()
         type_word_selection = (self.typeword_combobox.currentIndex()) + 1
-
-
+        graph_distro_selection = self.graph_distro_combobox.currentIndex()
+        #print("GOKU3"+ str(graph_distro_selection))
         no_words_flag = "null"
         #distribution_selection = "null"
         node_size_selection = 0
         edge_weight_selection = 0
         node_grade_selection = 0
-        print("111")
+        #print("111")
+
         if self.no_words_network_graph_Checkbox.isChecked():
             no_words_flag = 1
         else:
             no_words_flag = 0
 
-        if not self.filter_network_graph_Checkbox.isChecked():  # General Seleccionado
+        if not self.filter_network_graph_Checkbox.isChecked():  # Filtro No Seleccionado
             #distribution_selection = 1
             try:
                 self.mainController.delete_graph()
-                self.conceptual_network(int(no_words_flag), 1, 0, 0, 0,int(relation_selection), type_word_selection)
+                self.conceptual_network(int(no_words_flag), graph_distro_selection, 0, 0, 0, int(relation_selection), type_word_selection, self.graphcolor, self.nodeColor)
             except Exception as e:
                 print(e)
         elif self.filter_network_graph_Checkbox.isChecked():  # Filtro Seleccionado
@@ -1554,9 +1556,54 @@ class MainWindow(QMainWindow):
                     self.error_report("Parámetros no pueden ser menores a 0.")
                 else:
                     self.mainController.delete_graph()
-                    self.conceptual_network(int(no_words_flag), 1, node_size_selection, edge_weight_selection, node_grade_selection, int(relation_selection), type_word_selection)
+                    self.conceptual_network(int(no_words_flag), 1, node_size_selection, edge_weight_selection, node_grade_selection, int(relation_selection), type_word_selection,  self.graphcolor, self.nodeColor)
             except Exception as e:
                 print(e)
+
+    ##########################################################################################################
+    def changeNodePalette(self):
+        color_dialog = QColorDialog()
+        color_dialog.setWindowTitle("Colores de Grafo")
+        current_color = self.graph_color_frame.palette().color(QPalette.ColorRole.Window)
+        color_dialog.setCurrentColor(current_color)
+
+        if color_dialog.exec():
+            selected_color = color_dialog.selectedColor()
+            self.update_node_color(selected_color)
+
+    def update_node_color(self, color):
+        palette = self.graph_color_frame.palette()
+        palette.setColor(QPalette.ColorRole.Window, color)
+        self.graph_color_frame.setAutoFillBackground(True)
+        self.graph_color_frame.setPalette(palette)
+        self.graphcolor = color.name()
+        print("GOKUUUUU" + str(self.graphcolor))
+
+    def changeEdgePalette(self):
+        color_dialog = QColorDialog()
+        color_dialog.setWindowTitle("Colores de Nodo")
+        current_color = self.graph_color_node_frame.palette().color(QPalette.ColorRole.Window)
+        color_dialog.setCurrentColor(current_color)
+
+        if color_dialog.exec():
+            selected_color = color_dialog.selectedColor()
+            self.update_edge_color(selected_color)
+
+    def update_edge_color(self, color):
+        palette = self.graph_color_node_frame.palette()
+        palette.setColor(QPalette.ColorRole.Window, color)
+        self.graph_color_node_frame.setAutoFillBackground(True)
+        self.graph_color_node_frame.setPalette(palette)
+        self.nodeColor = color.name()
+        print("GOKUUUUU2" + str(self.nodeColor))
+
+
+    def convertRGBtoHex(self, color):
+        return '#{:02x}{:02x}{:02x}'.format(r, g, b)
+
+        print(rgb_to_hex(255, 165, 1))
+
+    ##########################################################################################################
 
     def open_text_file(self):
         file_dialog = QFileDialog()
