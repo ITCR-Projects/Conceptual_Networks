@@ -56,8 +56,8 @@ class MainController:
     def create_relation(self, step=1):
         self.networkAdmin.create_relation(step)
 
-    def get_graph(self):
-        return self.networkAdmin.get_graph(1)
+    def get_graph(self,type_word):
+        return self.networkAdmin.get_graph(type_word)
 
     def get_graph_by_filters(self, node_weight, edge_weight, node_grade, type_word):
         return self.networkAdmin.get_graph_by_filters(node_weight, edge_weight, node_grade, type_word)

@@ -10,6 +10,7 @@ from PyQt6.QtGui import QIcon, QPalette, QPixmap, QTextCursor, QTextCharFormat
 
 import matplotlib.pyplot as plt
 import matplotlib.font_manager
+import networkx as nx
 import numpy as np
 from PIL import Image
 from random import randint
@@ -578,7 +579,7 @@ class MainWindow(QMainWindow):
         self.transparent_colors_chkbox = QCheckBox("Transparente")
         self.transparent_colors_chkbox.setChecked(True)
         self.transparent_colors_chkbox.setStyleSheet(checkbox_style)
-        self.transparent_colors_chkbox.setToolTip("Hace que el fondoo de la imagen sea transparente")
+        self.transparent_colors_chkbox.setToolTip("Hace que el fondo de la imagen sea transparente")
 
         color_selecctor_layout.addWidget(self.transparent_colors_chkbox)
 
@@ -996,9 +997,22 @@ class MainWindow(QMainWindow):
         self.create_conceptual_network_button.setIcon(QIcon(resource_path("Icons/rodillo.png")))
 
         conceptual_network_widget_vertical_layout.addWidget(self.create_conceptual_network_button)
+
+
+        self.export_graph_button = QPushButton("Exportar Grafo a Gephi")
+        self.export_graph_button.setIcon(QIcon(resource_path("Icons/descargar.png")))
+        self.export_graph_button.setToolTip("Exporta el grafo")
+        self.export_graph_button.setStyleSheet(button_style_warming)
+        self.export_graph_button.clicked.connect(self.exportGraphToGephi)
+
+        conceptual_network_widget_vertical_layout.addWidget(self.export_graph_button)
+
         conceptual_network_widget_layout.addLayout(conceptual_network_widget_vertical_layout)
 
-        # self.graphtype_combobox.currentIndexChanged.connect(self.conceptual_network_tab_manage)
+        #self.graphtype_combobox.currentIndexChanged.connect(self.conceptual_network_tab_manage)
+
+
+
 
         self.conceptual_network_widget.setLayout(conceptual_network_widget_layout)
         #create_conceptual_network_button.clicked.connect(self.conceptual_network)
@@ -1549,6 +1563,31 @@ class MainWindow(QMainWindow):
                 self.mainController.delete_graph()
             except Exception as e:
                 print(e)
+
+    def exportGraphToGephi(self):
+        file_dialog = QFileDialog(self)
+        file_dialog.setAcceptMode(QFileDialog.AcceptMode.AcceptSave)
+        file_dialog.setNameFilter("GEPHI (*.gexf)")
+
+        file_path = ''
+        if file_dialog.exec() == QFileDialog.DialogCode.Accepted:
+            selected_files = file_dialog.selectedFiles()
+            if selected_files:
+                file_path = selected_files[0]
+                print(file_path)
+                self.mainController.set_network_data()
+                self.mainController.create_network()
+                relation_selection = int(self.relation_combobox.currentText())
+                self.mainController.create_relation(relation_selection)
+                type_word_selection = (self.typeword_combobox.currentIndex()) + 1
+                graph = self.mainController.get_graph(type_word_selection)
+                nx.write_gexf(graph, file_path)
+
+            alert = QMessageBox()
+            alert.setWindowTitle("Alerta")
+            alert.setText("¡Grafo Exportado!")
+            alert.setIcon(QMessageBox.Icon.Information)
+            alert.exec()
 
 
 

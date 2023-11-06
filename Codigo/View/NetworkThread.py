@@ -8,7 +8,7 @@ from matplotlib import pyplot as plt
 class NetworkThread(QThread):
 
     finished = pyqtSignal()
-    def __init__(self, main_controller, show_lables, type_graph, nodeSize, edgeWeight, nodeGrade,  relation, type_word, node_color, edge_color,):
+    def __init__(self, main_controller, show_lables, type_graph, nodeSize, edgeWeight, nodeGrade,  relation, type_word, node_color, edge_color):
         super().__init__()
         self.main_controller = main_controller
         self.show_lables = show_lables
@@ -21,6 +21,7 @@ class NetworkThread(QThread):
         self.edge_color = edge_color
         self.node_color = node_color
 
+
     def run(self):
         self.main_controller.set_network_data()
         self.main_controller.create_network()
@@ -29,7 +30,6 @@ class NetworkThread(QThread):
         graph= nx.Graph()
         #print("Aquí voyyyyyyyyy <<<<<<<<<<<<<<")
         try:
-
 
             graph = self.main_controller.get_graph_by_filters(self.nodeSize,self.edgeWeight, self.nodeGrade, self.type_word)
             # if self.type_graph == 1:
