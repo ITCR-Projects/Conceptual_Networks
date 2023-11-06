@@ -30,6 +30,7 @@ class NetworkThread(QThread):
         #print("Aquí voyyyyyyyyy <<<<<<<<<<<<<<")
         try:
 
+
             graph = self.main_controller.get_graph_by_filters(self.nodeSize,self.edgeWeight, self.nodeGrade, self.type_word)
             # if self.type_graph == 1:
             #     graph = self.main_controller.get_graph_by_node_weight(0)# all in general

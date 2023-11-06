@@ -418,6 +418,7 @@ class MainWindow(QMainWindow):
         text_visualizer_widget_layout.addWidget(self.text_browser)
 
         # -------------------------------------Cites-------------------------------------
+
         # -------------------------------------Conceptual Cloud-------------------------------------
         # Here is the configuration of the conceptual cloud tab
         conceptual_cloud_widget_layout = QGridLayout()
@@ -675,7 +676,7 @@ class MainWindow(QMainWindow):
         # ------------------------------Conceptual Network Tab------------------------------------------
 
         conceptual_network_widget_layout = QHBoxLayout()
-        conceptual_network_widget_layout = QHBoxLayout()
+
         # Poner gráfico de red acá
 
         '''network_config_label = QLabel("Grafico")
@@ -686,7 +687,40 @@ class MainWindow(QMainWindow):
         self.svg2_image.setPixmap(QPixmap(resource_path("Icons/imagen-de-archivo.png")))
         self.svg2_image.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         self.svg2_image.setAlignment(Qt.AlignmentFlag.AlignVCenter)
-        conceptual_network_widget_layout.addWidget(self.svg2_image)
+
+        self.conceptual_network_widget_vertical_widget = QWidget()
+        conceptual_network_widget_vertical_layout = QVBoxLayout()
+        self.conceptual_network_widget_vertical_widget.setLayout(conceptual_network_widget_vertical_layout)
+
+        conceptual_network_widget_vertical_layout.addWidget(self.svg2_image)
+
+        self.image_progress_bar2 = QWidget()
+        image_progress_bar2_layout = QHBoxLayout()
+        self.image_progress_bar2.setLayout(image_progress_bar_layout)
+
+        img_pgrsb2_label = QLabel("Procesando")
+        image_progress_bar2_layout.addWidget(img_pgrsb2_label)
+        self.img_progress_bar2 = QProgressBar()
+        self.img_progress_bar2.setRange(0, 0)
+        self.img_progress_bar2.setTextVisible(False)
+        self.img_progress_bar2.setStyleSheet(progress_bar_circular_style)
+
+        image_progress_bar2_layout.addWidget(self.img_progress_bar2)
+
+        # Iniciar un temporizador para simular la carga
+        self.loading_timer2 = QTimer()
+
+        self.loading_timer2.timeout.connect(self.update_img_progress2)
+        self.image_progress_bar2.setVisible(False)
+
+
+        conceptual_network_widget_vertical_layout.addWidget(self.image_progress_bar2)
+        conceptual_network_widget_layout.addWidget(self.conceptual_network_widget_vertical_widget)
+
+
+
+
+
 
         # onceptual_network_widget_layout.addWidget(network_config_label)
 
@@ -1000,6 +1034,13 @@ class MainWindow(QMainWindow):
             self.loading_timer.stop()
         else:
             self.img_progress_bar.setValue(value + 1)
+
+    def update_img_progress2(self):
+        value = self.img_progress_bar2.value()
+        if value >= 100:
+            self.loading_timer2.stop()
+        else:
+            self.img_progress_bar2.setValue(value + 1)
 
     # Function that adds the files to the list
     def add_files(self):
@@ -1385,6 +1426,8 @@ class MainWindow(QMainWindow):
 
 
     def network_thread_finish(self):
+        self.loading_timer2.stop()
+        self.image_progress_bar2.setVisible(False)
         alert = QMessageBox()
         alert.setWindowTitle("Proceso Terminado")
         alert.setText("¡Proceso Terminado!")
@@ -1520,6 +1563,9 @@ class MainWindow(QMainWindow):
 
 
     def drawGraph(self):
+        self.image_progress_bar2.setVisible(True)
+        self.loading_timer2.start(50)
+
         self.create_conceptual_network_button.setEnabled(False)
         relation_selection = self.relation_combobox.currentText()
         type_word_selection = (self.typeword_combobox.currentIndex()) + 1
@@ -1552,7 +1598,7 @@ class MainWindow(QMainWindow):
                 edge_weight_selection = int(self.EdgeWeight_txb.text())
                 node_grade_selection = int(self.NodeGrade_txb.text())
 
-                if node_size_selection < 0 or edge_weight_selection < 0 or node_grade_selection < 0:
+                if node_size_selection < 0 or edge_weight_selection < 0 or node_grade_selection < 0 or str(node_size_selection) == '' or str(edge_weight_selection) == '' or str(node_grade_selection) == '':
                     self.error_report("Parámetros no pueden ser menores a 0.")
                 else:
                     self.mainController.delete_graph()
@@ -1598,10 +1644,6 @@ class MainWindow(QMainWindow):
         print("GOKUUUUU2" + str(self.nodeColor))
 
 
-    def convertRGBtoHex(self, color):
-        return '#{:02x}{:02x}{:02x}'.format(r, g, b)
-
-        print(rgb_to_hex(255, 165, 1))
 
     ##########################################################################################################
 
