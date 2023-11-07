@@ -98,7 +98,6 @@ class StructureStemming:
         word = max(words[0], key=lambda key: words[0][key])
         return word
 
-
     def get_shortest_word(self, root):
         words = self.stem_words[root]
         word = sorted(words[0], key=lambda x: len(x))[0]

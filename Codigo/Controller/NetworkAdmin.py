@@ -58,14 +58,16 @@ class NetworkAdmin:
 
     def change_labels(self, new_graph, type_word):
         for node in new_graph.nodes():
-            new_label = node
-            if type_word == 1:  # OBTIENE LA PRIMERA PALABRA
+            if type_word == 1:
                 new_label = self.structure_stemming.get_first_word(node)
-            if type_word == 2:  # OBTIENE LA PALABRA MÁS REPETIDA
+            elif type_word == 2:
                 new_label = self.structure_stemming.get_heaviest_word(node)
-            if type_word == 3:  # OBTIENE LA PALABRA MÁS PEQUEÑA
+            elif type_word == 3:
                 new_label = self.structure_stemming.get_shortest_word(node)
-            new_graph = nx.relabel_nodes(new_graph, {node: new_label})
+            else:
+                new_label = node
+
+            new_graph.nodes[node]['label'] = new_label
 
         return new_graph
 
