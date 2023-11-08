@@ -1512,27 +1512,8 @@ class MainWindow(QMainWindow):
             relation_selection = int(self.relation_combobox.currentText())
             self.mainController.create_relation(relation_selection)
 
-            if not self.filter_network_graph_Checkbox.isChecked():  # General Seleccionado
-                self.filter_network_graph_Checkbox.setEnabled(False)
+            if self.filter_network_graph_Checkbox.isChecked():  # General Seleccionado
 
-                self.NodeSize_txb.setValue(0)
-                self.NodeGrade_txb.setValue(0)
-                self.EdgeWeight_txb.setValue(0)
-
-                self.NodeSize_txb.setEnabled(False)
-                self.NodeGrade_txb.setEnabled(False)
-                self.EdgeWeight_txb.setEnabled(False)
-
-
-
-                #self.node_size_slider.setEnabled(False)
-                #self.edge_weight_slider.setEnabled(False)
-                #self.node_grade_slider.setEnabled(False)
-
-                #self.size_network_graph_Checkbox.setEnabled(True)
-                #self.grade_network_graph_Checkbox.setEnabled(True)
-
-            elif self.filter_network_graph_Checkbox.isChecked():  # Filtro
                 try:
                     #self.general_network_graph_Checkbox.setEnabled(False)
                     heaviest_node = int(self.mainController.get_weight_of_heaviest_node())
@@ -1559,9 +1540,21 @@ class MainWindow(QMainWindow):
                 except Exception as e:
                         print(e)
 
+                #self.node_size_slider.setEnabled(False)
+                #self.edge_weight_slider.setEnabled(False)
+                #self.node_grade_slider.setEnabled(False)
+
+                #self.size_network_graph_Checkbox.setEnabled(True)
+                #self.grade_network_graph_Checkbox.setEnabled(True)
+
         else:  # Si se desmarca un QCheckBox
-            #self.general_network_graph_Checkbox.setEnabled(True)
-            self.filter_network_graph_Checkbox.setEnabled(True)
+            self.NodeSize_txb.setValue(0)
+            self.NodeGrade_txb.setValue(0)
+            self.EdgeWeight_txb.setValue(0)
+
+            self.NodeSize_txb.setEnabled(False)
+            self.NodeGrade_txb.setEnabled(False)
+            self.EdgeWeight_txb.setEnabled(False)
 
             try:
                 self.mainController.delete_graph()
