@@ -58,6 +58,7 @@ class NetworkThread(QThread):
             except Exception as e:
                 max_edge_weight = 1
                 print(e)
+                print("asddasda")
 
 
 

@@ -833,12 +833,13 @@ class MainWindow(QMainWindow):
 
         # Node Size Selection Layout
         conceptual_network_widget_horizontal_inside_size_layout = QHBoxLayout()
-        node_size_label = QLabel("Nodos De Aparición Mayor A")
+        node_size_label = QLabel("Nodos De Aparición Mayor A:")
         node_size_label.setStyleSheet(label_style_title)
 
         # Text box to get the node size
-        self.NodeSize_txb = QLineEdit()
+        self.NodeSize_txb = QSpinBox()
         self.NodeSize_txb.setStyleSheet(input_txt_style)
+        self.NodeSize_txb.setMinimum(0)
 
         #Slider to get the node size info
         #self.node_size_slider = QSlider(Qt.Orientation.Horizontal, self)
@@ -856,7 +857,6 @@ class MainWindow(QMainWindow):
         self.node_size_value_label = QLabel("Valor Máximo Posible: 0")
 
         conceptual_network_widget_horizontal_inside_size_layout.addWidget(node_size_label)
-        conceptual_network_widget_horizontal_inside_size_layout.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         conceptual_network_widget_horizontal_inside_size_layout.addWidget(self.NodeSize_txb)
         conceptual_network_widget_horizontal_inside_size_layout.addWidget(self.node_size_value_label)
 
@@ -868,8 +868,9 @@ class MainWindow(QMainWindow):
         node_grade_label.setStyleSheet(label_style_title)
 
         # Text box to get the node grade
-        self.NodeGrade_txb = QLineEdit()
+        self.NodeGrade_txb = QSpinBox()
         self.NodeGrade_txb.setStyleSheet(input_txt_style)
+        self.NodeGrade_txb.setMinimum(0)
 
         # self.node_grade_slider = QSlider(Qt.Orientation.Horizontal, self)
         # self.node_grade_slider.setGeometry(50, 50, 200, 50)
@@ -883,7 +884,6 @@ class MainWindow(QMainWindow):
         self.node_grade_value_label = QLabel("Valor Máximo Posible: 0")
 
         conceptual_network_widget_horizontal_inside_grade_layout.addWidget(node_grade_label)
-        conceptual_network_widget_horizontal_inside_grade_layout.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         conceptual_network_widget_horizontal_inside_grade_layout.addWidget(self.NodeGrade_txb)
         conceptual_network_widget_horizontal_inside_grade_layout.addWidget(self.node_grade_value_label)
 
@@ -893,8 +893,9 @@ class MainWindow(QMainWindow):
         edge_weight_label.setStyleSheet(label_style_title)
 
         # Text box to get the node grade
-        self.EdgeWeight_txb = QLineEdit()
+        self.EdgeWeight_txb = QSpinBox()
         self.EdgeWeight_txb.setStyleSheet(input_txt_style)
+        self.EdgeWeight_txb.setMinimum(0)
 
         # self.edge_weight_slider = QSlider(Qt.Orientation.Horizontal, self)
         # self.edge_weight_slider.setGeometry(50, 50, 200, 50)
@@ -909,7 +910,6 @@ class MainWindow(QMainWindow):
         self.edge_weight_label = QLabel("Valor Máximo Posible: 0")
 
         conceptual_network_widget_horizontal_inside_edge_weight_layout.addWidget(edge_weight_label)
-        conceptual_network_widget_horizontal_inside_edge_weight_layout.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         conceptual_network_widget_horizontal_inside_edge_weight_layout.addWidget(self.EdgeWeight_txb)
         conceptual_network_widget_horizontal_inside_edge_weight_layout.addWidget(self.edge_weight_label)
 
@@ -983,7 +983,7 @@ class MainWindow(QMainWindow):
         conceptual_network_widget_vertical_layout.addLayout(conceptual_network_widget_horizontal_inside_relation_layout)
         conceptual_network_widget_vertical_layout.addLayout(conceptual_network_widget_horizontal_inside_select_typeword_layout)
         conceptual_network_widget_vertical_layout.addLayout(conceptual_network_widget_horizontal_graph_distro_layout)
-        conceptual_network_widget_vertical_layout.addLayout(conceptual_network_widget_horizontal_inside_distribution_layout) #FILTROS!!! Cambiar luego
+        conceptual_network_widget_vertical_layout.addLayout(conceptual_network_widget_horizontal_inside_distribution_layout)
 
         conceptual_network_widget_vertical_layout.addLayout(conceptual_network_widget_horizontal_inside_size_layout)
         conceptual_network_widget_vertical_layout.addLayout(conceptual_network_widget_horizontal_inside_edge_weight_layout)
@@ -1515,9 +1515,9 @@ class MainWindow(QMainWindow):
             if not self.filter_network_graph_Checkbox.isChecked():  # General Seleccionado
                 self.filter_network_graph_Checkbox.setEnabled(False)
 
-                self.NodeSize_txb.setText("")
-                self.NodeGrade_txb.setText("")
-                self.EdgeWeight_txb.setText("")
+                self.NodeSize_txb.setValue(0)
+                self.NodeGrade_txb.setValue(0)
+                self.EdgeWeight_txb.setValue(0)
 
                 self.NodeSize_txb.setEnabled(False)
                 self.NodeGrade_txb.setEnabled(False)
@@ -1535,15 +1535,19 @@ class MainWindow(QMainWindow):
             elif self.filter_network_graph_Checkbox.isChecked():  # Filtro
                 try:
                     #self.general_network_graph_Checkbox.setEnabled(False)
-
-                    self.node_size_value_label.setText("Valor Máximo Posible: " + str(int(self.mainController.get_weight_of_heaviest_node())))
+                    heaviest_node = int(self.mainController.get_weight_of_heaviest_node())
+                    self.node_size_value_label.setText("Valor Máximo Posible: " + str(heaviest_node))
+                    self.NodeSize_txb.setMaximum(heaviest_node)
                     self.NodeSize_txb.setEnabled(True)
 
-                    self.edge_weight_label.setText("Valor Máximo Posible: " + str(int(self.mainController.get_weight_of_heaviest_edge())))
+                    heaviest_edge = int(self.mainController.get_weight_of_heaviest_edge())
+                    self.edge_weight_label.setText("Valor Máximo Posible: " + str(heaviest_edge))
+                    self.EdgeWeight_txb.setMaximum(heaviest_edge)
                     self.EdgeWeight_txb.setEnabled(True)
 
-                    self.node_grade_value_label.setText("Valor Máximo Posible: " + str(int(self.mainController.get_weight_of_heaviest_grade())))
-
+                    heaviest_grade = int(self.mainController.get_weight_of_heaviest_grade())
+                    self.node_grade_value_label.setText("Valor Máximo Posible: " + str(heaviest_grade))
+                    self.NodeGrade_txb.setMaximum(heaviest_grade)
                     self.NodeGrade_txb.setEnabled(True)
 
                     self.mainController.delete_graph()
@@ -1580,7 +1584,8 @@ class MainWindow(QMainWindow):
                 relation_selection = int(self.relation_combobox.currentText())
                 self.mainController.create_relation(relation_selection)
                 type_word_selection = (self.typeword_combobox.currentIndex()) + 1
-                graph = self.mainController.get_graph(type_word_selection)
+                #graph = self.mainController.get_graph(type_word_selection)
+                graph = self.mainController.get_graph_by_filters(self.NodeSize_txb.value(), self.EdgeWeight_txb.value(), self.NodeGrade_txb.value(), type_word_selection)
                 nx.write_gexf(graph, file_path)
 
             alert = QMessageBox()
@@ -1620,12 +1625,11 @@ class MainWindow(QMainWindow):
             except Exception as e:
                 print(e)
         elif self.filter_network_graph_Checkbox.isChecked():  # Filtro Seleccionado
-            print("222")
             try:
                 # distribution_selection = 2
-                node_size_selection = int(self.NodeSize_txb.text())
-                edge_weight_selection = int(self.EdgeWeight_txb.text())
-                node_grade_selection = int(self.NodeGrade_txb.text())
+                node_size_selection = self.NodeSize_txb.value()
+                edge_weight_selection = self.EdgeWeight_txb.value()
+                node_grade_selection = self.NodeGrade_txb.value()
 
                 if node_size_selection < 0 or edge_weight_selection < 0 or node_grade_selection < 0 or str(node_size_selection) == '' or str(edge_weight_selection) == '' or str(node_grade_selection) == '':
                     self.error_report("Parámetros no pueden ser menores a 0.")
