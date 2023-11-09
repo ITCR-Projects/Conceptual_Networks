@@ -16,6 +16,7 @@ class GraphThread(QThread):
 
     def run(self):
         self.main_controller.cleanText()
+        self.main_controller.clean_roots_words()
         count = 1
         fileCount = self.file_list.count()
         for i in range(fileCount):

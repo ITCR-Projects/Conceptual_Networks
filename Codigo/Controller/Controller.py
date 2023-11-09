@@ -82,3 +82,6 @@ class MainController:
 
     def get_web_pages(self):
         return self.textHandlerAdmin.getUrls()
+
+    def clean_roots_words(self):
+        self.textHandlerAdmin.clean_roots_words()

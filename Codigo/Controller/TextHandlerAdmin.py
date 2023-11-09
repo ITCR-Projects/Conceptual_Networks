@@ -336,3 +336,6 @@ class TextHandlerAdmin:
 
     def get_text2(self):
         return self.text2
+
+    def clean_roots_words(self):
+        self.roots_words = []
