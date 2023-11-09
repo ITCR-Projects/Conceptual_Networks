@@ -1507,6 +1507,7 @@ class MainWindow(QMainWindow):
 
     def network_checkbox_management(self, state):
         if state == 2:  # Si se marca un QCheckBox
+            self.mainController.delete_graph()
             self.mainController.set_network_data()
             self.mainController.create_network()
             relation_selection = int(self.relation_combobox.currentText())
@@ -1628,7 +1629,7 @@ class MainWindow(QMainWindow):
                     self.error_report("Parámetros no pueden ser menores a 0.")
                 else:
                     self.mainController.delete_graph()
-                    self.conceptual_network(int(no_words_flag), 1, node_size_selection, edge_weight_selection, node_grade_selection, int(relation_selection), type_word_selection,  self.graphcolor, self.nodeColor)
+                    self.conceptual_network(int(no_words_flag), graph_distro_selection, node_size_selection, edge_weight_selection, node_grade_selection, int(relation_selection), type_word_selection,  self.graphcolor, self.nodeColor)
             except Exception as e:
                 print(e)
 
