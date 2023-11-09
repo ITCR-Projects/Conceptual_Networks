@@ -12,9 +12,9 @@ class TextFile(File, ABC):
                 # Lee el contenido del archivo de entrada
                 text = input_file.read()
 
-            with open(path, 'w', encoding="utf8") as output_file:
-                # Escribe el contenido en el archivo de salida
-                output_file.write(text)
+            # with open(path, 'w', encoding="utf8") as output_file:
+            #     # Escribe el contenido en el archivo de salida
+            #     output_file.write(text)
 
             return {
                 'response': False,

@@ -64,8 +64,11 @@ class TextHandlerAdmin:
         Entradas: N/A.
         Salidas: Colección de Citas de un Texto.
         Restricciones: N/A'''
+        pattern = r'[\'"“«»](.*?)[\'"”«»]'
+        phrases = re.findall(pattern, self.text2)
 
-        phrases = re.findall(r'"(.*?)"', self.text2)
+
+
         return phrases
 
     def getUrls(self):

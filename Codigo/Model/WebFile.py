@@ -33,8 +33,8 @@ class WebFile(File, ABC):
             text = "\n".join(letters)
 
             # Se crea el archivo .txt y se guarda con la información de la página
-            with open(self.path + self.url_file, "w", encoding="utf-8") as f:
-                f.write(text)
+            # with open(self.path + self.url_file, "w", encoding="utf-8") as f:
+            #     f.write(text)
 
             return {
                 'response': False,

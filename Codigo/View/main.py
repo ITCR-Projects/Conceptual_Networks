@@ -607,13 +607,13 @@ class MainWindow(QMainWindow):
         shape_buttons_widget.setLayout(shape_buttons_widget_layout)
         shape_selection_button = QPushButton("Añadir")
         shape_selection_button.setIcon(QIcon(resource_path("Icons/recursos.png")))
-        shape_selection_button.setToolTip("Añade una mascara a la creación de la nube")
+        shape_selection_button.setToolTip("Añade una máscara a la creación de la nube")
         shape_selection_button.setStyleSheet(button_style_add)
         shape_selection_button.clicked.connect(self.selectMask)
         shape_buttons_widget_layout.addWidget(shape_selection_button)
         shape_delete_button = QPushButton("Quitar")
         shape_delete_button.setIcon(QIcon(resource_path("Icons/basura.png")))
-        shape_delete_button.setToolTip("Quita la mascara agregada")
+        shape_delete_button.setToolTip("Quita la máscara agregada")
         shape_delete_button.setStyleSheet(button_style_delete)
         shape_delete_button.clicked.connect(self.deleteselectMask)
         shape_buttons_widget_layout.addWidget(shape_delete_button)
@@ -662,7 +662,7 @@ class MainWindow(QMainWindow):
         self.word_func_combobox.setStyleSheet(combobox_normal_style)
         self.word_func_combobox.addItem("Primera en aparecer")
         self.word_func_combobox.addItem("Con más apariciones")
-        self.word_func_combobox.addItem("Mas corta")
+        self.word_func_combobox.addItem("Más corta")
         select_word_func_widget_layout.addWidget(word_func_label)
         select_word_func_widget_layout.addWidget(self.word_func_combobox)
 
@@ -803,7 +803,7 @@ class MainWindow(QMainWindow):
         self.typeword_combobox.setStyleSheet(combobox_normal_style)
         self.typeword_combobox.addItem("Primera en aparecer")
         self.typeword_combobox.addItem("Con más apariciones")
-        self.typeword_combobox.addItem("Mas cortas")
+        self.typeword_combobox.addItem("Más cortas")
 
 
         conceptual_network_widget_horizontal_inside_select_typeword_layout.addWidget(typeword_label)
@@ -1269,7 +1269,7 @@ class MainWindow(QMainWindow):
         except Exception as e:
             alert = QMessageBox()
             alert.setWindowTitle("Alerta")
-            alert.setText(f"¡Warming! la raiz {e} se agrego mas de una vez \n Puede que ocurriera un error al combinarlas")
+            alert.setText(f"¡Warming! la raíz {e} se agregó más de una vez \n Puede que ocurriera un error al combinarlas")
             alert.setIcon(QMessageBox.Icon.Information)
             alert.exec()
             self.root_list_list.clear()
