@@ -79,6 +79,8 @@ class MainWindow(QMainWindow):
         self.current_page = 1  # Actual page
         self.word_freq_dict = StructureStemming()
         self.fonts = {}
+        self.image_dir = ["Icons/SPRING.png", "Icons/KAMADI_KAWI.png", "Icons/ramdon.png", "Icons/shell.png",
+                          "Icons/spectral.png", "Icons/raingold.png", "Icons/spiral.png", "Icons/arf.png"]
         # Main controller class
         self.mainController = MainController()
 
@@ -704,7 +706,7 @@ class MainWindow(QMainWindow):
         network_config_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)'''
 
         self.svg2_image = QLabel()
-        self.svg2_image.setPixmap(QPixmap(resource_path("Icons/imagen-de-archivo.png")))
+        self.svg2_image.setPixmap(QPixmap(resource_path("Icons/SPRING.png")))
         self.svg2_image.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         self.svg2_image.setAlignment(Qt.AlignmentFlag.AlignVCenter)
 
@@ -785,7 +787,7 @@ class MainWindow(QMainWindow):
         self.graph_distro_combobox.addItem("Spiral")                                    #nx.spiral_layout(graph)
         self.graph_distro_combobox.addItem("Arf")                                       #nx.arf_layout(graph)
 
-
+        self.graph_distro_combobox.currentIndexChanged.connect(self.changeGraphDistroImage)
         conceptual_network_widget_horizontal_graph_distro_layout.addWidget(graph_distro_label)
         conceptual_network_widget_horizontal_graph_distro_layout.addWidget(self.graph_distro_combobox)
         # self.typeword_combobox.currentIndexChanged.connect(self.network_relations_checkbok_manage)
@@ -1136,9 +1138,9 @@ class MainWindow(QMainWindow):
         about_message_box.setIcon(QMessageBox.Icon.Information)
         about_message_box.setText("Aplicación Creadora de Redes Conceptuales")
         about_message_box.setDetailedText(
-            "Versión 1.0.1\n"
+            "Versión 1.0.3\n"
             "Conceptual Networks es un programa para la composición de redes conceptuales y su representación gráfica\n"
-            "Fecha de Lanzamiento: 14 Setiembre, 2023\n"
+            "Fecha de Lanzamiento: 9 Noviembre, 2023\n"
             "TEC  | Instituto Tecnológico De Costa Rica\n"
             "UNED | Universidad Estatal a Distancia\n"
             "LIIT | Laboratorio de Investigación e Innovación Tecnológica\n"
@@ -1411,14 +1413,6 @@ class MainWindow(QMainWindow):
 
     # Conceptual network manage
     def conceptual_network(self, show_lables=1, type_graph=1, nodeSize=50, edgeWeight=550, nodeGrade = 1, relation=1, type_word = 1, node_color = 0, edge_color = 0):
-        '''print(
-            "par1 : " + str(show_lables) +
-            " par2 : " + str(type_graph) +
-            " par3 : " + str(nodeSize) +
-            " par4 : " + str(edgeWeight) +
-            " par5 : " + str(nodeGrade) +
-            " par6 : " + str(relation)
-        )'''
         try:
             plt.close(plt.figure(2))
             plt.figure(2)
@@ -1562,6 +1556,16 @@ class MainWindow(QMainWindow):
             except Exception as e:
                 print(e)
 
+    def changeGraphDistroImage(self):
+        graph_distro_selection = self.graph_distro_combobox.currentIndex()
+
+        self.svg2_image.setPixmap(QPixmap(resource_path(self.image_dir[graph_distro_selection])))
+        self.svg2_image.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+        self.svg2_image.setAlignment(Qt.AlignmentFlag.AlignVCenter)
+
+
+
+
     def exportGraphToGephi(self):
         file_dialog = QFileDialog(self)
         file_dialog.setAcceptMode(QFileDialog.AcceptMode.AcceptSave)
@@ -1572,7 +1576,7 @@ class MainWindow(QMainWindow):
             selected_files = file_dialog.selectedFiles()
             if selected_files:
                 file_path = selected_files[0]
-                print(file_path)
+                #print(file_path)
                 self.mainController.set_network_data()
                 self.mainController.create_network()
                 relation_selection = int(self.relation_combobox.currentText())
@@ -1598,13 +1602,13 @@ class MainWindow(QMainWindow):
         relation_selection = self.relation_combobox.currentText()
         type_word_selection = (self.typeword_combobox.currentIndex()) + 1
         graph_distro_selection = self.graph_distro_combobox.currentIndex()
-        #print("GOKU3"+ str(graph_distro_selection))
+
         no_words_flag = "null"
         #distribution_selection = "null"
         node_size_selection = 0
         edge_weight_selection = 0
         node_grade_selection = 0
-        #print("111")
+
 
         if self.no_words_network_graph_Checkbox.isChecked():
             no_words_flag = 1
@@ -1650,7 +1654,7 @@ class MainWindow(QMainWindow):
         self.graph_color_frame.setAutoFillBackground(True)
         self.graph_color_frame.setPalette(palette)
         self.graphcolor = color.name()
-        print("GOKUUUUU" + str(self.graphcolor))
+
 
     def changeEdgePalette(self):
         color_dialog = QColorDialog()
@@ -1668,7 +1672,6 @@ class MainWindow(QMainWindow):
         self.graph_color_node_frame.setAutoFillBackground(True)
         self.graph_color_node_frame.setPalette(palette)
         self.nodeColor = color.name()
-        print("GOKUUUUU2" + str(self.nodeColor))
 
 
 

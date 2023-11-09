@@ -28,7 +28,7 @@ class NetworkThread(QThread):
         self.main_controller.create_relation(self.relation)
 
         graph= nx.Graph()
-        #print("Aquí voyyyyyyyyy <<<<<<<<<<<<<<")
+
         try:
 
             graph = self.main_controller.get_graph_by_filters(self.nodeSize,self.edgeWeight, self.nodeGrade, self.type_word)
@@ -48,7 +48,7 @@ class NetworkThread(QThread):
             try:
                 weights = nx.get_node_attributes(graph, 'weight')
                 max_node_weight = max(weights.values())
-                print("CACA1.2")
+
             except Exception as e:
                 max_node_weight = 1
                 print(e)
@@ -58,7 +58,7 @@ class NetworkThread(QThread):
             except Exception as e:
                 max_edge_weight = 1
                 print(e)
-                print("asddasda")
+
 
 
 
